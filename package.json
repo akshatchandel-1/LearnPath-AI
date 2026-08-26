@@ -1,0 +1,23 @@
+{
+  "name": "learnpath-ai",
+  "version": "1.0.0",
+  "description": "LearnPath AI - AI-Powered Personalized Learning Path Recommender (MERN + AI/ML)",
+  "scripts": {
+    "server": "cd server && npm run dev",
+    "client": "cd client && npm run dev",
+    "dev": "npm run server",
+    "seed": "cd server && npm run seed",
+    "test:audit": "node test_e2e_audit.js"
+  },
+  "keywords": [
+    "ai",
+    "recommendation-engine",
+    "mern",
+    "tf-idf",
+    "cosine-similarity",
+    "personalized-learning",
+    "hackathon"
+  ],
+  "author": "Google DeepMind Advanced Engineering",
+  "license": "MIT"
+}

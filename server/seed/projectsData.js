@@ -1,0 +1,87 @@
+const projectsData = [
+  {
+    title: 'AI Expense Tracker & Financial Intelligence Dashboard',
+    description: 'Build a full-stack MERN application that tracks personal income and expenses, visualizes spending trends with Recharts, and uses AI to categorize receipts and detect spending anomalies.',
+    category: 'Full Stack',
+    requiredSkills: ['React.js', 'Node.js', 'Express.js', 'MongoDB', 'Tailwind CSS'],
+    difficulty: 'Intermediate',
+    estimatedHours: 16,
+    features: [
+      'JWT Authentication with HTTP-Only Cookie Refresh Tokens',
+      'Interactive Spending Breakdown with Recharts Pie and Bar Charts',
+      'CSV / JSON Statement Export & Ingestion',
+      'AI Automated Receipt Tagging and Anomaly Categorization',
+      'Monthly Budget Goal Progress Tracker with Notifications',
+    ],
+    learningOutcomes: [
+      'Mastering Mongoose aggregation pipelines ($group, $match, $facet)',
+      'Secure client-side token synchronization in React Context',
+      'Responsive data visualization dashboard patterns',
+    ],
+    starterRepoUrl: 'https://github.com/tastejs/todomvc',
+    deliverables: ['Live deployed web app URL', 'GitHub repository with clean modular architecture', 'REST API documentation'],
+    rubric: [
+      { criteria: 'Full Stack Integration & Authentication', points: 30 },
+      { criteria: 'Interactive Visual Analytics & UX', points: 25 },
+      { criteria: 'Backend Code Quality & MongoDB Aggregations', points: 25 },
+      { criteria: 'AI Categorization Reliability', points: 20 },
+    ],
+  },
+  {
+    title: 'Developer Job Board & Intelligent Resume Matcher',
+    description: 'An end-to-end full-stack hiring platform where companies post jobs and candidates apply with resumes parsed and matched via cosine similarity and skill gap algorithms.',
+    category: 'Full Stack + AI',
+    requiredSkills: ['React.js', 'Node.js', 'Express.js', 'MongoDB', 'REST APIs', 'Machine Learning Algorithms'],
+    difficulty: 'Advanced',
+    estimatedHours: 24,
+    features: [
+      'Role-based access control (Candidates vs Recruiters)',
+      'Real-time job search with faceted filtering (Salary, Remote, Tech Stack)',
+      'TF-IDF & Cosine Similarity Resume-to-Job Fit Scorer',
+      'Interactive Kanban Application Pipeline (Applied, Screened, Interview, Offered)',
+      'Automated Email Notification Webhooks',
+    ],
+    learningOutcomes: [
+      'Implementing real TF-IDF similarity algorithms in Node.js',
+      'Advanced MongoDB compound text indexing and regex search',
+      'Complex role-based permissions and secure file uploads',
+    ],
+    starterRepoUrl: 'https://github.com/vercel/next.js/tree/canary/examples/with-mongodb',
+    deliverables: ['Live application URL', 'GitHub repository', 'Video walkthrough demo'],
+    rubric: [
+      { criteria: 'Recommendation & Matching Algorithm Accuracy', points: 35 },
+      { criteria: 'Full Stack Architecture & DB Schema Design', points: 30 },
+      { criteria: 'UI/UX Polish & Kanban Pipeline Responsiveness', points: 20 },
+      { criteria: 'Documentation & Setup Script Quality', points: 15 },
+    ],
+  },
+  {
+    title: 'Collaborative Real-Time Workspace & Code Sandbox',
+    description: 'A cloud-based real-time document and code editor with WebSockets, syntax highlighting, live cursor tracking, and collaborative state management.',
+    category: 'Frontend & Realtime',
+    requiredSkills: ['React.js', 'Node.js', 'Tailwind CSS', 'System Design'],
+    difficulty: 'Advanced',
+    estimatedHours: 20,
+    features: [
+      'Bi-directional WebSocket sync with Socket.io',
+      'Multi-user live cursor and presence indicators',
+      'Monaco Code Editor integration with syntax themes',
+      'In-browser JavaScript execution sandbox via Web Workers',
+      'Room-based access control and persistent cloud save',
+    ],
+    learningOutcomes: [
+      'Managing distributed state synchronization without race conditions',
+      'Preventing memory leaks in real-time event listeners',
+      'Optimizing Web Worker performance and DOM reconciliation',
+    ],
+    starterRepoUrl: 'https://github.com/socketio/socket.io/tree/main/examples',
+    deliverables: ['GitHub repository', 'Live deployed WebSocket instance'],
+    rubric: [
+      { criteria: 'Real-time Synchronization Concurrency & Stability', points: 40 },
+      { criteria: 'Frontend UI & Monaco Editor Integration', points: 30 },
+      { criteria: 'Code Sandbox Security & Web Worker Isolation', points: 30 },
+    ],
+  },
+];
+
+module.exports = projectsData;
