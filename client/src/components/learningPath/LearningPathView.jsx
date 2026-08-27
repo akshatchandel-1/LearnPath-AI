@@ -7,28 +7,28 @@ import { CheckCircle2, Circle, Clock, PlayCircle, Sparkles } from 'lucide-react'
 
 /**
  * Member 2: Learning Path Placeholder Component
- * Location: src/components/learningPath/LearningPathView.jsx
+ * Obsidian + Ivory + Coral Palette
  */
 export default function LearningPathView() {
   const { roadmapTitle, estimatedCompletion, stages } = mockLearningPath;
 
   const statusBadgeVariant = {
     'Completed': 'success',
-    'In Progress': 'warning',
+    'In Progress': 'primary',
     'Upcoming': 'neutral',
   };
 
   return (
     <div className="space-y-6">
       {/* Roadmap Header Summary */}
-      <Card variant="glow">
+      <Card variant="default">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
               <Badge variant="primary" size="sm" dot>Active Recommended Roadmap</Badge>
-              <span className="text-xs text-text-muted font-mono">{estimatedCompletion}</span>
+              <span className="text-xs text-[#5F6368] font-mono">{estimatedCompletion}</span>
             </div>
-            <h2 className="text-xl font-bold text-white mt-1">{roadmapTitle}</h2>
+            <h2 className="text-xl font-bold text-[#202124] mt-1">{roadmapTitle}</h2>
           </div>
           <Button variant="primary" size="sm" icon={Sparkles}>
             Re-generate Path with AI
@@ -52,27 +52,27 @@ export default function LearningPathView() {
                 <div className="flex items-start gap-3.5">
                   <div className="mt-1">
                     {isCompleted ? (
-                      <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                      <CheckCircle2 className="w-5 h-5 text-[#3F8F68]" />
                     ) : isInProgress ? (
-                      <PlayCircle className="w-5 h-5 text-amber-400 animate-pulse" />
+                      <PlayCircle className="w-5 h-5 text-[#E05A47]" />
                     ) : (
-                      <Circle className="w-5 h-5 text-slate-500" />
+                      <Circle className="w-5 h-5 text-[#8A8F98]" />
                     )}
                   </div>
                   <div>
-                    <span className="text-[11px] font-mono text-text-subtle uppercase">
+                    <span className="text-[11px] font-mono text-[#8A8F98] uppercase">
                       Stage {stage.id}
                     </span>
-                    <h3 className="text-base font-semibold text-slate-100">
+                    <h3 className="text-base font-semibold text-[#202124]">
                       {stage.name}
                     </h3>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-4">
-                  <div className="w-24 bg-slate-800 rounded-full h-2 overflow-hidden hidden sm:block">
+                  <div className="w-24 bg-[#E6E0D7] rounded-full h-2 overflow-hidden hidden sm:block">
                     <div
-                      className="bg-primary h-full rounded-full"
+                      className={`h-full rounded-full ${isCompleted ? 'bg-[#3F8F68]' : 'bg-[#E05A47]'}`}
                       style={{ width: `${stage.progress}%` }}
                     />
                   </div>

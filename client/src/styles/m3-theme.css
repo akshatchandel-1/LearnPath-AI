@@ -1,0 +1,357 @@
+/* ==========================================================================
+   Theme #1: OBSIDIAN + IVORY + CORAL
+   Specifically refined for Courses and Assessments modules.
+   Pure Educational SaaS / Editorial Warm Palette
+   ========================================================================== */
+
+.m3-theme-scope {
+  /* Color Palette Tokens */
+  --m3-surface-white: #FFFDF8;
+  --m3-surface-subtle: #F6F2EA;
+  --m3-surface-card: #FFFDF8;
+  --m3-surface-hover: #FFFFFF;
+  
+  --m3-border-light: #E6E0D7;
+  --m3-border-subtle: #EBE5DC;
+  --m3-border-accent: #D99A8A;
+  --m3-border-focus: #E05A47;
+  
+  --m3-text-dark: #202124;
+  --m3-text-headings: #202124;
+  --m3-text-body: #3F4247;
+  --m3-text-muted: #5F6368;
+  --m3-text-subtle: #8A8F98;
+  
+  --m3-primary-accent: #E05A47;
+  --m3-primary-hover: #C94A38;
+  --m3-primary-soft-bg: #FDF0EE;
+  --m3-primary-soft-text: #E05A47;
+  --m3-primary-soft-border: #F9D5CD;
+  
+  --m3-accent-coral: #E05A47;
+  --m3-accent-peach: #D99A8A;
+  --m3-accent-emerald: #3F8F68;
+  --m3-accent-emerald-soft: #EDF7F2;
+  --m3-accent-amber: #C48A3A;
+  --m3-accent-amber-soft: #FAF3E8;
+  --m3-accent-rose: #C94A4A;
+  --m3-accent-rose-soft: #FDF0F0;
+  --m3-accent-blue: #4A7BC7;
+  --m3-accent-blue-soft: #EFF5FB;
+  
+  --m3-shadow-card: 0 8px 28px rgba(32, 33, 36, 0.06);
+  --m3-shadow-hover: 0 12px 32px rgba(32, 33, 36, 0.09);
+  --m3-shadow-modal: 0 24px 48px -12px rgba(32, 33, 36, 0.18), 0 4px 12px 0 rgba(32, 33, 36, 0.08);
+
+  color: var(--m3-text-dark);
+  position: relative;
+  width: 100%;
+}
+
+/* Subtle Warm Peach Background Blooms (Extremely low opacity 0.04) */
+.m3-theme-scope::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: 2%;
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(224, 90, 71, 0.04) 0%, rgba(217, 154, 138, 0.02) 55%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  border-radius: 50%;
+  filter: blur(50px);
+}
+
+.m3-theme-scope::after {
+  content: '';
+  position: absolute;
+  top: 400px;
+  left: -5%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(217, 154, 138, 0.04) 0%, rgba(246, 242, 234, 0.02) 55%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  border-radius: 50%;
+  filter: blur(60px);
+}
+
+/* Typography Overrides */
+.m3-theme-scope h1 {
+  color: #202124 !important;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.m3-theme-scope h2 {
+  color: #202124 !important;
+  font-weight: 700;
+}
+
+.m3-theme-scope h3 {
+  color: #202124 !important;
+  font-weight: 700;
+}
+
+.m3-theme-scope h4 {
+  color: #202124 !important;
+  font-weight: 600;
+}
+
+.m3-theme-scope p {
+  color: #5F6368 !important;
+}
+
+/* Scoped PageHeader border */
+.m3-theme-scope .border-b {
+  border-color: #E6E0D7 !important;
+}
+
+/* Scoped Badge overrides for common component */
+.m3-theme-scope [class*="bg-primary/15"] {
+  background-color: #FDF0EE !important;
+  color: #E05A47 !important;
+  border-color: #F9D5CD !important;
+}
+
+.m3-theme-scope [class*="bg-status-success/15"] {
+  background-color: #EDF7F2 !important;
+  color: #3F8F68 !important;
+  border-color: #C6E7D6 !important;
+}
+
+.m3-theme-scope [class*="bg-status-warning/15"] {
+  background-color: #FAF3E8 !important;
+  color: #C48A3A !important;
+  border-color: #F0DEC0 !important;
+}
+
+.m3-theme-scope [class*="bg-status-danger/15"] {
+  background-color: #FDF0F0 !important;
+  color: #C94A4A !important;
+  border-color: #F7D2D2 !important;
+}
+
+.m3-theme-scope [class*="bg-slate-800/80"] {
+  background-color: #F1ECE3 !important;
+  color: #5F6368 !important;
+  border-color: #E6E0D7 !important;
+}
+
+/* Scoped Button overrides */
+.m3-theme-scope button[class*="bg-primary"] {
+  background-color: #E05A47 !important;
+  color: #FFFFFF !important;
+  border-color: #C94A38 !important;
+  box-shadow: 0 2px 8px 0 rgba(224, 90, 71, 0.25) !important;
+}
+
+.m3-theme-scope button[class*="bg-primary"]:hover {
+  background-color: #C94A38 !important;
+}
+
+.m3-theme-scope button[class*="bg-transparent"][class*="border-slate-700"] {
+  background-color: #FFFDF8 !important;
+  color: #202124 !important;
+  border-color: #E6E0D7 !important;
+  box-shadow: 0 1px 2px rgba(32, 33, 36, 0.04) !important;
+}
+
+.m3-theme-scope button[class*="bg-transparent"][class*="border-slate-700"]:hover {
+  background-color: #F6F2EA !important;
+  border-color: #D99A8A !important;
+  color: #E05A47 !important;
+}
+
+/* Warm Ivory Card Surfaces */
+.m3-card {
+  background: var(--m3-surface-white);
+  border: 1px solid var(--m3-border-light);
+  border-radius: 1.25rem;
+  box-shadow: var(--m3-shadow-card);
+  transition: all 0.2s ease-out;
+  position: relative;
+}
+
+.m3-card:hover {
+  background: var(--m3-surface-hover);
+  border-color: var(--m3-border-accent);
+  box-shadow: var(--m3-shadow-hover);
+  transform: translateY(-2px);
+}
+
+/* Stat KPI Cards */
+.m3-stat-box {
+  background: #FFFDF8;
+  border: 1px solid #E6E0D7;
+  border-radius: 1.25rem;
+  box-shadow: 0 4px 16px rgba(32, 33, 36, 0.04);
+  transition: all 0.2s ease-out;
+}
+
+.m3-stat-box:hover {
+  border-color: #D99A8A;
+  box-shadow: 0 8px 24px rgba(32, 33, 36, 0.07);
+}
+
+/* Banner Panel (Curriculum generator / Question engine) */
+.m3-banner-panel {
+  background: linear-gradient(135deg, #191A1C 0%, #262423 50%, #382420 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1.5rem;
+  box-shadow: 0 8px 30px -4px rgba(25, 26, 28, 0.25);
+  color: #FFFDF8;
+  position: relative;
+  overflow: hidden;
+}
+
+.m3-banner-panel::before {
+  content: '';
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(224, 90, 71, 0.25) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Filter Toolbar Panel */
+.m3-filter-panel {
+  background: #FFFDF8;
+  border: 1px solid #E6E0D7;
+  border-radius: 1.25rem;
+  box-shadow: var(--m3-shadow-card);
+}
+
+/* Buttons */
+.m3-btn-primary {
+  background-color: #E05A47;
+  color: #FFFFFF;
+  font-weight: 600;
+  border-radius: 0.75rem;
+  border: 1px solid #C94A38;
+  box-shadow: 0 2px 8px 0 rgba(224, 90, 71, 0.28);
+  transition: all 0.2s ease-out;
+}
+
+.m3-btn-primary:hover {
+  background-color: #C94A38;
+  box-shadow: 0 4px 14px 0 rgba(224, 90, 71, 0.38);
+  transform: translateY(-1px);
+}
+
+.m3-btn-secondary {
+  background-color: #FFFDF8;
+  color: #202124;
+  font-weight: 600;
+  border-radius: 0.75rem;
+  border: 1px solid #E6E0D7;
+  box-shadow: 0 1px 2px rgba(32, 33, 36, 0.04);
+  transition: all 0.2s ease-out;
+}
+
+.m3-btn-secondary:hover {
+  background-color: #F6F2EA;
+  border-color: #D99A8A;
+  color: #E05A47;
+}
+
+/* Badges */
+.m3-badge-coral,
+.m3-badge-indigo {
+  background-color: #FDF0EE;
+  color: #E05A47;
+  border: 1px solid #F9D5CD;
+  font-weight: 600;
+}
+
+.m3-badge-emerald {
+  background-color: #EDF7F2;
+  color: #3F8F68;
+  border: 1px solid #C6E7D6;
+  font-weight: 600;
+}
+
+.m3-badge-amber {
+  background-color: #FAF3E8;
+  color: #C48A3A;
+  border: 1px solid #F0DEC0;
+  font-weight: 600;
+}
+
+.m3-badge-neutral {
+  background-color: #F1ECE3;
+  color: #5F6368;
+  border: 1px solid #E6E0D7;
+  font-weight: 600;
+}
+
+.m3-badge-blue {
+  background-color: #EFF5FB;
+  color: #4A7BC7;
+  border: 1px solid #CFE0F5;
+  font-weight: 600;
+}
+
+/* Progress Bars */
+.m3-progress-track {
+  background-color: #E6E0D7;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.m3-progress-fill {
+  background: linear-gradient(90deg, #E05A47 0%, #EA7A69 100%);
+  border-radius: 9999px;
+  transition: width 0.5s ease;
+}
+
+/* Inputs */
+.m3-input {
+  background-color: #FFFDF8;
+  border: 1px solid #E6E0D7;
+  color: #202124;
+  border-radius: 0.75rem;
+  transition: all 0.2s ease-out;
+}
+
+.m3-input:focus {
+  outline: none;
+  border-color: #E05A47;
+  box-shadow: 0 0 0 3px rgba(224, 90, 71, 0.15);
+}
+
+.m3-input::placeholder {
+  color: #8A8F98;
+}
+
+/* Modal Dialog Light Theme */
+.m3-modal-dialog {
+  background: #FFFDF8;
+  border: 1px solid #E6E0D7;
+  box-shadow: var(--m3-shadow-modal);
+  border-radius: 1.5rem;
+  color: #202124;
+}
+
+/* Custom Scrollbar */
+.m3-theme-scope ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.m3-theme-scope ::-webkit-scrollbar-track {
+  background: #F1ECE3;
+}
+
+.m3-theme-scope ::-webkit-scrollbar-thumb {
+  background: #D6D1C8;
+  border-radius: 9999px;
+}
+
+.m3-theme-scope ::-webkit-scrollbar-thumb:hover {
+  background: #E05A47;
+}

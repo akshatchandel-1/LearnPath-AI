@@ -7,7 +7,7 @@ import { Bot, Send, Sparkles, User, Lightbulb } from 'lucide-react';
 
 /**
  * Member 4: AI Assistant Placeholder Component
- * Location: src/components/aiAssistant/AIChatInterface.jsx
+ * Obsidian + Ivory + Coral Palette
  */
 export default function AIChatInterface() {
   const [messages, setMessages] = useState(mockAIAssistant.sampleConversation);
@@ -28,17 +28,17 @@ export default function AIChatInterface() {
   return (
     <div className="space-y-6">
       {/* AI Assistant Chat Container */}
-      <Card variant="glow" className="flex flex-col h-[550px]">
+      <Card variant="default" className="flex flex-col h-[550px]">
         {/* Chat Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-slate-800/80">
+        <div className="flex items-center justify-between pb-4 border-b border-[#E6E0D7]">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white">
+            <div className="w-9 h-9 rounded-xl bg-[#FDF0EE] border border-[#F9D5CD] flex items-center justify-center text-[#E05A47]">
               <Bot className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-semibold text-white">LearnPath AI Mentor</h3>
-              <p className="text-xs text-emerald-400 flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <h3 className="text-base font-bold text-[#202124]">LearnPath AI Mentor</h3>
+              <p className="text-xs text-[#3F8F68] flex items-center gap-1 font-medium">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#3F8F68] animate-pulse" />
                 Online & Ready
               </p>
             </div>
@@ -56,21 +56,21 @@ export default function AIChatInterface() {
                 className={`flex items-start gap-2.5 ${isAI ? 'justify-start' : 'justify-end'}`}
               >
                 {isAI && (
-                  <div className="w-7 h-7 rounded-lg bg-primary/20 text-primary-300 flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="w-7 h-7 rounded-lg bg-[#FDF0EE] text-[#E05A47] border border-[#F9D5CD] flex items-center justify-center shrink-0 mt-0.5">
                     <Bot className="w-4 h-4" />
                   </div>
                 )}
                 <div
-                  className={`max-w-lg p-3 rounded-2xl text-xs sm:text-sm leading-relaxed ${
+                  className={`max-w-lg p-3.5 rounded-2xl text-xs sm:text-sm leading-relaxed ${
                     isAI
-                      ? 'bg-slate-900/90 border border-slate-800 text-slate-200 rounded-tl-sm'
-                      : 'bg-primary text-white rounded-tr-sm shadow-md shadow-primary/20'
+                      ? 'bg-[#F6F2EA] border border-[#E6E0D7] text-[#202124] rounded-tl-sm'
+                      : 'bg-[#E05A47] text-white rounded-tr-sm shadow-md shadow-[#E05A47]/20 font-medium'
                   }`}
                 >
                   {msg.message}
                 </div>
                 {!isAI && (
-                  <div className="w-7 h-7 rounded-lg bg-secondary/20 text-secondary-300 flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="w-7 h-7 rounded-lg bg-[#FAF0ED] text-[#A83B2B] border border-[#F3B2A4] flex items-center justify-center shrink-0 mt-0.5">
                     <User className="w-4 h-4" />
                   </div>
                 )}
@@ -80,9 +80,9 @@ export default function AIChatInterface() {
         </div>
 
         {/* Suggested Prompts */}
-        <div className="py-2 border-t border-slate-800/80">
-          <div className="flex items-center gap-1.5 text-[11px] text-text-subtle mb-2">
-            <Lightbulb className="w-3.5 h-3.5 text-amber-400" />
+        <div className="py-2 border-t border-[#E6E0D7]">
+          <div className="flex items-center gap-1.5 text-[11px] text-[#5F6368] mb-2 font-medium">
+            <Lightbulb className="w-3.5 h-3.5 text-[#C48A3A]" />
             <span>Suggested prompts:</span>
           </div>
           <div className="flex flex-wrap gap-1.5">
@@ -90,7 +90,7 @@ export default function AIChatInterface() {
               <button
                 key={idx}
                 onClick={() => handleSend(prompt)}
-                className="text-[11px] bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white px-2.5 py-1 rounded-lg border border-slate-800 transition-colors truncate max-w-xs"
+                className="text-[11px] bg-[#FFFDF8] hover:bg-[#F6F2EA] text-[#202124] px-3 py-1 rounded-xl border border-[#E6E0D7] hover:border-[#D99A8A] transition-colors truncate max-w-xs cursor-pointer font-medium"
               >
                 {prompt}
               </button>
@@ -111,7 +111,7 @@ export default function AIChatInterface() {
             value={inputVal}
             onChange={(e) => setInputVal(e.target.value)}
             placeholder="Ask your AI Mentor about concepts, roadmaps, code..."
-            className="flex-1 bg-slate-900/90 border border-slate-800 text-xs sm:text-sm text-slate-200 rounded-xl px-4 py-2.5 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary placeholder:text-slate-500"
+            className="flex-1 bg-[#FFFDF8] border border-[#E6E0D7] text-xs sm:text-sm text-[#202124] rounded-xl px-4 py-2.5 focus:outline-none focus:border-[#E05A47] focus:ring-1 focus:ring-[#E05A47] placeholder:text-[#8A8F98]"
           />
           <Button type="submit" variant="primary" size="md" icon={Send}>
             Send

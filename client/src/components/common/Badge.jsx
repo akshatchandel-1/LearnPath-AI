@@ -2,8 +2,7 @@ import React from 'react';
 
 /**
  * Common Badge Component
- * Variants: success, warning, info, danger, neutral, primary
- * Sizes: sm, md
+ * Variants: primary (coral), secondary, success (emerald), warning (amber), danger (red), info (blue), neutral
  */
 export default function Badge({
   children,
@@ -13,28 +12,28 @@ export default function Badge({
   className = '',
 }) {
   const sizeStyles = {
-    sm: 'text-[11px] px-2 py-0.5 font-medium',
-    md: 'text-xs px-2.5 py-1 font-medium',
+    sm: 'text-[11px] px-2 py-0.5 font-semibold',
+    md: 'text-xs px-2.5 py-1 font-semibold',
   };
 
   const variantStyles = {
-    primary: 'bg-primary/15 text-primary-300 border border-primary/30',
-    secondary: 'bg-secondary/15 text-purple-300 border border-secondary/30',
-    success: 'bg-status-success/15 text-emerald-300 border border-status-success/30',
-    warning: 'bg-status-warning/15 text-amber-300 border border-status-warning/30',
-    danger: 'bg-status-danger/15 text-rose-300 border border-status-danger/30',
-    info: 'bg-status-info/15 text-sky-300 border border-status-info/30',
-    neutral: 'bg-slate-800/80 text-slate-300 border border-slate-700/60',
+    primary: 'bg-[#FDF0EE] text-[#E05A47] border border-[#F9D5CD]',
+    secondary: 'bg-[#FAF0ED] text-[#A83B2B] border border-[#F3B2A4]',
+    success: 'bg-[#EDF7F2] text-[#3F8F68] border border-[#C6E7D6]',
+    warning: 'bg-[#FAF3E8] text-[#C48A3A] border border-[#F0DEC0]',
+    danger: 'bg-[#FDF0F0] text-[#C94A4A] border border-[#F7D2D2]',
+    info: 'bg-[#EFF5FB] text-[#4A7BC7] border border-[#CFE0F5]',
+    neutral: 'bg-[#F1ECE3] text-[#5F6368] border border-[#E6E0D7]',
   };
 
   const dotColors = {
-    primary: 'bg-primary',
-    secondary: 'bg-secondary',
-    success: 'bg-status-success',
-    warning: 'bg-status-warning',
-    danger: 'bg-status-danger',
-    info: 'bg-status-info',
-    neutral: 'bg-slate-400',
+    primary: 'bg-[#E05A47]',
+    secondary: 'bg-[#D99A8A]',
+    success: 'bg-[#3F8F68]',
+    warning: 'bg-[#C48A3A]',
+    danger: 'bg-[#C94A4A]',
+    info: 'bg-[#4A7BC7]',
+    neutral: 'bg-[#8A8F98]',
   };
 
   return (

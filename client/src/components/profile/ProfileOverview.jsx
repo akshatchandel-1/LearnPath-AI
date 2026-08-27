@@ -8,7 +8,7 @@ import { User, Mail, MapPin, Target, Award, Edit3, Settings } from 'lucide-react
 
 /**
  * Member 1: Profile Overview Placeholder Component
- * Location: src/components/profile/ProfileOverview.jsx
+ * Obsidian + Ivory + Coral Palette
  */
 export default function ProfileOverview() {
   const { user } = useAuth();
@@ -16,18 +16,18 @@ export default function ProfileOverview() {
   return (
     <div className="space-y-6">
       {/* Profile Header Banner Card */}
-      <Card variant="glow">
+      <Card variant="default">
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
           <img
             src={user?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80'}
             alt={user?.name || 'User'}
-            className="w-24 h-24 rounded-2xl object-cover border-2 border-primary/50 shadow-lg shadow-primary/20"
+            className="w-24 h-24 rounded-2xl object-cover border-2 border-[#E05A47] shadow-md"
           />
           <div className="flex-1 text-center sm:text-left space-y-2">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
-                <h2 className="text-2xl font-bold text-white">{user?.name || 'Demo Learner'}</h2>
-                <p className="text-xs text-text-muted flex items-center justify-center sm:justify-start gap-2 mt-1">
+                <h2 className="text-2xl font-bold text-[#202124]">{user?.name || 'Demo Learner'}</h2>
+                <p className="text-xs text-[#5F6368] flex items-center justify-center sm:justify-start gap-2 mt-1">
                   <Mail className="w-3.5 h-3.5" /> {user?.email}
                   <span>•</span>
                   <MapPin className="w-3.5 h-3.5" /> {mockProfile.location}
@@ -61,7 +61,7 @@ export default function ProfileOverview() {
             <CardTitle>Target Competencies</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-xs text-text-muted mb-3">{mockProfile.bio}</p>
+            <p className="text-xs text-[#5F6368] mb-3 leading-relaxed">{mockProfile.bio}</p>
             <div className="flex flex-wrap gap-2">
               {mockProfile.primaryInterests.map((interest, idx) => (
                 <Badge key={idx} variant="neutral" size="sm">
@@ -78,14 +78,14 @@ export default function ProfileOverview() {
             <CardTitle>AI Preferences</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2.5 text-xs text-slate-300">
-              <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-900/60 border border-slate-800">
+            <div className="space-y-2.5 text-xs text-[#3F4247]">
+              <div className="flex items-center justify-between p-3 rounded-xl bg-[#F6F2EA] border border-[#E6E0D7]">
                 <span>Mentor Persona</span>
-                <span className="font-semibold text-primary-300">{mockProfile.savedPreferences.aiMentorPersonality}</span>
+                <span className="font-semibold text-[#E05A47]">{mockProfile.savedPreferences.aiMentorPersonality}</span>
               </div>
-              <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-900/60 border border-slate-800">
+              <div className="flex items-center justify-between p-3 rounded-xl bg-[#F6F2EA] border border-[#E6E0D7]">
                 <span>Weekly Goal Commitment</span>
-                <span className="font-semibold text-white">{user?.weeklyGoalHours || 12} Hours / Week</span>
+                <span className="font-semibold text-[#202124]">{user?.weeklyGoalHours || 12} Hours / Week</span>
               </div>
             </div>
           </CardContent>

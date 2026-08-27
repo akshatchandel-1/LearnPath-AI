@@ -8,6 +8,7 @@
   }
   
   body {
+<<<<<<< Updated upstream
     @apply font-sans antialiased overflow-x-hidden;
     background-color: #F4F7FE;
     color: #1E293B;
@@ -34,3 +35,88 @@
 ::-webkit-scrollbar-track { background: #F8FAFC; }
 ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 9999px; }
 ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+=======
+    @apply bg-background text-text font-sans antialiased overflow-x-hidden;
+    background-color: #F6F2EA;
+    color: #202124;
+  }
+
+  /* Standard Typography Hierarchy */
+  h1 {
+    @apply text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-[#202124];
+  }
+  
+  h2 {
+    @apply text-xl md:text-2xl font-semibold tracking-tight text-[#202124];
+  }
+  
+  h3 {
+    @apply text-lg md:text-xl font-semibold text-[#202124];
+  }
+  
+  h4 {
+    @apply text-base font-medium text-[#202124];
+  }
+  
+  p {
+    @apply text-sm md:text-base text-text-muted leading-relaxed;
+    color: #5F6368;
+  }
+}
+
+/* Warm Ivory Surface Utilities */
+.glass-panel {
+  background: #FFFDF8;
+  border: 1px solid #E6E0D7;
+  box-shadow: 0 8px 28px rgba(32, 33, 36, 0.06);
+}
+
+.glass-panel-interactive {
+  background: #FFFDF8;
+  border: 1px solid #E6E0D7;
+  box-shadow: 0 8px 28px rgba(32, 33, 36, 0.06);
+  transition: all 0.2s ease-in-out;
+}
+
+.glass-panel-interactive:hover {
+  background: #FFFFFF;
+  border-color: #D99A8A;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(32, 33, 36, 0.09);
+}
+
+.glass-card-glow {
+  background: #FFFDF8;
+  border: 1px solid rgba(224, 90, 71, 0.35);
+  box-shadow: 0 8px 28px rgba(224, 90, 71, 0.08);
+}
+
+.gradient-brand {
+  background: linear-gradient(135deg, #E05A47 0%, #D99A8A 100%);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #E05A47 0%, #D99A8A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F1ECE3;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D6D1C8;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #E05A47;
+}
+>>>>>>> Stashed changes

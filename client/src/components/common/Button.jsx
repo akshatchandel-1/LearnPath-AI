@@ -3,8 +3,7 @@ import { Loader2 } from 'lucide-react';
 
 /**
  * Common Button Component
- * Standardized across all 4 member modules.
- * Variants: primary, secondary, outline, danger, ghost
+ * Coral Primary (#E05A47), Ivory Secondary (#FFFDF8)
  * Sizes: sm, md, lg
  */
 export default function Button({
@@ -20,20 +19,20 @@ export default function Button({
   onClick,
   ...props
 }) {
-  const baseStyles = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background disabled:opacity-50 disabled:cursor-not-allowed select-none active:scale-[0.98]';
+  const baseStyles = 'inline-flex items-center justify-center font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#F6F2EA] disabled:opacity-50 disabled:cursor-not-allowed select-none active:scale-[0.98] cursor-pointer';
 
   const sizeStyles = {
-    sm: 'text-xs px-3 py-1.5 gap-1.5',
-    md: 'text-sm px-4 py-2.5 gap-2',
-    lg: 'text-base px-5 py-3 gap-2.5 font-semibold',
+    sm: 'text-xs px-3.5 py-1.5 gap-1.5 font-semibold',
+    md: 'text-xs sm:text-sm px-4 py-2.5 gap-2 font-semibold',
+    lg: 'text-sm sm:text-base px-5 py-3 gap-2.5 font-bold',
   };
 
   const variantStyles = {
-    primary: 'bg-primary hover:bg-primary-600 text-white shadow-md shadow-primary/20 hover:shadow-primary/35 focus:ring-primary',
-    secondary: 'bg-secondary hover:bg-secondary-600 text-white shadow-md shadow-secondary/20 hover:shadow-secondary/35 focus:ring-secondary',
-    outline: 'bg-transparent hover:bg-slate-800/60 text-slate-200 border border-slate-700 hover:border-slate-500 focus:ring-slate-500',
-    danger: 'bg-status-danger hover:bg-red-600 text-white shadow-md shadow-red-500/20 focus:ring-red-500',
-    ghost: 'bg-transparent hover:bg-slate-800/50 text-slate-300 hover:text-white focus:ring-slate-600',
+    primary: 'bg-[#E05A47] hover:bg-[#C94A38] text-white shadow-md shadow-[#E05A47]/20 hover:shadow-lg hover:shadow-[#E05A47]/30 border border-[#C94A38] focus:ring-[#E05A47]',
+    secondary: 'bg-[#FFFDF8] hover:bg-[#F6F2EA] text-[#202124] border border-[#E6E0D7] hover:border-[#D99A8A] shadow-sm focus:ring-[#E05A47]',
+    outline: 'bg-transparent hover:bg-[#F6F2EA] text-[#202124] border border-[#E6E0D7] hover:border-[#D99A8A] focus:ring-[#E05A47]',
+    danger: 'bg-[#C94A4A] hover:bg-[#B33E3E] text-white shadow-md shadow-[#C94A4A]/20 focus:ring-[#C94A4A]',
+    ghost: 'bg-transparent hover:bg-[#F6F2EA] text-[#5F6368] hover:text-[#202124] focus:ring-[#E05A47]',
   };
 
   const isBtnDisabled = disabled || isLoading;

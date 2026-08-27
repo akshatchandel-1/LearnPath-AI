@@ -15,10 +15,10 @@ export default function PageHeader({
   className = '',
 }) {
   return (
-    <div className={`flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 mb-8 border-b border-slate-800/80 ${className}`}>
+    <div className={`flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-[#E6E0D7] ${className}`}>
       <div>
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-50">
+          <h1 className="text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight text-[#202124]">
             {title}
           </h1>
           {badge && (
@@ -28,7 +28,7 @@ export default function PageHeader({
           )}
         </div>
         {description && (
-          <p className="mt-1 text-sm md:text-base text-text-muted max-w-3xl">
+          <p className="mt-1 text-xs sm:text-sm text-[#5F6368] max-w-3xl leading-relaxed">
             {description}
           </p>
         )}
