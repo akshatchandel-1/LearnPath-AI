@@ -11,7 +11,7 @@ export default function MainLayout({ children }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-text selection:bg-primary selection:text-white">
+    <div className="min-h-screen flex flex-col bg-[#F8FAFC] dark:bg-[#0B0F19] text-slate-800 dark:text-slate-100 selection:bg-purple-600 selection:text-white transition-colors duration-200">
       {/* Top Shared Navbar */}
       <Navbar
         onMobileMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -19,7 +19,7 @@ export default function MainLayout({ children }) {
       />
 
       {/* Main Layout Container (Sidebar + Content) */}
-      <div className="flex-1 flex w-full max-w-7xl mx-auto">
+      <div className="flex-1 flex w-full max-w-[1440px] mx-auto">
         {/* Sidebar */}
         <Sidebar
           isOpen={isMobileMenuOpen}
@@ -31,14 +31,6 @@ export default function MainLayout({ children }) {
           {children}
         </main>
       </div>
-
-      {/* Global Minimal Footer */}
-      <footer className="w-full border-t border-slate-800/80 bg-background/60 py-4 px-6 text-center text-xs text-text-subtle">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span>© 2026 LearnPath AI — AI-Powered Personalized Learning Path Recommender</span>
-          <span className="font-mono text-[11px] text-slate-400">Foundation Ready for 4-Developer Team</span>
-        </div>
-      </footer>
     </div>
   );
 }

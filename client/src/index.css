@@ -4,13 +4,13 @@
 
 @layer base {
   :root {
-    color-scheme: dark;
+    color-scheme: light;
   }
   
   body {
-    @apply bg-background text-text font-sans antialiased overflow-x-hidden;
-    background-color: #0F172A;
-    color: #F8FAFC;
+    @apply bg-slate-50 text-slate-800 font-sans antialiased overflow-x-hidden;
+    background-color: #F8FAFC;
+    color: #1E293B;
   }
 
   /* Standard Typography Hierarchy */

@@ -5,48 +5,113 @@
  */
 
 export const mockUser = {
-  id: 'usr_101',
-  name: 'Demo Learner',
-  email: 'alex.rivera@learnpath.ai',
-  avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-  targetRole: 'Full Stack MERN Developer',
+  id: 'usr_kritika_101',
+  name: 'Kritika Gupta',
+  email: 'kritika.gupta@example.com',
+  location: 'Kanpur, India',
+  avatar: null, // Displays purple circle with initial 'K' as in screenshot
+  targetRole: 'Full Stack Developer',
+  tagline: 'Aspiring Full Stack Developer',
+  education: 'B.Tech in CSE (Data Science)',
   experienceLevel: 'Intermediate',
-  weeklyGoalHours: 12,
-  completedHours: 7.5,
-  overallProgress: 68,
-  streakDays: 5,
-  totalXp: 1420,
+  weeklyGoalHours: 10,
+  weeklyLearningTime: '8-10 hours',
+  careerGoal: 'To become a skilled Full Stack Developer and work on impactful products.',
+  preferredLearningStyle: 'Hands-on Projects',
+  currentFocus: 'JavaScript, React, Node.js',
+  streakDays: 7,
+  coursesCompleted: 12,
+  projectsDone: 5,
+  skillsGained: 18,
+  totalLearningHours: 48,
+  interests: ['Web Development', 'Artificial Intelligence', 'Data Science', 'UI/UX Design'],
+  areasOfInterest: ['Web Development', 'AI', 'Data Science'],
+  skills: [
+    { name: 'HTML', progress: 90 },
+    { name: 'CSS', progress: 80 },
+    { name: 'JavaScript', progress: 65 },
+    { name: 'React', progress: 40 },
+    { name: 'Node.js', progress: 20 }
+  ]
 };
 
 export const mockDashboard = {
   stats: [
-    { label: 'Weekly Target', value: '7.5 / 12 hrs', progress: 62.5, change: '+1.5 hrs this week' },
-    { label: 'Mastered Skills', value: '14 / 22', progress: 63.6, change: '+2 new skills' },
-    { label: 'Active Courses', value: '3 in progress', progress: 75, change: '1 course completed' },
-    { label: 'Overall Readiness', value: '68%', progress: 68, change: '+5% vs last week' },
+    { label: 'Current Streak', value: '7 days', count: 7, icon: 'fire', change: 'Keep it up!' },
+    { label: 'Courses Completed', value: '12', count: 12, icon: 'book', change: '+2 this month' },
+    { label: 'Projects Done', value: '5', count: 5, icon: 'folder', change: '+1 this week' },
+    { label: 'Skills Gained', value: '18', count: 18, icon: 'star', change: '+3 new badges' }
   ],
-  recentMilestones: [
-    { title: 'Completed MongoDB Aggregations', date: 'Yesterday', category: 'Backend' },
-    { title: 'Passed React Hooks Assessment', date: '3 days ago', category: 'Frontend' },
-    { title: 'Started Express REST Architecture', date: '5 days ago', category: 'Backend' },
+  learningPath: {
+    title: 'Full Stack Web Development',
+    status: 'In Progress',
+    progress: 65,
+    currentModule: 'JavaScript Fundamentals'
+  },
+  nextMilestone: {
+    title: 'Build a Responsive Portfolio',
+    description: 'Create and deploy a personal portfolio website using HTML, CSS, and JavaScript.',
+    dueDate: 'Due in 5 days'
+  },
+  recommendedNext: [
+    {
+      id: 'rec_1',
+      title: 'React.js - Complete Guide',
+      type: 'Course',
+      duration: '4.5 hrs',
+      icon: 'react',
+      level: 'Intermediate'
+    },
+    {
+      id: 'rec_2',
+      title: 'Node.js Basics',
+      type: 'Course',
+      duration: '3.0 hrs',
+      icon: 'node',
+      level: 'Beginner'
+    },
+    {
+      id: 'rec_3',
+      title: 'Build a Todo App',
+      type: 'Project',
+      duration: '2.5 hrs',
+      icon: 'project',
+      level: 'Hands-on'
+    }
   ],
-  recommendedNextStep: {
-    title: 'Node.js Event Loop & Asynchronous I/O',
-    module: 'Learning Path Step 4.2',
-    duration: '45 mins',
-  }
+  skills: [
+    { name: 'HTML', progress: 90 },
+    { name: 'CSS', progress: 80 },
+    { name: 'JavaScript', progress: 65 },
+    { name: 'React', progress: 40 },
+    { name: 'Node.js', progress: 20 }
+  ],
+  recentActivity: [
+    { id: 1, title: 'Completed: CSS Flexbox Tutorial', time: '2 hours ago', status: 'completed' },
+    { id: 2, title: 'Completed: JavaScript Basics', time: '1 day ago', status: 'completed' },
+    { id: 3, title: 'Started: React.js - Complete Guide', time: '2 days ago', status: 'started' },
+    { id: 4, title: 'Completed: HTML Forms', time: '3 days ago', status: 'completed' }
+  ]
 };
 
 export const mockProfile = {
-  bio: 'Passionate aspiring Full Stack engineer aiming for senior engineering roles in cloud-native web apps.',
-  location: 'San Francisco, CA',
-  github: 'github.com/demolearner',
-  linkedin: 'linkedin.com/in/demolearner',
-  primaryInterests: ['Full Stack MERN', 'TypeScript', 'Vector Databases', 'System Design'],
-  savedPreferences: {
-    emailNotifications: true,
-    weeklyDigest: true,
-    aiMentorPersonality: 'Encouraging & Practical',
+  name: 'Kritika Gupta',
+  tagline: 'Aspiring Full Stack Developer',
+  email: 'kritika.gupta@example.com',
+  location: 'Kanpur, India',
+  education: 'B.Tech in CSE (Data Science)',
+  experienceLevel: 'Intermediate',
+  careerGoal: 'To become a skilled Full Stack Developer and work on impactful products.',
+  areasOfInterest: 'Web Development, AI, Data Science',
+  preferredLearningStyle: 'Hands-on Projects',
+  weeklyLearningTime: '8-10 hours',
+  currentFocus: 'JavaScript, React, Node.js',
+  interests: ['Web Development', 'Artificial Intelligence', 'Data Science', 'UI/UX Design'],
+  summaryStats: {
+    coursesCompleted: 12,
+    projectsCompleted: 5,
+    dayStreak: 7,
+    totalHours: 48
   }
 };
 

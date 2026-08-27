@@ -4,7 +4,7 @@ const ThemeContext = createContext(null);
 
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('learnpath_theme') || 'dark';
+    return localStorage.getItem('learnpath_theme') || 'light';
   });
 
   useEffect(() => {
