@@ -1,11 +1,10 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { mockUser } from '../utils/mockData';
+import api from '../services/api';
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
-    // Check if user session exists in localStorage, otherwise default to demo user for seamless team preview
     const saved = localStorage.getItem('learnpath_user');
     if (saved) {
       try {
@@ -14,7 +13,7 @@ export function AuthProvider({ children }) {
         console.error('Error parsing stored user:', e);
       }
     }
-    return mockUser;
+    return null;
   });
 
   const [loading, setLoading] = useState(false);
@@ -31,37 +30,37 @@ export function AuthProvider({ children }) {
   const login = async (email, password) => {
     setLoading(true);
     try {
-      // Basic login placeholder (will connect to backend later)
-      const simulatedUser = {
-        ...mockUser,
-        email: email || mockUser.email,
-      };
-      setUser(simulatedUser);
-      localStorage.setItem('learnpath_token', 'demo_token_xyz_123');
-      setLoading(false);
-      return { success: true, user: simulatedUser };
+      const res = await api.post('/auth/login', { email, password });
+      if (res.data.success) {
+        setUser(res.data.user);
+        localStorage.setItem('learnpath_token', res.data.token);
+        setLoading(false);
+        return { success: true, user: res.data.user };
+      }
     } catch (err) {
       setLoading(false);
-      return { success: false, error: err.message };
+      return { success: false, error: err.response?.data?.message || err.message };
     }
   };
 
   const signup = async (name, email, password, targetRole) => {
     setLoading(true);
     try {
-      const newUser = {
-        ...mockUser,
-        name: name || 'Learner',
-        email: email || 'learner@learnpath.ai',
-        targetRole: targetRole || 'Full Stack Developer',
-      };
-      setUser(newUser);
-      localStorage.setItem('learnpath_token', 'demo_token_xyz_123');
-      setLoading(false);
-      return { success: true, user: newUser };
+      const res = await api.post('/auth/register', { 
+        name, 
+        email, 
+        password, 
+        careerGoal: targetRole || 'Full Stack Developer'
+      });
+      if (res.data.success) {
+        setUser(res.data.user);
+        localStorage.setItem('learnpath_token', res.data.token);
+        setLoading(false);
+        return { success: true, user: res.data.user };
+      }
     } catch (err) {
       setLoading(false);
-      return { success: false, error: err.message };
+      return { success: false, error: err.response?.data?.message || err.message };
     }
   };
 
@@ -71,13 +70,24 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('learnpath_token');
   };
 
-  const loginAsDemo = () => {
-    setUser(mockUser);
-    localStorage.setItem('learnpath_token', 'demo_token_xyz_123');
+  const loginAsDemo = async () => {
+    setLoading(true);
+    try {
+      const res = await api.post('/auth/demo-login');
+      if (res.data.success) {
+        setUser(res.data.user);
+        localStorage.setItem('learnpath_token', res.data.token);
+        setLoading(false);
+        return { success: true, user: res.data.user };
+      }
+    } catch (err) {
+      setLoading(false);
+      return { success: false, error: err.response?.data?.message || err.message };
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, signup, logout, loginAsDemo }}>
+    <AuthContext.Provider value={{ user, loading, login, signup, logout, loginAsDemo, isAuthenticated: !!user }}>
       {children}
     </AuthContext.Provider>
   );
