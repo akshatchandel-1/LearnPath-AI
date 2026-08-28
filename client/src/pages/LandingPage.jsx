@@ -26,28 +26,28 @@ export default function LandingPage() {
       desc: 'Central command for learning metrics, milestones, and user skill profiles.',
       path: '/dashboard',
       icon: LayoutDashboard,
-      member: 'Member 1',
+      tag: 'Overview',
     },
     {
       title: 'Learning Path & Skill Gaps',
       desc: 'Adaptive roadmaps and AI-driven competency gap diagnosis.',
       path: '/learning-path',
       icon: Compass,
-      member: 'Member 2',
+      tag: 'Roadmap',
     },
     {
       title: 'Courses & Assessments',
       desc: 'Curated curriculum modules and automated benchmark quizzes.',
       path: '/courses',
       icon: BookOpen,
-      member: 'Member 3',
+      tag: 'Learning',
     },
     {
       title: 'AI Assistant & Progress',
       desc: 'Interactive 24/7 AI tutor and real-time study analytics.',
       path: '/ai-assistant',
       icon: Bot,
-      member: 'Member 4',
+      tag: 'Mentorship',
     },
   ];
 
@@ -61,7 +61,7 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto text-center space-y-6">
           <div className="inline-flex items-center gap-2">
             <Badge variant="coral" size="md" dot>
-              HCL Hackathon Production Build
+              Enterprise Edition
             </Badge>
             <Badge variant="secondary" size="md">
               AI-Powered SaaS
@@ -81,14 +81,14 @@ export default function LandingPage() {
 
           {/* Action CTAs */}
           <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
-            <Link to="/dashboard">
+            <Link to="/login">
               <Button variant="primary" size="lg" icon={ArrowRight} iconPosition="right">
-                Launch App & Dashboard
+                Get Started
               </Button>
             </Link>
-            <Link to="/login">
+            <Link to="/dashboard">
               <Button variant="outline" size="lg">
-                Sign In / Demo Mode
+                View Dashboard
               </Button>
             </Link>
           </div>
@@ -98,33 +98,40 @@ export default function LandingPage() {
       {/* Feature Modules Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex-1 relative z-10">
         <div className="text-center max-w-xl mx-auto mb-12">
-          <h2 className="text-2xl font-extrabold text-[#F5F1E8]">Integrated Engineering Modules</h2>
-          <p className="text-xs sm:text-sm text-[#C7C2B6] mt-1.5 font-medium">
-            Seamlessly integrated across all 4 frontend developer modules with one unified Obsidian + Ivory + Coral design system.
+          <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-[#F5F1E8]">
+            Complete Learning Ecosystem
+          </h2>
+          <p className="text-xs sm:text-sm text-[#8C877D] mt-2">
+            Engineered with deep telemetry to guide software engineers from diagnosis to mastery.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {featureList.map((feature, idx) => {
-            const Icon = feature.icon;
+          {featureList.map((f, idx) => {
+            const Icon = f.icon;
             return (
-              <Link key={idx} to={feature.path} className="group">
-                <Card variant="interactive" className="h-full flex flex-col justify-between">
+              <Link key={idx} to={f.path} className="group block">
+                <Card variant="glow" className="h-full flex flex-col justify-between p-6">
                   <div>
                     <div className="flex items-center justify-between mb-4">
-                      <div className="w-10 h-10 rounded-2xl bg-[#FF6B5F]/10 border border-[#FF6B5F]/20 text-[#FF6B5F] flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <div className="w-10 h-10 rounded-xl bg-[#FF6B5F]/15 border border-[#FF6B5F]/30 text-[#FF857A] flex items-center justify-center group-hover:scale-110 transition-transform">
                         <Icon className="w-5 h-5" />
                       </div>
-                      <Badge variant="coral" size="sm">{feature.member}</Badge>
+                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-white/5 text-[#8C877D]">
+                        {f.tag}
+                      </span>
                     </div>
-                    <CardTitle className="text-base mb-1 text-[#F5F1E8] group-hover:text-[#FF857A] transition-colors">{feature.title}</CardTitle>
-                    <CardDescription className="text-xs line-clamp-2 text-[#C7C2B6]">
-                      {feature.desc}
+                    <CardTitle className="text-base sm:text-lg mb-2 text-[#F5F1E8] group-hover:text-[#FF857A] transition-colors">
+                      {f.title}
+                    </CardTitle>
+                    <CardDescription className="text-xs text-[#8C877D] leading-relaxed">
+                      {f.desc}
                     </CardDescription>
                   </div>
-                  <div className="pt-4 mt-4 border-t border-white/[0.06] flex items-center text-xs text-[#FF857A] font-bold group-hover:text-[#FF6B5F]">
+
+                  <div className="pt-4 mt-4 border-t border-white/[0.06] flex items-center gap-1 text-xs font-bold text-[#FF857A] group-hover:translate-x-1 transition-transform">
                     <span>Explore Module</span>
-                    <ArrowRight className="w-3.5 h-3.5 ml-1 transition-transform group-hover:translate-x-1" />
+                    <ArrowRight className="w-3.5 h-3.5" />
                   </div>
                 </Card>
               </Link>
@@ -132,11 +139,6 @@ export default function LandingPage() {
           })}
         </div>
       </div>
-
-      {/* Global Minimal Footer */}
-      <footer className="border-t border-white/[0.06] py-6 text-center text-xs text-[#8C877D] bg-[#0E1114]">
-        <p>© 2026 LearnPath AI — AI-Powered Personalized Learning Path Recommender</p>
-      </footer>
     </div>
   );
 }

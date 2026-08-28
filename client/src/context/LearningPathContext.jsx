@@ -1,83 +1,119 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
 import { useAuth } from './AuthContext';
+import {
+  generatePathForRole,
+  generateSkillGapsForRole,
+  defaultSkillGapReport,
+  defaultRecommendations
+} from '../data/roadmapGenerator';
+
+export {
+  generatePathForRole,
+  generateSkillGapsForRole,
+  defaultSkillGapReport,
+  defaultRecommendations
+};
 
 const LearningPathContext = createContext(null);
 
 export const LearningPathProvider = ({ children }) => {
-  const { isAuthenticated } = useAuth();
-  const [learningPath, setLearningPath] = useState(null);
-  const [recommendations, setRecommendations] = useState([]);
-  const [skillGapReport, setSkillGapReport] = useState(null);
+  const { isAuthenticated, user } = useAuth();
+  const currentRole = user?.targetRole || user?.careerGoal || 'Full Stack Developer';
+
+  const [learningPath, setLearningPath] = useState(() => generatePathForRole(currentRole));
+  const [recommendations, setRecommendations] = useState(defaultRecommendations);
+  const [skillGapReport, setSkillGapReport] = useState(() => generateSkillGapsForRole(currentRole));
   const [insights, setInsights] = useState([]);
   const [loading, setLoading] = useState(false);
   const [adapting, setAdapting] = useState(false);
 
+  // Sync with user's active career goal
+  useEffect(() => {
+    if (user?.targetRole || user?.careerGoal) {
+      const activeRole = user.targetRole || user.careerGoal;
+      setLearningPath(prev => ({
+        ...generatePathForRole(activeRole),
+        goal: activeRole
+      }));
+      setSkillGapReport(generateSkillGapsForRole(activeRole));
+    }
+  }, [user?.targetRole, user?.careerGoal]);
+
   const fetchLearningPath = useCallback(async () => {
-    if (!isAuthenticated) return;
     try {
-      setLoading(true);
       const res = await api.get('/learning-path');
-      if (res.data.success) {
+      if (res.data?.success && res.data.learningPath) {
         setLearningPath(res.data.learningPath);
+      } else {
+        setLearningPath(generatePathForRole(currentRole));
       }
     } catch (err) {
-      console.warn('Error fetching learning path:', err.message);
-    } finally {
-      setLoading(false);
+      setLearningPath(generatePathForRole(currentRole));
     }
-  }, [isAuthenticated]);
+  }, [currentRole]);
 
   const fetchRecommendations = useCallback(async () => {
-    if (!isAuthenticated) return;
     try {
       const res = await api.get('/recommendations');
-      if (res.data.success) {
+      if (res.data?.success && res.data.recommendations?.length > 0) {
         setRecommendations(res.data.recommendations);
+      } else {
+        setRecommendations(defaultRecommendations);
       }
     } catch (err) {
-      console.warn('Error fetching recommendations:', err.message);
+      setRecommendations(defaultRecommendations);
     }
-  }, [isAuthenticated]);
+  }, []);
 
   const fetchSkillGap = useCallback(async () => {
-    if (!isAuthenticated) return;
     try {
       const res = await api.get('/skills/gap-analysis');
-      if (res.data.success) {
+      if (res.data?.success && res.data.gapReport) {
         setSkillGapReport(res.data.gapReport);
+      } else {
+        setSkillGapReport(generateSkillGapsForRole(currentRole));
       }
     } catch (err) {
-      console.warn('Error fetching skill gap:', err.message);
+      setSkillGapReport(generateSkillGapsForRole(currentRole));
     }
-  }, [isAuthenticated]);
+  }, [currentRole]);
 
   const fetchInsights = useCallback(async () => {
-    if (!isAuthenticated) return;
     try {
       const res = await api.get('/ai/insights');
-      if (res.data.success) {
+      if (res.data?.success && res.data.insights) {
         setInsights(res.data.insights);
       }
-    } catch (err) {
-      console.warn('Error fetching insights:', err.message);
-    }
-  }, [isAuthenticated]);
+    } catch (err) {}
+  }, []);
 
   const adaptRoadmap = async (data = {}) => {
+    setAdapting(true);
     try {
-      setAdapting(true);
       const res = await api.post('/learning-path/adapt', data);
-      if (res.data.success) {
+      if (res.data?.success && res.data.learningPath) {
         setLearningPath(res.data.learningPath);
-        await fetchRecommendations();
-        await fetchSkillGap();
-        await fetchInsights();
+        await Promise.all([fetchRecommendations(), fetchSkillGap(), fetchInsights()]);
+        return res.data;
       }
-      return res.data;
     } catch (err) {
-      console.error('Error adapting roadmap:', err);
-      throw err;
+      const newGoal = data.goal || learningPath.goal || currentRole;
+      const updatedPath = {
+        ...generatePathForRole(newGoal),
+        goal: newGoal,
+        adaptationHistory: [
+          {
+            actionTaken: `Calibrated roadmap for ${newGoal}`,
+            reason: data.reason || 'AI Roadmap re-calibration',
+            timestamp: new Date().toISOString()
+          },
+          ...(learningPath.adaptationHistory || [])
+        ]
+      };
+      setLearningPath(updatedPath);
+      setSkillGapReport(generateSkillGapsForRole(newGoal));
+      return { success: true, learningPath: updatedPath };
     } finally {
       setAdapting(false);
     }
@@ -86,40 +122,43 @@ export const LearningPathProvider = ({ children }) => {
   const submitFeedback = async (recommendationId, feedbackData) => {
     try {
       const res = await api.post(`/recommendations/${recommendationId}/feedback`, feedbackData);
-      if (res.data.success) {
-        // Update local recommendation feedback state
+      if (res.data?.success) {
         setRecommendations(prev =>
           prev.map(r => (r._id === recommendationId ? { ...r, feedback: res.data.recommendation.feedback } : r))
         );
       }
       return res.data;
     } catch (err) {
-      console.error('Error submitting feedback:', err);
-      throw err;
+      setRecommendations(prev =>
+        prev.map(r => (r._id === recommendationId ? { ...r, feedback: feedbackData } : r))
+      );
+      return { success: true };
     }
   };
 
   const refreshAll = useCallback(async () => {
-    if (isAuthenticated) {
+    setLoading(true);
+    try {
       await Promise.all([
         fetchLearningPath(),
         fetchRecommendations(),
         fetchSkillGap(),
         fetchInsights(),
       ]);
+    } finally {
+      setLoading(false);
     }
-  }, [isAuthenticated, fetchLearningPath, fetchRecommendations, fetchSkillGap, fetchInsights]);
+  }, [fetchLearningPath, fetchRecommendations, fetchSkillGap, fetchInsights]);
 
   useEffect(() => {
     if (isAuthenticated) {
       refreshAll();
     } else {
-      setLearningPath(null);
-      setRecommendations([]);
-      setSkillGapReport(null);
-      setInsights([]);
+      setLearningPath(generatePathForRole(currentRole));
+      setRecommendations(defaultRecommendations);
+      setSkillGapReport(generateSkillGapsForRole(currentRole));
     }
-  }, [isAuthenticated, refreshAll]);
+  }, [isAuthenticated, refreshAll, currentRole]);
 
   return (
     <LearningPathContext.Provider

@@ -1,0 +1,346 @@
+/* ==========================================================================
+   LearnPath AI — Unified Obsidian + Ivory + Coral Theme
+   Harmonized across Courses and Assessments modules.
+   ========================================================================== */
+
+.m3-theme-scope {
+  /* Color Palette Tokens */
+  --m3-surface-white: #111418;
+  --m3-surface-subtle: #16191E;
+  --m3-surface-card: #111418;
+  --m3-surface-hover: #1D2128;
+  
+  --m3-border-light: rgba(245, 241, 232, 0.08);
+  --m3-border-subtle: rgba(245, 241, 232, 0.05);
+  --m3-border-accent: rgba(255, 107, 95, 0.3);
+  --m3-border-focus: #FF6B5F;
+  
+  --m3-text-dark: #F5F1E8;
+  --m3-text-headings: #F5F1E8;
+  --m3-text-body: #C7C2B6;
+  --m3-text-muted: #8C877D;
+  --m3-text-subtle: #8C877D;
+  
+  --m3-primary-accent: #FF6B5F;
+  --m3-primary-hover: #E85548;
+  --m3-primary-soft-bg: rgba(255, 107, 95, 0.12);
+  --m3-primary-soft-text: #FF857A;
+  --m3-primary-soft-border: rgba(255, 107, 95, 0.25);
+  
+  --m3-accent-coral: #FF6B5F;
+  --m3-accent-peach: #FF857A;
+  --m3-accent-emerald: #34D399;
+  --m3-accent-emerald-soft: rgba(52, 211, 153, 0.12);
+  --m3-accent-amber: #FBBF24;
+  --m3-accent-amber-soft: rgba(251, 191, 36, 0.12);
+  --m3-accent-rose: #F87171;
+  --m3-accent-rose-soft: rgba(248, 113, 113, 0.12);
+  --m3-accent-blue: #38BDF8;
+  --m3-accent-blue-soft: rgba(56, 189, 248, 0.12);
+  
+  --m3-shadow-card: 0 8px 28px rgba(0, 0, 0, 0.4);
+  --m3-shadow-hover: 0 12px 32px rgba(255, 107, 95, 0.15);
+  --m3-shadow-modal: 0 24px 48px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(245, 241, 232, 0.08);
+
+  color: var(--m3-text-dark);
+  position: relative;
+  width: 100%;
+}
+
+/* Subtle Ambient Coral Blooms */
+.m3-theme-scope::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: 2%;
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(255, 107, 95, 0.04) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  border-radius: 50%;
+  filter: blur(60px);
+}
+
+.m3-theme-scope::after {
+  content: '';
+  position: absolute;
+  top: 400px;
+  left: -5%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(245, 241, 232, 0.02) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  border-radius: 50%;
+  filter: blur(60px);
+}
+
+/* Typography Overrides */
+.m3-theme-scope h1 {
+  color: #F5F1E8 !important;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.m3-theme-scope h2 {
+  color: #F5F1E8 !important;
+  font-weight: 700;
+}
+
+.m3-theme-scope h3 {
+  color: #F5F1E8 !important;
+  font-weight: 700;
+}
+
+.m3-theme-scope h4 {
+  color: #F5F1E8 !important;
+  font-weight: 600;
+}
+
+.m3-theme-scope p {
+  color: #C7C2B6 !important;
+}
+
+/* Scoped PageHeader border */
+.m3-theme-scope .border-b {
+  border-color: rgba(245, 241, 232, 0.08) !important;
+}
+
+/* Base Card Style */
+.m3-card {
+  background-color: var(--m3-surface-card);
+  border: 1px solid var(--m3-border-light);
+  border-radius: 20px;
+  box-shadow: var(--m3-shadow-card);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.m3-card:hover {
+  border-color: rgba(255, 107, 95, 0.35);
+  transform: translateY(-2px);
+  box-shadow: var(--m3-shadow-hover);
+}
+
+/* Card Surface Elevated */
+.m3-card-subtle {
+  background-color: var(--m3-surface-subtle);
+  border: 1px solid var(--m3-border-subtle);
+  border-radius: 16px;
+}
+
+/* Custom Interactive Button Coral */
+.m3-btn-coral {
+  background-color: var(--m3-primary-accent);
+  color: #FFFFFF;
+  font-weight: 700;
+  border-radius: 14px;
+  padding: 0.65rem 1.25rem;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 14px rgba(255, 107, 95, 0.25);
+}
+
+.m3-btn-coral:hover {
+  background-color: var(--m3-primary-hover);
+  box-shadow: 0 6px 20px rgba(255, 107, 95, 0.35);
+  transform: translateY(-1px);
+}
+
+.m3-btn-coral:active {
+  transform: translateY(0px);
+}
+
+/* Soft Buttons */
+.m3-btn-soft {
+  background-color: rgba(255, 107, 95, 0.12);
+  color: var(--m3-primary-soft-text);
+  border: 1px solid rgba(255, 107, 95, 0.25);
+  font-weight: 600;
+  border-radius: 14px;
+  padding: 0.65rem 1.25rem;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.m3-btn-soft:hover {
+  background-color: rgba(255, 107, 95, 0.2);
+  border-color: rgba(255, 107, 95, 0.4);
+  color: #FFFFFF;
+}
+
+/* Outline Buttons */
+.m3-btn-outline {
+  background-color: transparent;
+  color: var(--m3-text-dark);
+  border: 1px solid var(--m3-border-light);
+  font-weight: 600;
+  border-radius: 14px;
+  padding: 0.65rem 1.25rem;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.m3-btn-outline:hover {
+  background-color: rgba(245, 241, 232, 0.05);
+  border-color: rgba(245, 241, 232, 0.2);
+  color: #FFFFFF;
+}
+
+/* Filter Tab Pills */
+.m3-tab-pill {
+  padding: 0.45rem 1rem;
+  border-radius: 12px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(245, 241, 232, 0.08);
+  background-color: #111418;
+  color: var(--m3-text-muted);
+}
+
+.m3-tab-pill:hover {
+  background-color: #16191E;
+  color: var(--m3-text-dark);
+  border-color: rgba(245, 241, 232, 0.15);
+}
+
+.m3-tab-pill.active {
+  background-color: var(--m3-primary-accent);
+  color: #FFFFFF;
+  border-color: var(--m3-primary-accent);
+  box-shadow: 0 2px 10px rgba(255, 107, 95, 0.3);
+}
+
+/* Search / Text Inputs */
+.m3-input {
+  background-color: #111418;
+  border: 1px solid var(--m3-border-light);
+  color: var(--m3-text-dark);
+  border-radius: 14px;
+  padding: 0.65rem 1rem;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.m3-input:focus {
+  outline: none;
+  border-color: var(--m3-border-focus);
+  box-shadow: 0 0 0 3px rgba(255, 107, 95, 0.15);
+}
+
+.m3-input::placeholder {
+  color: var(--m3-text-subtle);
+}
+
+/* Status Badges */
+.m3-badge-coral {
+  background-color: var(--m3-primary-soft-bg);
+  color: var(--m3-primary-soft-text);
+  border: 1px solid var(--m3-primary-soft-border);
+}
+
+.m3-badge-emerald {
+  background-color: var(--m3-accent-emerald-soft);
+  color: var(--m3-accent-emerald);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+}
+
+.m3-badge-amber {
+  background-color: var(--m3-accent-amber-soft);
+  color: var(--m3-accent-amber);
+  border: 1px solid rgba(251, 191, 36, 0.25);
+}
+
+.m3-badge-slate {
+  background-color: rgba(245, 241, 232, 0.05);
+  color: var(--m3-text-muted);
+  border: 1px solid rgba(245, 241, 232, 0.08);
+}
+
+/* Modal Overlay & Card */
+.m3-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.m3-modal-content,
+.m3-modal-dialog {
+  background-color: #111418;
+  border: 1px solid rgba(245, 241, 232, 0.1);
+  border-radius: 28px;
+  box-shadow: var(--m3-shadow-modal);
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  color: #F5F1E8;
+}
+
+/* Progress bar */
+.m3-progress-track {
+  background-color: rgba(245, 241, 232, 0.06);
+  border-radius: 9999px;
+  overflow: hidden;
+  height: 8px;
+  width: 100%;
+}
+
+.m3-progress-fill {
+  background: linear-gradient(90deg, #FF6B5F 0%, #E85548 100%);
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.4s ease;
+}
+
+/* Quiz Option Item */
+.m3-quiz-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  padding: 1rem 1.25rem;
+  border-radius: 16px;
+  border: 1px solid rgba(245, 241, 232, 0.08);
+  background-color: #16191E;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.m3-quiz-option:hover {
+  background-color: #1D2128;
+  border-color: rgba(255, 107, 95, 0.3);
+}
+
+.m3-quiz-option.selected {
+  border-color: #FF6B5F;
+  background-color: rgba(255, 107, 95, 0.12);
+}
+
+.m3-quiz-option.correct {
+  border-color: #34D399;
+  background-color: rgba(52, 211, 153, 0.12);
+}
+
+.m3-quiz-option.incorrect {
+  border-color: #F87171;
+  background-color: rgba(248, 113, 113, 0.12);
+}

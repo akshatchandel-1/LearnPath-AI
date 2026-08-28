@@ -1,11 +1,13 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
 import PageHeader from '../components/common/PageHeader';
 import Badge from '../components/common/Badge';
 import Button from '../components/common/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/common/Card';
-import { useLearningPath } from '../context/LearningPathContext';
+import { useLearningPath, defaultSkillGapReport, defaultRecommendations } from '../context/LearningPathContext';
+import { useAuth } from '../context/AuthContext';
+import { generateSkillGapReportPDF } from '../utils/reportGenerator';
 import {
   Download,
   RotateCcw,
@@ -75,7 +77,7 @@ const generateRadarData = (gaps = []) => {
     reqPoints.push(`${req.x},${req.y}`);
     curPoints.push({ x: cur.x, y: cur.y });
     
-    const labelPos = getPoint(110, angle);
+    const labelPos = getPoint(115, angle);
     let anchor = 'start';
     if (idx === 0 || idx === 3) anchor = 'middle';
     else if (idx > 3) anchor = 'end';
@@ -93,92 +95,97 @@ const generateRadarData = (gaps = []) => {
 
 export default function SkillGapsPage() {
   const navigate = useNavigate();
-  const { skillGapReport, recommendations, loading, refreshAll } = useLearningPath();
+  const { user } = useAuth();
+  const { skillGapReport, recommendations } = useLearningPath();
   const [addedCourses, setAddedCourses] = useState({});
 
-  useEffect(() => {
-    if (!skillGapReport || (recommendations && recommendations.length === 0)) {
-      refreshAll();
-    }
-  }, [skillGapReport, recommendations, refreshAll]);
+  const activeTargetRole = user?.targetRole || user?.careerGoal || skillGapReport?.targetRole || 'Full Stack Developer';
+  const report = skillGapReport || defaultSkillGapReport;
+  const recs = (recommendations && recommendations.length > 0) ? recommendations : defaultRecommendations;
 
-  const handleAddCourse = (idx) => {
+  const { readinessScore, gaps = [], criticalGaps = [] } = report;
+  const radarData = useMemo(() => generateRadarData(gaps), [gaps]);
+  
+  const highPriorityCount = criticalGaps?.length || gaps.filter(g => g.priority === 'High').length;
+  const strongSkillsCount = gaps.filter(g => (g.currentLevel || 0) >= 75).length;
+  const gapSkillsCount = gaps.filter(g => (g.currentLevel || 0) < 75).length;
+
+  const handleAddCourse = (idx, rec) => {
     setAddedCourses(prev => ({ ...prev, [idx]: true }));
+
+    // Enroll in course in localStorage
+    try {
+      const savedCourses = localStorage.getItem('m3_courses_data');
+      if (savedCourses) {
+        const parsed = JSON.parse(savedCourses);
+        const match = parsed.find(c => c.title.toLowerCase().includes(rec.title.toLowerCase()) || rec.title.toLowerCase().includes(c.title.toLowerCase()));
+        if (match) {
+          const updated = parsed.map(c => c.id === match.id ? { ...c, enrolled: true, progress: c.progress || 10 } : c);
+          localStorage.setItem('m3_courses_data', JSON.stringify(updated));
+        }
+      }
+    } catch (e) {}
   };
 
   const handleDownload = () => {
-    alert("Skill Gap Report downloaded successfully (PDF format).");
+    generateSkillGapReportPDF(report, user);
   };
-
-  if (loading || !skillGapReport) {
-    return (
-      <MainLayout>
-        <div className="flex items-center justify-center h-full min-h-[60vh]">
-          <div className="flex flex-col items-center gap-4">
-            <div className="w-10 h-10 border-3 border-[#FF6B5F]/20 border-t-[#FF6B5F] rounded-full animate-spin" />
-            <p className="text-[#8C877D] font-medium animate-pulse text-xs">
-              Analyzing your skill competency gaps...
-            </p>
-          </div>
-        </div>
-      </MainLayout>
-    );
-  }
-
-  const { readinessScore, gaps = [], criticalGaps = [], targetRole } = skillGapReport;
-  const radarData = generateRadarData(gaps);
-  const highPriorityCount = criticalGaps?.length || gaps.filter(g => g.gapScore > 40).length;
-  const strongSkillsCount = gaps.filter(g => g.gapScore <= 20).length;
-  const gapSkillsCount = gaps.filter(g => g.gapScore > 20).length;
 
   const dynamicStats = [
     {
-      title: 'Skill Match',
+      title: 'Overall Skill Match',
       value: `${readinessScore || 68}%`,
-      subText: 'vs market benchmark',
+      subText: 'vs target role requirements',
       icon: Target,
       color: 'coral'
     },
     {
-      title: 'Mastered Skills',
-      value: strongSkillsCount || 4,
-      subText: 'Strong proficiency',
+      title: 'Strong Competencies',
+      value: strongSkillsCount,
+      subText: 'Ready for production',
       icon: CheckCircle2,
       color: 'emerald'
     },
     {
-      title: 'Active Gaps',
-      value: gapSkillsCount || 3,
-      subText: 'Identified gaps',
+      title: 'Identified Skill Gaps',
+      value: gapSkillsCount,
+      subText: 'Needs reinforcement',
       icon: AlertOctagon,
       color: 'amber'
     },
     {
-      title: 'Priority Gaps',
-      value: highPriorityCount || 2,
-      subText: 'Immediate focus',
+      title: 'High Priority Focus',
+      value: highPriorityCount,
+      subText: 'Critical bottleneck areas',
       icon: TrendingUp,
       color: 'coral'
     },
+    {
+      title: 'Sync Status',
+      value: 'Live',
+      subText: 'Real-time AI telemetry',
+      icon: Calendar,
+      color: 'blue'
+    }
   ];
 
   return (
     <MainLayout>
       <PageHeader
-        greeting="Competency Radar & Analysis"
+        greeting="Competency Disparity Telemetry"
         title="Skill Gap Analysis"
-        description="Identify your current competency discrepancies against industry benchmarks and bridge them with AI."
-        badge="Live Analysis"
+        description="Identify exact competency deltas against industry benchmark profiles and bridge gaps with targeted curriculum."
+        badge="Live Telemetry"
         badgeVariant="coral"
         action={
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <Button
               variant="outline"
               size="sm"
               icon={RotateCcw}
               onClick={() => navigate('/assessments')}
             >
-              Take Assessment
+              Take Skill Assessment
             </Button>
             <Button
               variant="primary"
@@ -186,215 +193,187 @@ export default function SkillGapsPage() {
               icon={Download}
               onClick={handleDownload}
             >
-              Export Report
+              Download Report
             </Button>
           </div>
         }
       />
 
-      <div className="max-w-[1500px] mx-auto w-full space-y-6">
-        {/* Top Metric Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="max-w-[1500px] mx-auto w-full space-y-6 pb-8">
+        
+        {/* ── Top Metric Stats Row ── */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           {dynamicStats.map((stat, idx) => (
-            <Card key={idx} variant="interactive" className="group">
+            <Card key={idx} variant="interactive">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs text-[#8C877D] font-medium uppercase tracking-wider">{stat.title}</span>
-                <div className="w-8 h-8 rounded-xl bg-[#FF6B5F]/10 border border-[#FF6B5F]/20 text-[#FF6B5F] flex items-center justify-center group-hover:scale-110 transition-transform">
+                <span className="text-[11px] font-bold text-[#8C877D] uppercase tracking-wider">{stat.title}</span>
+                <div className="w-8 h-8 rounded-xl bg-[#FF6B5F]/10 border border-[#FF6B5F]/20 text-[#FF6B5F] flex items-center justify-center">
                   <stat.icon className="w-4 h-4" />
                 </div>
               </div>
-              <div className="text-2xl font-black text-[#F5F1E8] tracking-tight mb-1">
-                {stat.value}
-              </div>
-              <p className="text-[11px] text-[#8C877D] font-medium">{stat.subText}</p>
+              <div className="text-2xl font-black text-[#F5F1E8] tracking-tight mb-1 font-mono">{stat.value}</div>
+              <p className="text-xs text-[#8C877D]">{stat.subText}</p>
             </Card>
           ))}
         </div>
 
-        {/* Main Content Split: Left (Breakdown & Recommendations) + Right (Radar Chart & AI Insights) */}
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
-          {/* Left 8 Cols */}
-          <div className="xl:col-span-8 space-y-6">
-            {/* Skill Gap Breakdown Table */}
-            <Card variant="default">
-              <CardHeader>
+        {/* ── Main Content Split ── */}
+        <div className="flex flex-col xl:flex-row gap-6">
+          
+          {/* ── Left Column: Skills Breakdown & Course Bridges ── */}
+          <div className="flex-1 min-w-0 space-y-6">
+            
+            {/* Skills Breakdown Table Card */}
+            <Card variant="glow">
+              <div className="flex items-center justify-between pb-4 border-b border-white/[0.08] mb-4">
                 <div>
-                  <CardTitle>Skill Gap Breakdown</CardTitle>
-                  <CardDescription>Target Role Benchmark: {targetRole || 'Full Stack AI Engineer'}</CardDescription>
+                  <CardTitle className="text-[#F5F1E8]">Competency Breakdown Matrix</CardTitle>
+                  <p className="text-xs text-[#8C877D]">Disparity between verified level and {activeTargetRole} benchmark</p>
                 </div>
-                <Badge variant="coral" size="sm">
-                  {gaps.length} Evaluated Skills
-                </Badge>
-              </CardHeader>
-
-              {/* Table Header */}
-              <div className="grid grid-cols-12 gap-3 pb-3 border-b border-white/[0.08] text-[11px] font-bold text-[#8C877D] uppercase tracking-wider">
-                <div className="col-span-4">Skill Domain</div>
-                <div className="col-span-3 text-center">Your Level</div>
-                <div className="col-span-3 text-center">Target Level</div>
-                <div className="col-span-1 text-center">Gap</div>
-                <div className="col-span-1 text-right">Priority</div>
+                <Badge variant="coral" size="sm">{activeTargetRole}</Badge>
               </div>
 
-              {/* Table Rows */}
-              <div className="divide-y divide-white/[0.04]">
-                {gaps.map((gap, idx) => {
-                  const Icon = getSkillIcon(gap.skill);
-                  const prio = getPriorityColor(gap.priority);
+              <div className="space-y-3.5">
+                {gaps.map((item, idx) => {
+                  const pColors = getPriorityColor(item.priority);
+                  const Icon = getSkillIcon(item.category);
+                  const curr = item.currentLevel || 50;
+                  const req = item.targetLevel || 85;
 
                   return (
-                    <div key={idx} className="grid grid-cols-12 gap-3 py-3.5 items-center hover:bg-white/[0.02] px-1 rounded-xl transition-colors">
-                      {/* Skill Name */}
-                      <div className="col-span-4 flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#FF857A] shrink-0">
-                          <Icon className="w-4 h-4" />
+                    <div
+                      key={idx}
+                      className="p-4 rounded-2xl bg-[#111418] border border-white/[0.06] hover:border-white/15 transition-all space-y-3"
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 text-[#FF857A] flex items-center justify-center shrink-0">
+                            <Icon className="w-4.5 h-4.5" />
+                          </div>
+                          <div>
+                            <h4 className="text-sm font-bold text-[#F5F1E8]">{item.skill}</h4>
+                            <span className="text-[11px] text-[#8C877D] font-mono">{item.category} Domain</span>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-xs font-bold text-[#F5F1E8] truncate" title={gap.skill}>
-                            {gap.skill}
-                          </p>
-                          <p className="text-[10px] text-[#8C877D]">Core Competency</p>
+
+                        <div className="flex items-center gap-3">
+                          <span className={`px-2.5 py-0.5 rounded-lg text-xs font-bold font-mono ${pColors.bg} ${pColors.text} border ${pColors.border}`}>
+                            {item.priority} Priority
+                          </span>
+                          <span className="text-xs text-[#FF857A] font-bold font-mono">
+                            Gap: {item.gapDisparity || `${req - curr}%`}
+                          </span>
                         </div>
                       </div>
 
-                      {/* Current Level */}
-                      <div className="col-span-3 flex items-center gap-2 px-2">
-                        <span className="text-xs font-bold text-[#C7C2B6] w-7">{gap.currentLevel}%</span>
-                        <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                      {/* Progress Bar Comparison */}
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-[11px] text-[#8C877D]">
+                          <span>Current: <strong className="text-[#F5F1E8] font-mono">{curr}%</strong></span>
+                          <span>Required: <strong className="text-[#34D399] font-mono">{req}%</strong></span>
+                        </div>
+                        <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden relative">
                           <div
-                            className="h-full rounded-full bg-gradient-to-r from-[#FF6B5F] to-[#E85548]"
-                            style={{ width: `${gap.currentLevel}%` }}
+                            className="absolute top-0 bottom-0 w-1 bg-[#34D399] z-10"
+                            style={{ left: `${req}%` }}
+                            title={`Target: ${req}%`}
+                          />
+                          <div
+                            className="bg-gradient-to-r from-[#FF6B5F] to-[#E85548] h-full rounded-full transition-all duration-500"
+                            style={{ width: `${curr}%` }}
                           />
                         </div>
-                      </div>
-
-                      {/* Target Level */}
-                      <div className="col-span-3 flex items-center gap-2 px-2">
-                        <span className="text-xs font-bold text-[#34D399] w-7">{gap.targetLevel}%</span>
-                        <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
-                          <div
-                            className="h-full rounded-full bg-[#34D399]"
-                            style={{ width: `${gap.targetLevel}%` }}
-                          />
-                        </div>
-                      </div>
-
-                      {/* Gap % */}
-                      <div className="col-span-1 text-center">
-                        <span className="text-xs font-black text-[#FF857A]">
-                          {gap.gapPercent}%
-                        </span>
-                      </div>
-
-                      {/* Priority Badge */}
-                      <div className="col-span-1 text-right">
-                        <span className={`inline-block px-2 py-0.5 rounded-lg text-[10px] font-bold border ${prio.bg} ${prio.text} ${prio.border}`}>
-                          {gap.priority}
-                        </span>
                       </div>
                     </div>
                   );
                 })}
               </div>
-
-              {/* Info Hint Banner */}
-              <div className="mt-4 flex items-center gap-2.5 bg-[#FF6B5F]/10 p-3 rounded-xl border border-[#FF6B5F]/20 text-[#FF857A] text-xs">
-                <Lightbulb className="w-4 h-4 shrink-0" />
-                <span>Focus on High Priority skill gaps to accelerate your readiness for <strong>{targetRole}</strong>.</span>
-              </div>
             </Card>
 
-            {/* Top Recommendations to Close Gaps */}
+            {/* Recommended Bridge Courses */}
             <Card variant="default">
-              <CardHeader>
+              <div className="flex items-center justify-between pb-4 border-b border-white/[0.08] mb-4">
                 <div>
-                  <CardTitle>Recommended Action Items</CardTitle>
-                  <CardDescription>Curated resources directly targeting your largest discrepancies</CardDescription>
+                  <CardTitle className="text-[#F5F1E8]">Targeted Gap-Closing Curriculum</CardTitle>
+                  <p className="text-xs text-[#8C877D]">Courses prioritized by the recommendation engine for {activeTargetRole}</p>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => navigate('/courses')}
-                  icon={ArrowRight}
-                  iconPosition="right"
-                >
+                <Button variant="outline" size="sm" onClick={() => navigate('/courses')}>
                   Explore All
                 </Button>
-              </CardHeader>
+              </div>
 
-              <div className="space-y-3">
-                {recommendations && recommendations.length > 0 ? (
-                  recommendations.slice(0, 3).map((rec, idx) => {
-                    const res = rec.resource || {};
-                    return (
-                      <div
-                        key={idx}
-                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-[#16191E] border border-white/[0.06] hover:border-[#FF6B5F]/30 transition-all group"
-                      >
-                        <div className="flex items-center gap-3.5">
-                          <div className="w-10 h-10 rounded-xl bg-[#FF6B5F]/10 border border-[#FF6B5F]/20 text-[#FF6B5F] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                            <BookOpen className="w-5 h-5" />
-                          </div>
-                          <div>
-                            <h4 className="text-xs sm:text-sm font-bold text-[#F5F1E8] group-hover:text-[#FF6B5F] transition-colors">
-                              {res.title || 'Advanced Microservices & Cloud Patterns'}
-                            </h4>
-                            <div className="flex items-center gap-2 text-xs text-[#8C877D] mt-0.5">
-                              <span>{res.provider || 'LearnPath AI'} • {res.type || 'Course'}</span>
-                              <span>•</span>
-                              <span className="text-[10px] font-bold text-[#FF857A] bg-[#FF6B5F]/10 px-2 py-0.5 rounded border border-[#FF6B5F]/20">
-                                Bridges: {rec.skillGapAddressed || 'Backend Mastery'}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
-                        <Button
-                          variant={addedCourses[idx] ? 'secondary' : 'primary'}
-                          size="sm"
-                          onClick={() => handleAddCourse(idx)}
-                          icon={addedCourses[idx] ? CheckCircle2 : Plus}
-                          className="shrink-0"
-                        >
-                          {addedCourses[idx] ? 'Added to Path' : 'Add to Path'}
-                        </Button>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {recs.slice(0, 4).map((rec, idx) => (
+                  <div
+                    key={rec._id || idx}
+                    className="p-4 rounded-2xl bg-[#0E1114] border border-white/[0.06] hover:border-[#FF6B5F]/30 transition-all flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#FF6B5F]/15 text-[#FF857A] uppercase font-mono">
+                          {rec.category}
+                        </span>
+                        <span className="text-xs text-[#34D399] font-bold font-mono">
+                          {rec.matchScore || 95}% Match
+                        </span>
                       </div>
-                    );
-                  })
-                ) : (
-                  <p className="text-xs text-[#8C877D] text-center py-4">No recommendations found.</p>
-                )}
+                      <h4 className="text-sm font-bold text-[#F5F1E8] mb-1 leading-snug">{rec.title}</h4>
+                      <p className="text-xs text-[#8C877D] line-clamp-2 mb-3 leading-relaxed">{rec.reason || rec.tagline}</p>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-2 border-t border-white/[0.06] mt-2">
+                      <span className="text-[11px] text-[#8C877D] font-mono">{rec.duration || '6.5 Hours'}</span>
+                      <Button
+                        variant={addedCourses[idx] ? 'outline' : 'primary'}
+                        size="sm"
+                        onClick={() => handleAddCourse(idx, rec)}
+                      >
+                        {addedCourses[idx] ? 'Added to Path ✓' : 'Add to Path'}
+                      </Button>
+                    </div>
+                  </div>
+                ))}
               </div>
             </Card>
+
           </div>
 
-          {/* Right 4 Cols: Radar Hexagon View + AI Insights */}
-          <div className="xl:col-span-4 space-y-6">
-            {/* Hexagonal Skill Radar Chart */}
-            <Card variant="glow">
-              <div className="flex items-center justify-between mb-3 pb-2 border-b border-white/[0.08]">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-[#8C877D]">
-                  Skill Radar Competency
-                </h3>
-                <span className="text-[10px] text-[#34D399] font-mono">Benchmark Sync</span>
+          {/* ── Right Column: Skill Radar & AI Strategic Advice ── */}
+          <div className="w-full xl:w-[400px] space-y-6 flex-shrink-0">
+            
+            {/* Skill Radar View Card */}
+            <Card variant="default">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-bold text-[#F5F1E8]">Skill Radar View</h3>
+                  <Info className="w-3.5 h-3.5 text-[#8C877D]" />
+                </div>
+                <div className="flex items-center gap-3 text-[10px] font-mono">
+                  <span className="flex items-center gap-1 text-[#34D399]">
+                    <span className="w-2 h-2 rounded-full bg-[#34D399]" /> Target
+                  </span>
+                  <span className="flex items-center gap-1 text-[#FF857A]">
+                    <span className="w-2 h-2 rounded-full bg-[#FF6B5F]" /> Current
+                  </span>
+                </div>
               </div>
-
-              <div className="w-full aspect-square relative flex items-center justify-center py-2">
-                <svg viewBox="0 0 200 200" className="w-full h-full max-w-[260px] overflow-visible">
-                  {/* Grid Hexagons */}
-                  <polygon points="100,10 178,55 178,145 100,190 22,145 22,55" fill="none" stroke="rgba(245,241,232,0.08)" strokeWidth="1" />
-                  <polygon points="100,32.5 158.5,66.25 158.5,133.75 100,167.5 41.5,133.75 41.5,66.25" fill="none" stroke="rgba(245,241,232,0.08)" strokeWidth="1" />
-                  <polygon points="100,55 139,77.5 139,122.5 100,145 61,122.5 61,77.5" fill="none" stroke="rgba(245,241,232,0.08)" strokeWidth="1" />
+              
+              <div className="w-full aspect-square relative flex items-center justify-center py-2 bg-[#0E1114] rounded-2xl border border-white/[0.04]">
+                <svg viewBox="0 0 200 200" className="w-full h-full max-w-[280px] overflow-visible">
+                  {/* Grid Lines (Hexagon) */}
+                  <polygon points="100,10 178,55 178,145 100,190 22,145 22,55" fill="none" stroke="rgba(245, 241, 232, 0.08)" strokeWidth="1" />
+                  <polygon points="100,32.5 158.5,66.25 158.5,133.75 100,167.5 41.5,133.75 41.5,66.25" fill="none" stroke="rgba(245, 241, 232, 0.08)" strokeWidth="1" />
+                  <polygon points="100,55 139,77.5 139,122.5 100,145 61,122.5 61,77.5" fill="none" stroke="rgba(245, 241, 232, 0.08)" strokeWidth="1" />
                   
-                  {/* Axis lines */}
-                  <line x1="100" y1="100" x2="100" y2="10" stroke="rgba(245,241,232,0.08)" strokeWidth="1" />
-                  <line x1="100" y1="100" x2="178" y2="55" stroke="rgba(245,241,232,0.08)" strokeWidth="1" />
-                  <line x1="100" y1="100" x2="178" y2="145" stroke="rgba(245,241,232,0.08)" strokeWidth="1" />
-                  <line x1="100" y1="100" x2="100" y2="190" stroke="rgba(245,241,232,0.08)" strokeWidth="1" />
-                  <line x1="100" y1="100" x2="22" y2="145" stroke="rgba(245,241,232,0.08)" strokeWidth="1" />
-                  <line x1="100" y1="100" x2="22" y2="55" stroke="rgba(245,241,232,0.08)" strokeWidth="1" />
+                  {/* Axis Lines */}
+                  <line x1="100" y1="100" x2="100" y2="10" stroke="rgba(245, 241, 232, 0.08)" strokeWidth="1" />
+                  <line x1="100" y1="100" x2="178" y2="55" stroke="rgba(245, 241, 232, 0.08)" strokeWidth="1" />
+                  <line x1="100" y1="100" x2="178" y2="145" stroke="rgba(245, 241, 232, 0.08)" strokeWidth="1" />
+                  <line x1="100" y1="100" x2="100" y2="190" stroke="rgba(245, 241, 232, 0.08)" strokeWidth="1" />
+                  <line x1="100" y1="100" x2="22" y2="145" stroke="rgba(245, 241, 232, 0.08)" strokeWidth="1" />
+                  <line x1="100" y1="100" x2="22" y2="55" stroke="rgba(245, 241, 232, 0.08)" strokeWidth="1" />
 
-                  {/* Required Data Polygon (Green Dashed) */}
+                  {/* Required Target Polygon */}
                   {radarData.reqStr && (
                     <polygon 
                       points={radarData.reqStr} 
@@ -405,65 +384,92 @@ export default function SkillGapsPage() {
                     />
                   )}
 
-                  {/* User Data Polygon (Coral Fill) */}
+                  {/* Current Data Polygon */}
                   {radarData.curStr && (
                     <polygon 
                       points={radarData.curStr} 
-                      fill="#FF6B5F" 
-                      fillOpacity="0.2" 
+                      fill="rgba(255, 107, 95, 0.25)" 
                       stroke="#FF6B5F" 
                       strokeWidth="2" 
                     />
                   )}
 
                   {/* Data Points */}
-                  {radarData.curPoints?.map((pt, i) => (
-                    <circle key={i} cx={pt.x} cy={pt.y} r="3" fill="#FF857A" />
+                  {radarData.curPoints.map((pt, i) => (
+                    <circle key={i} cx={pt.x} cy={pt.y} r="3.5" fill="#FF857A" stroke="#0B0D0F" strokeWidth="1" />
                   ))}
 
                   {/* Skill Labels */}
-                  {radarData.labels?.map((lbl, i) => (
+                  {radarData.labels.map((lbl, i) => (
                     <text key={i} x={lbl.x} y={lbl.y + 3} fontSize="7" fontWeight="bold" fill="#C7C2B6" textAnchor={lbl.anchor}>
                       {lbl.text}
                     </text>
                   ))}
                 </svg>
               </div>
-
-              {/* Legend */}
-              <div className="flex items-center justify-center gap-4 pt-2 text-[10px] font-bold">
-                <span className="flex items-center gap-1.5 text-[#FF857A]">
-                  <span className="w-2.5 h-2.5 rounded bg-[#FF6B5F]" /> Current Mastery
-                </span>
-                <span className="flex items-center gap-1.5 text-[#34D399]">
-                  <span className="w-2.5 h-2.5 rounded border border-[#34D399] border-dashed" /> Industry Target
-                </span>
-              </div>
             </Card>
 
             {/* AI Insights Card */}
-            <Card variant="default">
+            <Card variant="glow">
               <div className="flex items-center gap-2 mb-3">
-                <Sparkles className="w-4 h-4 text-[#FF6B5F]" />
-                <h3 className="text-xs font-bold uppercase tracking-wider text-[#8C877D]">
-                  AI Synthesis
-                </h3>
+                <Sparkles className="w-5 h-5 text-[#FF6B5F]" />
+                <h3 className="text-sm font-bold text-[#F5F1E8]">AI Strategic Recommendations</h3>
               </div>
-              <p className="text-xs text-[#C7C2B6] leading-relaxed font-medium">
+              <p className="text-xs text-[#C7C2B6] leading-relaxed">
                 {criticalGaps && criticalGaps.length > 0 ? (
                   <>
-                    Your analysis shows high priority opportunities in <span className="font-bold text-[#FF857A]">{criticalGaps.join(', ')}</span>. 
-                    Targeting these modules will increase your readiness for <span className="font-bold text-[#F5F1E8]">{targetRole}</span> to over <strong>85%</strong>.
+                    Telemetric analysis highlights priority competencies in <strong className="text-[#FF857A]">{criticalGaps.join(', ')}</strong>. 
+                    Tackling these modules will elevate your competency match for <strong className="text-[#F5F1E8]">{activeTargetRole}</strong> by an estimated +22%.
                   </>
                 ) : (
                   <>
-                    Your skills are well-aligned with your target role of <span className="font-bold text-[#FF857A]">{targetRole}</span>!
+                    Your competencies align strongly with your target profile for {activeTargetRole}! Maintain weekly review quizzes to consolidate retention.
                   </>
                 )}
               </p>
             </Card>
+
+            {/* What You Can Do Next Action Checklist */}
+            <Card variant="default">
+              <h3 className="text-sm font-bold text-[#F5F1E8] mb-4">Recommended Next Actions</h3>
+              <div className="space-y-3.5">
+                
+                <div className="flex items-start gap-3 p-2.5 rounded-xl bg-[#0E1114] border border-white/[0.04]">
+                  <div className="w-8 h-8 rounded-lg bg-[#FF6B5F]/15 text-[#FF857A] flex items-center justify-center shrink-0 mt-0.5">
+                    <Target className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-[#F5F1E8] mb-0.5">Prioritize Bottlenecks</h4>
+                    <p className="text-[11px] text-[#8C877D]">Start with {criticalGaps[0] || 'Core Architecture & APIs'}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 p-2.5 rounded-xl bg-[#0E1114] border border-white/[0.04]">
+                  <div className="w-8 h-8 rounded-lg bg-[#34D399]/15 text-[#34D399] flex items-center justify-center shrink-0 mt-0.5">
+                    <BookOpen className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-[#F5F1E8] mb-0.5">Complete Bridge Modules</h4>
+                    <p className="text-[11px] text-[#8C877D]">Enroll in curated micro-courses</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 p-2.5 rounded-xl bg-[#0E1114] border border-white/[0.04]">
+                  <div className="w-8 h-8 rounded-lg bg-[#38BDF8]/15 text-[#38BDF8] flex items-center justify-center shrink-0 mt-0.5">
+                    <RotateCcw className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-[#F5F1E8] mb-0.5">Reassess in 30 Days</h4>
+                    <p className="text-[11px] text-[#8C877D]">Track competency gains with assessments</p>
+                  </div>
+                </div>
+
+              </div>
+            </Card>
+
           </div>
         </div>
+
       </div>
     </MainLayout>
   );

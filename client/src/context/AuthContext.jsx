@@ -4,27 +4,36 @@ import api from '../services/api';
 const AuthContext = createContext(null);
 
 export const defaultUser = {
-  id: 'usr_akshat_101',
-  name: 'Akshat Singh',
-  email: 'akshat.singh@learnpath.ai',
+  id: 'usr_default_101',
+  name: 'Learner',
+  email: 'learner@learnpath.ai',
   avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-  targetRole: 'Full Stack MERN Developer',
-  tagline: 'Full Stack AI Engineer & Cloud Architect',
+  targetRole: 'Full Stack Developer',
+  tagline: 'Aspiring Software Engineer & Cloud Architect',
   location: 'San Francisco, CA',
   education: 'B.Tech in Computer Science',
   experienceLevel: 'Intermediate',
   weeklyGoalHours: 12,
-  completedHours: 7.5,
-  overallProgress: 68,
-  streakDays: 12,
-  totalXp: 1850,
-  bio: 'Passionate aspiring AI Full Stack engineer building high-scale cloud architectures, MERN web applications, and personalized AI pipelines.',
+  completedHours: 0,
+  overallProgress: 0,
+  streakDays: 0,
+  totalXp: 0,
+  bio: 'Passionate developer building scalable web architectures, mastering full-stack systems and cloud engineering.',
   areasOfInterest: 'Web Development, Artificial Intelligence, System Architecture',
   preferredLearningStyle: 'Hands-on Projects',
   weeklyLearningTime: '12-15 hours/week',
-  currentFocus: 'React 18, Node.js Microservices, PyTorch, MongoDB',
-  careerGoal: 'To engineer production-ready AI-driven scalable SaaS products and lead innovative engineering teams.',
-  interests: ['Full Stack MERN', 'TypeScript', 'Vector Databases', 'Deep Learning', 'System Design']
+  currentFocus: 'React 18, Node.js Microservices, MongoDB',
+  careerGoal: 'Full Stack Developer',
+  interests: ['Full Stack Development', 'TypeScript', 'System Design', 'Cloud Architecture'],
+  skills: [
+    { name: 'HTML & CSS', progress: 85 },
+    { name: 'JavaScript ES6+', progress: 75 },
+    { name: 'React.js', progress: 60 },
+    { name: 'Node.js & Express', progress: 50 },
+    { name: 'MongoDB', progress: 45 },
+  ],
+  completedMilestonesCount: 0,
+  activeCoursesCount: 0,
 };
 
 export function AuthProvider({ children }) {
@@ -37,7 +46,7 @@ export function AuthProvider({ children }) {
         console.error('Error parsing stored user:', e);
       }
     }
-    return defaultUser; // Default logged in as demo user for instant hackathon showcase
+    return defaultUser;
   });
 
   const [loading, setLoading] = useState(false);
@@ -62,15 +71,14 @@ export function AuthProvider({ children }) {
         return { success: true, user: res.data.user };
       }
     } catch (err) {
-      // Graceful offline mock fallback
-      console.warn('Backend offline or login error, using local fallback:', err.message);
+      console.warn('Backend offline or login error, using local session fallback:', err.message);
       const fallbackUser = {
         ...defaultUser,
         email: email || defaultUser.email,
-        name: email ? email.split('@')[0] : defaultUser.name
+        name: email ? email.split('@')[0].replace('.', ' ').replace(/^[a-z]/, c => c.toUpperCase()) : 'Learner'
       };
       setUser(fallbackUser);
-      localStorage.setItem('learnpath_token', 'demo-jwt-token-learnpath-2026');
+      localStorage.setItem('learnpath_token', 'session-jwt-token-learnpath-2026');
       setLoading(false);
       return { success: true, user: fallbackUser };
     }
@@ -92,15 +100,16 @@ export function AuthProvider({ children }) {
         return { success: true, user: res.data.user };
       }
     } catch (err) {
-      console.warn('Backend offline or register error, using local fallback:', err.message);
+      console.warn('Backend offline or register error, using local session fallback:', err.message);
       const newUser = {
         ...defaultUser,
-        name: name || defaultUser.name,
+        name: name || (email ? email.split('@')[0] : 'Learner'),
         email: email || defaultUser.email,
-        targetRole: targetRole || defaultUser.targetRole
+        targetRole: targetRole || 'Full Stack Developer',
+        careerGoal: targetRole || 'Full Stack Developer'
       };
       setUser(newUser);
-      localStorage.setItem('learnpath_token', 'demo-jwt-token-learnpath-2026');
+      localStorage.setItem('learnpath_token', 'session-jwt-token-learnpath-2026');
       setLoading(false);
       return { success: true, user: newUser };
     }
@@ -110,30 +119,40 @@ export function AuthProvider({ children }) {
     setUser(null);
     localStorage.removeItem('learnpath_user');
     localStorage.removeItem('learnpath_token');
-  };
-
-  const loginAsDemo = async () => {
-    setLoading(true);
-    try {
-      const res = await api.post('/auth/demo-login');
-      if (res.data?.success) {
-        setUser(res.data.user);
-        localStorage.setItem('learnpath_token', res.data.token);
-        setLoading(false);
-        return { success: true, user: res.data.user };
-      }
-    } catch (err) {
-      console.warn('Demo login offline fallback active');
-    }
-    setUser(defaultUser);
-    localStorage.setItem('learnpath_token', 'demo-jwt-token-learnpath-2026');
-    setLoading(false);
-    return { success: true, user: defaultUser };
+    localStorage.removeItem('m3_courses_data');
+    localStorage.removeItem('m3_assessments_data');
   };
 
   const updateUserProfile = (updatedFields) => {
     setUser((prev) => {
       const updated = { ...prev, ...updatedFields };
+      localStorage.setItem('learnpath_user', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const awardXp = (amount = 100) => {
+    setUser((prev) => {
+      if (!prev) return prev;
+      const newXp = (prev.totalXp || 0) + amount;
+      const updated = { ...prev, totalXp: newXp };
+      localStorage.setItem('learnpath_user', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const updateSkillMastery = (skillName, newLevel) => {
+    setUser((prev) => {
+      if (!prev) return prev;
+      const skills = prev.skills || [];
+      const index = skills.findIndex(s => s.name.toLowerCase() === skillName.toLowerCase());
+      let updatedSkills;
+      if (index >= 0) {
+        updatedSkills = skills.map((s, i) => i === index ? { ...s, progress: Math.min(100, Math.max(s.progress, newLevel)) } : s);
+      } else {
+        updatedSkills = [...skills, { name: skillName, progress: newLevel }];
+      }
+      const updated = { ...prev, skills: updatedSkills };
       localStorage.setItem('learnpath_user', JSON.stringify(updated));
       return updated;
     });
@@ -146,8 +165,9 @@ export function AuthProvider({ children }) {
       login, 
       signup, 
       logout, 
-      loginAsDemo, 
       updateUserProfile,
+      awardXp,
+      updateSkillMastery,
       isAuthenticated: !!user 
     }}>
       {children}

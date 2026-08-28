@@ -1,5 +1,6 @@
 import React from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import {
   LayoutDashboard,
   User,
@@ -11,7 +12,8 @@ import {
   TrendingUp,
   X,
   Sparkles,
-  Flame
+  Flame,
+  LogOut
 } from 'lucide-react';
 
 export const navigationItems = [
@@ -19,65 +21,67 @@ export const navigationItems = [
     name: 'Dashboard',
     path: '/dashboard',
     icon: LayoutDashboard,
-    member: 'Member 1',
     description: 'Overview & metrics'
   },
   {
     name: 'My Profile',
     path: '/profile',
     icon: User,
-    member: 'Member 1',
     description: 'Skills & preferences'
   },
   {
     name: 'Learning Path',
     path: '/learning-path',
     icon: Compass,
-    member: 'Member 2',
     description: 'Roadmap & timeline'
   },
   {
     name: 'Skill Gaps',
     path: '/skill-gaps',
     icon: Target,
-    member: 'Member 2',
     description: 'Analysis & radar'
   },
   {
     name: 'Courses',
     path: '/courses',
     icon: BookOpen,
-    member: 'Member 3',
     description: 'Curated modules'
   },
   {
     name: 'Assessments',
     path: '/assessments',
     icon: ClipboardCheck,
-    member: 'Member 3',
     description: 'Quizzes & tests'
   },
   {
     name: 'AI Assistant',
     path: '/ai-assistant',
     icon: Bot,
-    member: 'Member 4',
     description: 'Mentor & tutor'
   },
   {
     name: 'Progress',
     path: '/progress',
     icon: TrendingUp,
-    member: 'Member 4',
     description: 'Analytics & stats'
   },
 ];
 
 export default function Sidebar({ isOpen, onClose }) {
+  const { user, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const userStreak = user?.streakDays ?? user?.streak ?? 0;
+
+  const handleSignOut = () => {
+    logout();
+    navigate('/login');
+    if (onClose) onClose();
+  };
 
   const sidebarContent = (
-    <div className="flex flex-col h-full border-r w-64 select-none bg-[#111418] border-white/[0.06] text-[#C7C2B6] shadow-2xl relative z-20">
+    <div className="flex flex-col h-full border-r w-64 select-none bg-[#111418] dark:bg-[#111418] border-white/[0.06] text-[#C7C2B6] shadow-2xl relative z-20">
       {/* Brand Header */}
       <div className="p-5 border-b border-white/[0.06] flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -86,10 +90,10 @@ export default function Sidebar({ isOpen, onClose }) {
           </div>
           <div>
             <h2 className="text-sm font-extrabold text-[#F5F1E8] tracking-tight">
-              AI Learning Path
+              LearnPath AI
             </h2>
             <p className="text-[10px] text-[#8C877D] font-medium">
-              Learn. Build. Advance.
+              Intelligent Learning Platform
             </p>
           </div>
         </div>
@@ -97,15 +101,19 @@ export default function Sidebar({ isOpen, onClose }) {
         {/* Mobile close button */}
         <button
           onClick={onClose}
-          className="p-1 rounded-lg text-[#8C877D] hover:text-[#F5F1E8] hover:bg-white/10 lg:hidden"
-          aria-label="Close sidebar"
+          className="p-1 rounded-lg text-[#8C877D] hover:text-[#F5F1E8] hover:bg-white/10 lg:hidden cursor-pointer"
+          aria-label="Close navigation sidebar"
         >
           <X className="w-5 h-5" />
         </button>
       </div>
 
-      {/* Navigation List */}
-      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+      {/* Navigation Modules Section */}
+      <nav className="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto" aria-label="Main Navigation">
+        <div className="px-3 pb-2 text-[10px] font-mono tracking-widest text-[#8C877D] uppercase font-bold">
+          Navigation
+        </div>
+
         {navigationItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.path;
@@ -114,39 +122,29 @@ export default function Sidebar({ isOpen, onClose }) {
             <NavLink
               key={item.path}
               to={item.path}
-              onClick={onClose}
-              className={({ isActive: linkActive }) =>
-                `flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition-all duration-200 group ${
-                  linkActive
-                    ? 'bg-gradient-to-r from-[#FF6B5F] to-[#E85548] text-white shadow-lg shadow-[#FF6B5F]/25 font-bold'
-                    : 'text-[#8C877D] hover:text-[#F5F1E8] hover:bg-white/5'
-                }`
-              }
+              onClick={() => {
+                if (onClose) onClose();
+              }}
+              className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all group ${
+                isActive
+                  ? 'bg-[#FF6B5F] text-white shadow-md shadow-[#FF6B5F]/20'
+                  : 'text-[#C7C2B6] hover:text-[#F5F1E8] hover:bg-white/[0.04]'
+              }`}
             >
               <div className="flex items-center gap-3 min-w-0">
                 <Icon
-                  className={`w-4 h-4 shrink-0 transition-colors ${
-                    isActive ? 'text-white' : 'text-[#8C877D] group-hover:text-[#FF6B5F]'
+                  className={`w-4 h-4 shrink-0 transition-transform group-hover:scale-110 ${
+                    isActive ? 'text-white' : 'text-[#FF857A]'
                   }`}
                 />
                 <span className="truncate">{item.name}</span>
               </div>
-
-              <span
-                className={`text-[9px] font-mono px-1.5 py-0.5 rounded-md ${
-                  isActive
-                    ? 'bg-white/20 text-white font-bold'
-                    : 'text-[#7C786E] bg-white/[0.03] group-hover:text-[#C7C2B6]'
-                }`}
-              >
-                {item.member.replace('Member ', 'M')}
-              </span>
             </NavLink>
           );
         })}
       </nav>
 
-      {/* Bottom Learning Streak Card */}
+      {/* Learning Streak Card */}
       <div className="p-3.5 m-3 rounded-2xl bg-[#16191E] border border-white/[0.08] text-white shadow-xl relative overflow-hidden">
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-1">
@@ -155,12 +153,12 @@ export default function Sidebar({ isOpen, onClose }) {
               Learning Streak
             </span>
           </div>
-          <div className="text-xl font-extrabold text-[#F5F1E8] tracking-tight">
-            12 Days
+          <div className="text-xl font-extrabold text-[#F5F1E8] tracking-tight font-mono">
+            {userStreak} Days
           </div>
           <div className="text-[10px] text-[#8C877D] mt-0.5 flex items-center justify-between">
-            <span>Keep it up! 🔥</span>
-            <span className="text-[#FF6B5F] font-semibold">+50 XP Today</span>
+            <span>{userStreak > 0 ? 'Keep it up! 🔥' : 'Start your streak today!'}</span>
+            <span className="text-[#FF6B5F] font-semibold">+50 XP</span>
           </div>
         </div>
 
@@ -181,18 +179,23 @@ export default function Sidebar({ isOpen, onClose }) {
         </svg>
       </div>
 
-      {/* Sidebar Footer */}
-      <div className="p-4 border-t border-white/[0.06] text-xs text-[#7C786E]">
-        <div className="flex items-center justify-between mb-0.5">
-          <span className="font-mono text-[10px]">STATUS</span>
-          <span className="flex items-center gap-1 text-[#34D399] font-medium text-[10px]">
+      {/* Sidebar Footer & Logout */}
+      <div className="p-3 border-t border-white/[0.06] space-y-2">
+        <button
+          onClick={handleSignOut}
+          className="w-full flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-[#F87171] hover:bg-[#F87171]/10 transition-colors cursor-pointer"
+        >
+          <LogOut className="w-4 h-4" />
+          <span>Sign Out</span>
+        </button>
+
+        <div className="flex items-center justify-between px-1 text-[10px] text-[#8C877D]">
+          <span className="font-mono">STATUS</span>
+          <span className="flex items-center gap-1 text-[#34D399] font-medium font-mono">
             <span className="w-1.5 h-1.5 rounded-full bg-[#34D399] animate-pulse" />
             ONLINE
           </span>
         </div>
-        <p className="text-[10px] text-[#7C786E]">
-          HCLTech Hackathon Production
-        </p>
       </div>
     </div>
   );

@@ -5,10 +5,8 @@ import { ThemeProvider } from './context/ThemeContext';
 import { LearningPathProvider } from './context/LearningPathContext';
 import ProtectedRoute from './components/common/ProtectedRoute';
 
-// Public Pages
-import LandingPage from './pages/LandingPage';
-import LoginPage from './pages/LoginPage';
-import SignupPage from './pages/SignupPage';
+// Canonical Authentication Page (Obsidian + Ivory + Coral)
+import AuthPage from './pages/AuthPage';
 
 // Member 1 Feature Pages (Dashboard + Profile)
 import DashboardPage from './pages/DashboardPage';
@@ -27,9 +25,8 @@ import AIAssistantPage from './pages/AIAssistantPage';
 import ProgressPage from './pages/ProgressPage';
 
 /**
- * Unified LearnPath AI Routes Setup
- * Complete integration across all 4 developer modules.
- * Standardized on Obsidian + Ivory + Coral theme.
+ * Unified Canonical LearnPath AI Router Architecture
+ * All 8 feature modules integrated into a single protected environment.
  */
 export default function App() {
   return (
@@ -38,10 +35,10 @@ export default function App() {
         <LearningPathProvider>
           <BrowserRouter>
             <Routes>
-              {/* Public Entry Routes */}
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/signup" element={<SignupPage />} />
+              {/* Public Entry Routes (Landing removed, direct Auth interface) */}
+              <Route path="/" element={<AuthPage defaultIsLogin={true} />} />
+              <Route path="/login" element={<AuthPage defaultIsLogin={true} />} />
+              <Route path="/signup" element={<AuthPage defaultIsLogin={false} />} />
 
               {/* Member 1 Routes */}
               <Route
@@ -115,7 +112,7 @@ export default function App() {
                 }
               />
 
-              {/* Route Aliases for Seamless Legacy Navigation */}
+              {/* Legacy Route Aliases */}
               <Route path="/roadmap" element={<Navigate to="/learning-path" replace />} />
               <Route path="/skills" element={<Navigate to="/skill-gaps" replace />} />
               <Route path="/analytics" element={<Navigate to="/progress" replace />} />

@@ -1,350 +1,500 @@
-import React, { useState } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '../common/Card';
-import Badge from '../common/Badge';
-import Button from '../common/Button';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { mockDashboard } from '../../utils/mockData';
+import { useTheme } from '../../context/ThemeContext';
+import { INITIAL_COURSES } from '../../data/coursesAndAssessmentsData';
 import {
-  ArrowRight,
-  Clock,
-  Target,
+  Flame,
   BookOpen,
+  FolderCheck,
   Award,
-  Sparkles,
-  PlayCircle,
+  Clock,
+  Calendar,
   CheckCircle2,
-  TrendingUp,
   Star,
   ChevronRight,
-  X,
   Code2,
-  Layers,
-  Flame
+  Sparkles,
+  X,
+  Target,
+  ArrowRight,
+  PlayCircle
 } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
 
 export default function DashboardOverview() {
   const { user } = useAuth();
+  const { theme } = useTheme();
   const navigate = useNavigate();
-  const [activeModal, setActiveModal] = useState(null);
+  const isDark = theme === 'dark';
+
+  const userName = user?.name ? user.name.split(' ')[0] : 'Learner';
+  const targetRole = user?.targetRole || user?.careerGoal || 'Full Stack Developer';
+  const userStreak = user?.streakDays ?? user?.streak ?? 0;
+  const userXp = user?.totalXp || 0;
+
+  const [activeModal, setActiveModal] = useState(null); // 'milestone' | 'course' | null
   const [selectedCourse, setSelectedCourse] = useState(null);
 
-  const recommendedCourses = [
-    {
-      id: 'rc1',
-      title: 'Full Stack MERN Architecture',
-      level: 'Intermediate',
-      duration: '4.5 hrs',
-      rating: 4.9,
-      type: 'Core Roadmap',
-      progress: 68,
-    },
-    {
-      id: 'rc2',
-      title: 'Vector Databases & LLM Embeddings',
-      level: 'Advanced',
-      duration: '3.2 hrs',
-      rating: 4.8,
-      type: 'AI Specialty',
-      progress: 40,
-    },
-    {
-      id: 'rc3',
-      title: 'Node.js Event Loop & Microservices',
-      level: 'Intermediate',
-      duration: '2.8 hrs',
-      rating: 4.7,
-      type: 'Backend Mastery',
-      progress: 85,
-    }
+  const [courses, setCourses] = useState(() => {
+    try {
+      const saved = localStorage.getItem('m3_courses_data');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return INITIAL_COURSES;
+  });
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('m3_courses_data');
+      if (saved) setCourses(JSON.parse(saved));
+    } catch (e) {}
+  }, []);
+
+  const inProgressCourses = courses.filter((c) => c.enrolled);
+  const activeCoursesCount = inProgressCourses.length;
+  const milestonesDoneCount = user?.completedMilestonesCount || 0;
+
+  const skillsData = user?.skills || [
+    { name: 'HTML & CSS', progress: 85 },
+    { name: 'JavaScript ES6+', progress: 75 },
+    { name: 'React.js', progress: 60 },
+    { name: 'Node.js & Express', progress: 50 },
+    { name: 'MongoDB', progress: 45 },
   ];
 
-  const skillMatrix = [
-    { name: 'React.js & State Management', progress: 85, level: 'Advanced' },
-    { name: 'Node.js & Express API', progress: 75, level: 'Intermediate' },
-    { name: 'MongoDB Indexing & Aggregations', progress: 65, level: 'Intermediate' },
-    { name: 'AI/ML Prompt Engineering & LangChain', progress: 50, level: 'Beginner' },
-  ];
-
-  const statIcons = [Clock, Target, BookOpen, Award];
+  const handleOpenCourse = (course) => {
+    setSelectedCourse(course);
+    setActiveModal('course');
+  };
 
   return (
-    <div className="space-y-6">
-      {/* Metric Quick Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {mockDashboard.stats.map((stat, idx) => {
-          const Icon = statIcons[idx % statIcons.length];
-          return (
-            <Card key={idx} variant="interactive" className="relative overflow-hidden group">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-xs text-[#8C877D] font-medium">{stat.label}</span>
-                <div className="w-8 h-8 rounded-xl bg-[#FF6B5F]/10 border border-[#FF6B5F]/20 text-[#FF6B5F] flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Icon className="w-4 h-4" />
-                </div>
-              </div>
-              <div className="text-xl sm:text-2xl font-black text-[#F5F1E8] tracking-tight mb-2">
-                {stat.value}
-              </div>
-              <div className="w-full bg-white/5 rounded-full h-1.5 mb-2 overflow-hidden">
-                <div
-                  className="bg-gradient-to-r from-[#FF6B5F] to-[#E85548] h-full rounded-full transition-all duration-500"
-                  style={{ width: `${stat.progress}%` }}
-                />
-              </div>
-              <span className="text-[11px] text-[#34D399] font-semibold flex items-center gap-1">
-                <TrendingUp className="w-3 h-3" />
-                {stat.change}
-              </span>
-            </Card>
-          );
-        })}
+    <div className="space-y-6 max-w-7xl mx-auto pb-8 animate-in fade-in duration-200">
+      {/* Header Greeting */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <div>
+          <h1 className={`text-2xl sm:text-3xl font-black tracking-tight flex items-center gap-2 ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
+            Welcome back, {userName} 👋
+          </h1>
+          <p className="text-xs sm:text-sm text-[#8C877D] mt-1">
+            Track your personalized engineering roadmap for <strong className="text-[#FF857A]">{targetRole}</strong>.
+          </p>
+        </div>
+
+        <button
+          onClick={() => navigate('/learning-path')}
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#FF6B5F] hover:bg-[#E85548] text-white text-xs font-bold transition-all shadow-md shadow-[#FF6B5F]/20 cursor-pointer self-start sm:self-auto"
+        >
+          <span>View Active Roadmap</span>
+          <ArrowRight className="w-3.5 h-3.5" />
+        </button>
       </div>
 
-      {/* Main Row: Active Milestone (Left 8-col) + Skill Mastery (Right 4-col) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left 8-Cols: Active Roadmap Milestone & Recommended Modules */}
-        <div className="lg:col-span-8 space-y-6">
-          {/* Active Milestone Card */}
-          <Card variant="glow" className="relative overflow-hidden">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/[0.08]">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <Badge variant="coral" size="sm" dot>Current Milestone</Badge>
-                  <span className="text-xs text-[#8C877D] font-mono">Stage 2 of 5</span>
-                </div>
-                <h3 className="text-lg font-bold text-[#F5F1E8]">
-                  Full-Stack Architecture & Microservices
-                </h3>
-              </div>
-              <Button
-                variant="primary"
-                size="sm"
-                icon={PlayCircle}
-                onClick={() => setActiveModal('learning')}
-              >
-                Continue Lesson
-              </Button>
+      {/* Top 4 Stat Metric Cards (Dynamic - Zero Inventions) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Card 1: Current Streak */}
+        <div className={`p-5 rounded-2xl border transition-all shadow-sm hover:shadow-md ${
+          isDark ? 'bg-[#111418] border-white/[0.08]' : 'bg-white border-black/[0.08]'
+        }`}>
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-[#FF6B5F]/15 border border-[#FF6B5F]/30 text-[#FF857A] flex items-center justify-center shrink-0">
+              <Flame className="w-6 h-6 fill-current" />
             </div>
-
-            <div className="pt-4 space-y-3">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-[#C7C2B6] font-medium">Stage Progress</span>
-                <span className="text-[#FF6B5F] font-bold">65% Completed</span>
+            <div>
+              <p className="text-xs font-bold text-[#8C877D] uppercase tracking-wider">Current Streak</p>
+              <div className="flex items-baseline gap-1.5 mt-0.5">
+                <span className={`text-2xl font-black font-mono ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
+                  {userStreak}
+                </span>
+                <span className="text-xs font-medium text-[#8C877D]">days</span>
               </div>
-              <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden">
+            </div>
+          </div>
+        </div>
+
+        {/* Card 2: Active Courses */}
+        <div className={`p-5 rounded-2xl border transition-all shadow-sm hover:shadow-md ${
+          isDark ? 'bg-[#111418] border-white/[0.08]' : 'bg-white border-black/[0.08]'
+        }`}>
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-[#34D399]/15 border border-[#34D399]/30 text-[#34D399] flex items-center justify-center shrink-0">
+              <BookOpen className="w-6 h-6" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-[#8C877D] uppercase tracking-wider">Courses Active</p>
+              <span className={`text-2xl font-black font-mono block mt-0.5 ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
+                {activeCoursesCount}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Card 3: Milestones Done */}
+        <div className={`p-5 rounded-2xl border transition-all shadow-sm hover:shadow-md ${
+          isDark ? 'bg-[#111418] border-white/[0.08]' : 'bg-white border-black/[0.08]'
+        }`}>
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-[#38BDF8]/15 border border-[#38BDF8]/30 text-[#38BDF8] flex items-center justify-center shrink-0">
+              <FolderCheck className="w-6 h-6" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-[#8C877D] uppercase tracking-wider">Milestones Done</p>
+              <span className={`text-2xl font-black font-mono block mt-0.5 ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
+                {milestonesDoneCount}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Card 4: Total XP */}
+        <div className={`p-5 rounded-2xl border transition-all shadow-sm hover:shadow-md ${
+          isDark ? 'bg-[#111418] border-white/[0.08]' : 'bg-white border-black/[0.08]'
+        }`}>
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-[#FBBF24]/15 border border-[#FBBF24]/30 text-[#FBBF24] flex items-center justify-center shrink-0">
+              <Award className="w-6 h-6" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-[#8C877D] uppercase tracking-wider">Total XP Earned</p>
+              <span className={`text-2xl font-black font-mono block mt-0.5 ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
+                +{userXp} XP
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Middle Row: Your Learning Path & Next Milestone */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Your Learning Path Card */}
+        <div className={`p-6 rounded-2xl border flex flex-col justify-between space-y-5 ${
+          isDark ? 'bg-[#111418] border-white/[0.08]' : 'bg-white border-black/[0.08]'
+        }`}>
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-bold text-[#8C877D] uppercase tracking-wider">
+                Your Learning Path
+              </span>
+              <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#FF6B5F]/15 text-[#FF857A] border border-[#FF6B5F]/30 font-mono">
+                Active Roadmap
+              </span>
+            </div>
+            <h3 className={`text-lg font-black mb-4 ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
+              {targetRole}
+            </h3>
+
+            {/* Progress Bar */}
+            <div className="space-y-2">
+              <div className="flex justify-between items-center text-xs text-[#8C877D]">
+                <span>Overall Curriculum Progress</span>
+                <span className="font-bold text-[#FF857A] font-mono">65% Complete</span>
+              </div>
+              <div className="w-full bg-white/5 rounded-full h-2.5 overflow-hidden">
                 <div
                   className="bg-gradient-to-r from-[#FF6B5F] to-[#E85548] h-full rounded-full transition-all duration-500"
                   style={{ width: '65%' }}
                 />
               </div>
-
-              <div className="p-3.5 rounded-xl bg-[#16191E] border border-white/[0.06] flex items-center justify-between mt-2">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-[#FF6B5F]/10 border border-[#FF6B5F]/20 text-[#FF6B5F] flex items-center justify-center">
-                    <Code2 className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-[#F5F1E8]">Next Up: Express REST Architecture & JWT Auth</h4>
-                    <p className="text-[10px] text-[#8C877D]">Estimated time: 45 mins • Hands-on Lab</p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setActiveModal('learning')}
-                  className="text-xs font-bold text-[#FF6B5F] hover:text-[#FF857A] flex items-center gap-1 cursor-pointer"
-                >
-                  <span>Start</span>
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
             </div>
-          </Card>
 
-          {/* Recommended Modules */}
-          <Card variant="default">
-            <CardHeader>
-              <div>
-                <CardTitle>Recommended For Your Goal</CardTitle>
-                <CardDescription>Tailored modules based on your target role: {user?.targetRole || 'Full Stack Developer'}</CardDescription>
-              </div>
-              <Link to="/courses">
-                <Button variant="outline" size="sm" icon={ArrowRight} iconPosition="right">
-                  View All
-                </Button>
-              </Link>
-            </CardHeader>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {recommendedCourses.map((course) => (
-                <div
-                  key={course.id}
-                  onClick={() => {
-                    setSelectedCourse(course);
-                    setActiveModal('course');
-                  }}
-                  className="p-4 rounded-xl bg-[#16191E] border border-white/[0.06] hover:border-[#FF6B5F]/30 transition-all cursor-pointer group flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-[10px] font-bold text-[#FF6B5F] bg-[#FF6B5F]/10 px-2 py-0.5 rounded-md border border-[#FF6B5F]/20">
-                        {course.type}
-                      </span>
-                      <span className="text-[11px] text-[#8C877D] font-mono">{course.duration}</span>
-                    </div>
-                    <h4 className="text-xs font-bold text-[#F5F1E8] group-hover:text-[#FF6B5F] transition-colors line-clamp-2 mb-1">
-                      {course.title}
-                    </h4>
-                    <div className="flex items-center gap-2 text-[11px] text-[#8C877D]">
-                      <span>{course.level}</span>
-                      <span>•</span>
-                      <span className="flex items-center gap-1 text-[#FBBF24]">
-                        <Star className="w-3 h-3 fill-current" />
-                        {course.rating}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="pt-3 mt-3 border-t border-white/[0.06] flex items-center justify-between">
-                    <span className="text-[10px] text-[#8C877D] font-semibold">{course.progress}% progress</span>
-                    <span className="text-xs font-bold text-[#FF6B5F] group-hover:translate-x-0.5 transition-transform">
-                      →
-                    </span>
-                  </div>
-                </div>
-              ))}
+            <div className="mt-5 pt-4 border-t border-white/[0.06]">
+              <p className="text-xs text-[#8C877D] font-medium">Current Milestone Phase</p>
+              <p className={`text-sm font-bold mt-0.5 ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
+                Phase 2: Core Engineering Architecture & APIs
+              </p>
             </div>
-          </Card>
+          </div>
+
+          <div className="pt-2">
+            <button
+              onClick={() => navigate('/learning-path')}
+              className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#FF6B5F] hover:bg-[#E85548] text-white text-xs font-bold transition-all shadow-md shadow-[#FF6B5F]/20 cursor-pointer flex items-center justify-center gap-2"
+            >
+              <PlayCircle className="w-4 h-4" />
+              <span>Continue Learning</span>
+            </button>
+          </div>
         </div>
 
-        {/* Right 4-Cols: Skill Mastery & Recent Activity */}
-        <div className="lg:col-span-4 space-y-6">
-          {/* Skill Mastery Card */}
-          <Card variant="default">
-            <CardHeader>
-              <div>
-                <CardTitle>Skill Competency</CardTitle>
-                <CardDescription>Verified skills in your profile</CardDescription>
-              </div>
-              <Link to="/skill-gaps">
-                <Button variant="ghost" size="sm" className="text-xs">
-                  Analysis →
-                </Button>
-              </Link>
-            </CardHeader>
-
-            <div className="space-y-3.5 pt-1">
-              {skillMatrix.map((skill, idx) => (
-                <div key={idx} className="space-y-1.5">
-                  <div className="flex justify-between items-center text-xs font-semibold">
-                    <span className="text-[#F5F1E8]">{skill.name}</span>
-                    <span className="text-[#FF6B5F]">{skill.progress}%</span>
-                  </div>
-                  <div className="w-full bg-white/5 rounded-full h-1.5 overflow-hidden">
-                    <div
-                      className="bg-gradient-to-r from-[#FF6B5F] to-[#E85548] h-full rounded-full transition-all duration-500"
-                      style={{ width: `${skill.progress}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
+        {/* Next Milestone Card */}
+        <div className={`p-6 rounded-2xl border flex flex-col justify-between space-y-5 ${
+          isDark ? 'bg-[#111418] border-white/[0.08]' : 'bg-white border-black/[0.08]'
+        }`}>
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-bold text-[#8C877D] uppercase tracking-wider">
+                Upcoming Milestone
+              </span>
+              <span className="flex items-center gap-1 text-xs font-bold text-[#FBBF24] font-mono">
+                <Calendar className="w-3.5 h-3.5" />
+                Target: Next Week
+              </span>
             </div>
-          </Card>
+            <h3 className={`text-lg font-black mb-2 ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
+              Production Architecture Project Milestone
+            </h3>
+            <p className="text-xs text-[#8C877D] leading-relaxed mb-4">
+              Construct a multi-service system with live data feeds and containerization to verify Phase 2 readiness.
+            </p>
 
-          {/* Recent Milestones Activity */}
-          <Card variant="default">
-            <CardHeader>
-              <CardTitle>Recent Activity</CardTitle>
-              <span className="text-xs text-[#8C877D]">Live</span>
-            </CardHeader>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center text-xs text-[#8C877D]">
+                <span>Milestone Tasks Completed</span>
+                <span className="font-bold text-[#34D399] font-mono">2 of 3 tasks (68%)</span>
+              </div>
+              <div className="w-full bg-white/5 rounded-full h-2.5 overflow-hidden">
+                <div
+                  className="bg-gradient-to-r from-[#34D399] to-[#059669] h-full rounded-full transition-all duration-500"
+                  style={{ width: '68%' }}
+                />
+              </div>
+            </div>
+          </div>
 
-            <ul className="space-y-3 text-xs">
-              {mockDashboard.recentMilestones.map((item, idx) => (
-                <li
-                  key={idx}
-                  className="flex items-start justify-between pb-3 border-b border-white/[0.06] last:border-0 last:pb-0"
-                >
-                  <div className="flex items-start gap-2.5">
-                    <div className="w-5 h-5 rounded-md bg-[#34D399]/15 text-[#34D399] flex items-center justify-center shrink-0 mt-0.5">
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-[#F5F1E8]">{item.title}</p>
-                      <p className="text-[10px] text-[#8C877D]">{item.date}</p>
-                    </div>
-                  </div>
-                  <Badge variant="neutral" size="sm">
-                    {item.category}
-                  </Badge>
-                </li>
-              ))}
-            </ul>
-          </Card>
+          <div className="pt-2">
+            <button
+              onClick={() => setActiveModal('milestone')}
+              className={`w-full sm:w-auto px-5 py-2.5 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
+                isDark ? 'border-white/10 bg-[#16191E] text-[#F5F1E8] hover:bg-white/5' : 'border-black/10 bg-[#F5F1E8] text-[#111418] hover:bg-black/5'
+              }`}
+            >
+              View Milestone Details
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Interactive Modals */}
-      {activeModal === 'learning' && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
-          <div className="bg-[#111418] border border-white/10 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4 text-[#F5F1E8]">
-            <div className="flex justify-between items-center border-b pb-3 border-white/[0.08]">
-              <h3 className="font-bold text-base flex items-center gap-2 text-[#F5F1E8]">
-                <Sparkles className="w-5 h-5 text-[#FF6B5F]" /> Continue Learning
-              </h3>
-              <button onClick={() => setActiveModal(null)} className="text-[#8C877D] hover:text-white">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <p className="text-xs text-[#C7C2B6] leading-relaxed">
-              You are currently on <strong>Express REST Architecture & Microservices</strong> in <em>{user?.targetRole || 'Full Stack MERN'}</em>.
-            </p>
-            <div className="p-3 bg-[#FF6B5F]/10 border border-[#FF6B5F]/20 rounded-xl text-xs text-[#FF857A]">
-              🎯 Next Lesson: Authentication Middleware, JWT Token Verification & Rate Limiting.
-            </div>
-            <div className="pt-2 flex justify-end gap-2">
-              <button
-                onClick={() => {
-                  setActiveModal(null);
-                  navigate('/learning-path');
-                }}
-                className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#FF6B5F] to-[#E85548] text-white text-xs font-bold shadow-md shadow-[#FF6B5F]/20 hover:scale-105 transition-all"
+      {/* Courses in Progress Section */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className={`text-lg font-black ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
+              Active Courses in Progress
+            </h3>
+            <p className="text-xs text-[#8C877D]">Pick up where you left off in your modules</p>
+          </div>
+          <button
+            onClick={() => navigate('/courses')}
+            className="text-xs font-bold text-[#FF857A] hover:underline flex items-center gap-1 cursor-pointer"
+          >
+            <span>View All Courses</span>
+            <ChevronRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        {inProgressCourses.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {inProgressCourses.slice(0, 3).map((course) => (
+              <div
+                key={course.id}
+                onClick={() => handleOpenCourse(course)}
+                className={`p-5 rounded-2xl border transition-all cursor-pointer group hover:border-[#FF6B5F]/40 ${
+                  isDark ? 'bg-[#111418] border-white/[0.08]' : 'bg-white border-black/[0.08]'
+                }`}
               >
-                Go to Lesson
-              </button>
-            </div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-[#FF6B5F]/15 text-[#FF857A] uppercase font-mono">
+                    {course.category}
+                  </span>
+                  <span className="text-xs font-bold text-[#FF857A] font-mono">
+                    {course.progress || 0}%
+                  </span>
+                </div>
+
+                <h4 className={`text-sm font-bold line-clamp-1 mb-1 group-hover:text-[#FF857A] transition-colors ${
+                  isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'
+                }`}>
+                  {course.title}
+                </h4>
+                <p className="text-xs text-[#8C877D] line-clamp-1 mb-3">
+                  {course.tagline || 'Curated module track'}
+                </p>
+
+                <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden mb-3">
+                  <div
+                    className="bg-gradient-to-r from-[#FF6B5F] to-[#E85548] h-full rounded-full"
+                    style={{ width: `${course.progress || 0}%` }}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between text-[11px] text-[#8C877D] pt-1">
+                  <span>{course.completedLessons || 0}/{course.totalLessons || 8} lessons</span>
+                  <span className="font-mono">{course.duration}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="p-8 rounded-2xl bg-[#111418] border border-white/[0.08] text-center space-y-3">
+            <BookOpen className="w-8 h-8 text-[#8C877D] mx-auto opacity-50" />
+            <p className="text-xs text-[#8C877D]">No courses currently enrolled. Start a learning track matched to your goals!</p>
+            <button
+              onClick={() => navigate('/courses')}
+              className="px-4 py-2 rounded-xl bg-[#FF6B5F] hover:bg-[#E85548] text-white text-xs font-bold transition-all cursor-pointer"
+            >
+              Browse Course Catalog
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Bottom Grid: Skill Competency Progress & Weekly Goal */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Skill Competency Bars */}
+        <div className={`p-6 rounded-2xl border lg:col-span-2 space-y-4 ${
+          isDark ? 'bg-[#111418] border-white/[0.08]' : 'bg-white border-black/[0.08]'
+        }`}>
+          <div className="flex items-center justify-between">
+            <h3 className={`text-base font-bold ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
+              Verified Skill Competency
+            </h3>
+            <button
+              onClick={() => navigate('/skill-gaps')}
+              className="text-xs font-bold text-[#FF857A] hover:underline cursor-pointer"
+            >
+              Analyze Gaps →
+            </button>
+          </div>
+
+          <div className="space-y-3.5">
+            {skillsData.map((skill, idx) => (
+              <div key={idx} className="space-y-1">
+                <div className="flex justify-between text-xs">
+                  <span className={`font-semibold ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
+                    {skill.name}
+                  </span>
+                  <span className="text-[#8C877D] font-mono font-bold">{skill.progress}%</span>
+                </div>
+                <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden">
+                  <div
+                    className="bg-gradient-to-r from-[#FF6B5F] to-[#E85548] h-full rounded-full"
+                    style={{ width: `${skill.progress}%` }}
+                  />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-      )}
 
-      {activeModal === 'course' && selectedCourse && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
-          <div className="bg-[#111418] border border-white/10 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4 text-[#F5F1E8]">
-            <div className="flex justify-between items-center border-b pb-3 border-white/[0.08]">
-              <h3 className="font-bold text-base text-[#F5F1E8]">
-                {selectedCourse.title}
+        {/* Weekly Goal Progress */}
+        <div className={`p-6 rounded-2xl border space-y-4 flex flex-col justify-between ${
+          isDark ? 'bg-[#111418] border-white/[0.08]' : 'bg-white border-black/[0.08]'
+        }`}>
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <Clock className="w-4 h-4 text-[#FF6B5F]" />
+              <h3 className={`text-base font-bold ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
+                Weekly Study Goal
               </h3>
-              <button onClick={() => setActiveModal(null)} className="text-[#8C877D] hover:text-white">
-                <X className="w-5 h-5" />
-              </button>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="px-2.5 py-1 rounded text-xs font-bold bg-[#FF6B5F]/10 border border-[#FF6B5F]/20 text-[#FF6B5F]">
-                {selectedCourse.type}
-              </span>
-              <span className="text-xs text-[#8C877D]">Duration: {selectedCourse.duration}</span>
+            <div className={`text-3xl font-black font-mono my-2 ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
+              {user?.completedHours || 0} / 12 hrs
             </div>
-            <p className="text-xs text-[#C7C2B6] leading-relaxed">
-              Recommended module tailored for your target competency profile: <strong>{user?.targetRole || 'Full Stack Developer'}</strong>.
+            <p className="text-xs text-[#8C877D] leading-relaxed mb-4">
+              Maintain your daily study cadence to keep milestone pacing optimal!
             </p>
-            <div className="pt-2 flex justify-end gap-2">
-              <button
-                onClick={() => {
-                  setActiveModal(null);
-                  navigate('/courses');
-                }}
-                className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#FF6B5F] to-[#E85548] text-white text-xs font-bold shadow-md shadow-[#FF6B5F]/20 hover:scale-105 transition-all"
-              >
-                Enroll & Open Course
-              </button>
+
+            <div className="w-full bg-white/5 rounded-full h-2.5 overflow-hidden">
+              <div
+                className="bg-gradient-to-r from-[#FF6B5F] to-[#E85548] h-full rounded-full"
+                style={{ width: `${Math.min(100, Math.round(((user?.completedHours || 0) / 12) * 100))}%` }}
+              />
             </div>
+          </div>
+
+          <button
+            onClick={() => navigate('/progress')}
+            className={`w-full py-2.5 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
+              isDark ? 'border-white/10 bg-[#16191E] text-[#F5F1E8] hover:bg-white/5' : 'border-black/10 bg-[#F5F1E8] text-[#111418] hover:bg-black/5'
+            }`}
+          >
+            View Detailed Analytics
+          </button>
+        </div>
+      </div>
+
+      {/* Interactive Modal for Milestone / Course Details */}
+      {activeModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
+          <div className={`w-full max-w-lg p-6 sm:p-8 rounded-[28px] border shadow-2xl relative ${
+            isDark ? 'bg-[#111418] border-white/10 text-[#F5F1E8]' : 'bg-white border-black/10 text-[#111418]'
+          }`}>
+            <button
+              onClick={() => setActiveModal(null)}
+              className="absolute top-5 right-5 p-2 rounded-xl text-[#8C877D] hover:text-[#F5F1E8] cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {activeModal === 'milestone' && (
+              <div className="space-y-4">
+                <div className="w-10 h-10 rounded-xl bg-[#FF6B5F]/15 text-[#FF857A] flex items-center justify-center">
+                  <Target className="w-5 h-5" />
+                </div>
+                <h3 className="text-xl font-black">Production Architecture Project</h3>
+                <p className="text-xs text-[#8C877D] leading-relaxed">
+                  This milestone tests component hierarchy, custom hooks, and server-side state synchronization with MongoDB.
+                </p>
+                <div className="p-3.5 rounded-xl bg-[#0E1114] border border-white/[0.06] space-y-2 text-xs">
+                  <div className="flex items-center gap-2 text-[#34D399]">
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>State Management Setup (Complete)</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-[#34D399]">
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>REST API Service Consumption (Complete)</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-[#FF857A]">
+                    <Clock className="w-4 h-4" />
+                    <span>Live Telemetry & Unit Tests (In Progress)</span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    setActiveModal(null);
+                    navigate('/courses');
+                  }}
+                  className="w-full py-2.5 rounded-xl bg-[#FF6B5F] text-white text-xs font-bold hover:bg-[#E85548] cursor-pointer"
+                >
+                  Continue to Course Syllabus
+                </button>
+              </div>
+            )}
+
+            {activeModal === 'course' && selectedCourse && (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-[#FF6B5F]/15 text-[#FF857A] uppercase font-mono">
+                    {selectedCourse.category}
+                  </span>
+                  <span className="text-xs font-bold text-[#FBBF24] font-mono">★ {selectedCourse.rating || 4.9}</span>
+                </div>
+                <h3 className="text-xl font-black">{selectedCourse.title}</h3>
+                <p className="text-xs text-[#8C877D] leading-relaxed">
+                  {selectedCourse.tagline || selectedCourse.description}
+                </p>
+                <div className="space-y-1">
+                  <div className="flex justify-between text-xs text-[#8C877D]">
+                    <span>Progress</span>
+                    <span className="font-mono font-bold text-[#FF857A]">{selectedCourse.progress || 0}%</span>
+                  </div>
+                  <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden">
+                    <div
+                      className="bg-gradient-to-r from-[#FF6B5F] to-[#E85548] h-full rounded-full"
+                      style={{ width: `${selectedCourse.progress || 0}%` }}
+                    />
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    setActiveModal(null);
+                    navigate('/courses');
+                  }}
+                  className="w-full py-2.5 rounded-xl bg-[#FF6B5F] text-white text-xs font-bold hover:bg-[#E85548] cursor-pointer"
+                >
+                  Launch Full Course Details
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
