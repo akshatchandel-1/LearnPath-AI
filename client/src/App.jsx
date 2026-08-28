@@ -7,28 +7,29 @@ import ProtectedRoute from './components/common/ProtectedRoute';
 
 // Public Pages
 import LandingPage from './pages/LandingPage';
-import AuthPage from './pages/AuthPage';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
 
-// Member 1 Feature Pages
+// Member 1 Feature Pages (Dashboard + Profile)
 import DashboardPage from './pages/DashboardPage';
 import ProfilePage from './pages/ProfilePage';
 
-// Member 2 Feature Pages
+// Member 2 Feature Pages (Learning Path + Skill Gaps)
 import LearningPathPage from './pages/LearningPathPage';
 import SkillGapsPage from './pages/SkillGapsPage';
 
-// Member 3 Feature Pages
+// Member 3 Feature Pages (Courses + Assessments)
 import CoursesPage from './pages/CoursesPage';
 import AssessmentsPage from './pages/AssessmentsPage';
 
-// Member 4 Feature Pages
+// Member 4 Feature Pages (AI Assistant + Progress)
 import AIAssistantPage from './pages/AIAssistantPage';
 import ProgressPage from './pages/ProgressPage';
 
 /**
- * Main Application Routes Setup
- * App.jsx contains strictly route definitions and global context providers.
- * Feature development occurs inside isolated pages/ and components/ folders.
+ * Unified LearnPath AI Routes Setup
+ * Complete integration across all 4 developer modules.
+ * Standardized on Obsidian + Ivory + Coral theme.
  */
 export default function App() {
   return (
@@ -39,8 +40,8 @@ export default function App() {
             <Routes>
               {/* Public Entry Routes */}
               <Route path="/" element={<LandingPage />} />
-              <Route path="/login" element={<AuthPage defaultIsLogin={true} />} />
-              <Route path="/signup" element={<AuthPage defaultIsLogin={false} />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
 
               {/* Member 1 Routes */}
               <Route
@@ -113,6 +114,12 @@ export default function App() {
                   </ProtectedRoute>
                 }
               />
+
+              {/* Route Aliases for Seamless Legacy Navigation */}
+              <Route path="/roadmap" element={<Navigate to="/learning-path" replace />} />
+              <Route path="/skills" element={<Navigate to="/skill-gaps" replace />} />
+              <Route path="/analytics" element={<Navigate to="/progress" replace />} />
+              <Route path="/resources" element={<Navigate to="/courses" replace />} />
 
               {/* Fallback Catch-all */}
               <Route path="*" element={<Navigate to="/" replace />} />

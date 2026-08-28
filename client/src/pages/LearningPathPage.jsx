@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
+import PageHeader from '../components/common/PageHeader';
+import Badge from '../components/common/Badge';
+import Button from '../components/common/Button';
+import { Card, CardHeader, CardTitle, CardContent } from '../components/common/Card';
 import { useLearningPath } from '../context/LearningPathContext';
 import {
   Target,
@@ -17,23 +21,26 @@ import {
   Flag,
   PlayCircle,
   Lightbulb,
-  AlertCircle
+  AlertCircle,
+  Sparkles,
+  Edit3,
+  Save,
+  Compass
 } from 'lucide-react';
 
 const colorMap = {
-  emerald: { bg: 'bg-emerald-500', bgLight: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200' },
-  amber:   { bg: 'bg-amber-500',   bgLight: 'bg-amber-50',   text: 'text-amber-700',   border: 'border-amber-200' },
-  blue:    { bg: 'bg-blue-500',    bgLight: 'bg-blue-50',    text: 'text-blue-700',    border: 'border-blue-200' },
-  violet:  { bg: 'bg-violet-500',  bgLight: 'bg-violet-50',  text: 'text-violet-700',  border: 'border-violet-200' },
-  rose:    { bg: 'bg-rose-500',    bgLight: 'bg-rose-50',    text: 'text-rose-700',    border: 'border-rose-200' },
-  slate:   { bg: 'bg-slate-400',   bgLight: 'bg-slate-50',   text: 'text-slate-700',   border: 'border-slate-200' },
+  emerald: { bg: 'bg-[#34D399]', bgLight: 'bg-[#34D399]/10', text: 'text-[#34D399]', border: 'border-[#34D399]/30' },
+  amber:   { bg: 'bg-[#FBBF24]', bgLight: 'bg-[#FBBF24]/10', text: 'text-[#FBBF24]', border: 'border-[#FBBF24]/30' },
+  coral:   { bg: 'bg-[#FF6B5F]', bgLight: 'bg-[#FF6B5F]/10', text: 'text-[#FF857A]', border: 'border-[#FF6B5F]/30' },
+  blue:    { bg: 'bg-[#38BDF8]', bgLight: 'bg-[#38BDF8]/10', text: 'text-[#38BDF8]', border: 'border-[#38BDF8]/30' },
+  slate:   { bg: 'bg-white/20',  bgLight: 'bg-white/5',      text: 'text-[#8C877D]', border: 'border-white/10' },
 };
 
 const getStatusConfig = (status) => {
   switch (status) {
     case 'completed': return { color: 'emerald', icon: CheckCircle2 };
-    case 'in-progress': return { color: 'blue', icon: PlayCircle };
-    case 'available': return { color: 'violet', icon: Book };
+    case 'in-progress': return { color: 'coral', icon: PlayCircle };
+    case 'available': return { color: 'blue', icon: Book };
     case 'reinforce': return { color: 'amber', icon: AlertCircle };
     case 'locked':
     default: return { color: 'slate', icon: Lock };
@@ -51,7 +58,7 @@ export default function LearningPathPage() {
 
   useEffect(() => {
     if (learningPath) {
-      setGoalText(learningPath.goal || 'Loading goal...');
+      setGoalText(learningPath.goal || 'Full Stack AI Engineer');
       setExpandedPhase(learningPath.currentPhase || 1);
     }
   }, [learningPath]);
@@ -75,208 +82,330 @@ export default function LearningPathPage() {
       <MainLayout>
         <div className="flex items-center justify-center h-full min-h-[60vh]">
           <div className="flex flex-col items-center gap-4">
-            <div className="w-8 h-8 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin"></div>
-            <p className="text-slate-500 font-medium animate-pulse">Loading your personalized path...</p>
+            <div className="w-10 h-10 border-3 border-[#FF6B5F]/20 border-t-[#FF6B5F] rounded-full animate-spin" />
+            <p className="text-[#8C877D] font-medium animate-pulse text-xs">
+              Loading your personalized learning path...
+            </p>
           </div>
         </div>
       </MainLayout>
     );
   }
 
-  const currentPhaseData = learningPath.phases.find(p => p.phaseNumber === learningPath.currentPhase) || learningPath.phases[0];
+  const currentPhaseData = learningPath.phases?.find(p => p.phaseNumber === learningPath.currentPhase) || learningPath.phases?.[0] || {};
 
   return (
     <MainLayout>
-      <div className="flex flex-col xl:flex-row gap-6 max-w-[1400px] mx-auto w-full relative">
-      {isAdapting && (
-        <div className="absolute inset-0 bg-white/50 backdrop-blur-sm z-50 flex items-center justify-center rounded-2xl">
-          <div className="flex flex-col items-center gap-3">
-             <div className="w-8 h-8 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin"></div>
-             <p className="text-violet-700 font-medium">Recalibrating your roadmap...</p>
-          </div>
-        </div>
-      )}
-      {/* ── Left Column (Main Content) ── */}
-      <div className="flex-1 min-w-0">
-        
-        {/* Header */}
-        <div className="mb-6">
-          <div className="flex items-center gap-3 mb-1">
-            <h1 className="text-2xl font-bold text-slate-900">My Learning Path</h1>
-            <span className="bg-violet-100 text-violet-700 text-[10px] font-mono px-2 py-0.5 rounded-full">#EDE9FE</span>
-          </div>
-          <p className="text-sm text-slate-500">Personalized roadmap to help you achieve your goals</p>
-        </div>
-
-        {/* Goal Card */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 mb-8 flex items-start gap-5">
-          <div className="w-14 h-14 rounded-xl bg-violet-100 text-violet-600 flex items-center justify-center shrink-0">
-            <Target className="w-7 h-7" />
-          </div>
-          <div className="flex-1 pt-1">
-            <div className="flex items-center gap-2 mb-1">
-              <h2 className="text-lg font-bold text-slate-900">Goal: </h2>
-              {isEditingGoal ? (
-                <input 
-                  type="text" 
-                  value={goalText}
-                  onChange={(e) => setGoalText(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === 'Enter') handleSaveGoal(); }}
-                  className="text-lg font-bold text-violet-700 bg-violet-50 px-2 py-0.5 rounded border border-violet-200 focus:outline-none focus:ring-2 focus:ring-violet-500 w-full max-w-sm"
-                  autoFocus
-                />
-              ) : (
-                <h2 className="text-lg font-bold text-violet-700">{learningPath.goal}</h2>
-              )}
-            </div>
-            <p className="text-sm text-slate-500 leading-relaxed max-w-2xl">
-              {learningPath.title}
-            </p>
-          </div>
-          <button 
-            onClick={() => isEditingGoal ? handleSaveGoal() : setIsEditingGoal(true)}
-            className="hidden sm:block px-4 py-2 bg-white border border-slate-200 text-slate-700 text-sm font-semibold rounded-lg hover:bg-slate-50 transition-colors"
+      <PageHeader
+        greeting="AI Roadmap Generation"
+        title="My Learning Path"
+        description="Personalized, competency-based milestones engineered to reach your target career objective."
+        badge="Active Roadmap"
+        badgeVariant="coral"
+        action={
+          <Button
+            variant="outline"
+            size="sm"
+            icon={Sparkles}
+            onClick={async () => {
+              setIsAdapting(true);
+              try {
+                await adaptRoadmap({ reason: 'Manual AI path refresh requested' });
+              } finally {
+                setIsAdapting(false);
+              }
+            }}
           >
-            {isEditingGoal ? 'Save Goal' : 'Edit Goal'}
-          </button>
-        </div>
+            Re-calibrate with AI
+          </Button>
+        }
+      />
 
-        {/* Timeline View */}
-        <div className="relative pl-3 pb-10">
-          <div className="flex items-center justify-end mb-4">
-            <div className="flex items-center gap-2 text-xs text-slate-500">
-              <span>View as:</span>
-              <div className="flex bg-white p-1 rounded-lg border border-slate-200">
-                <button 
+      <div className="flex flex-col xl:flex-row gap-6 max-w-[1500px] mx-auto w-full relative">
+        {isAdapting && (
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center rounded-3xl animate-in fade-in">
+            <div className="flex flex-col items-center gap-3 p-6 bg-[#111418] border border-white/10 rounded-2xl shadow-2xl">
+              <div className="w-8 h-8 border-3 border-[#FF6B5F]/20 border-t-[#FF6B5F] rounded-full animate-spin" />
+              <p className="text-[#FF857A] font-bold text-sm">Recalibrating your roadmap with AI...</p>
+            </div>
+          </div>
+        )}
+
+        {/* Left Column: Main Timeline & Phases */}
+        <div className="flex-1 min-w-0 space-y-6">
+          {/* Goal & Milestone Header Card */}
+          <Card variant="glow" className="flex flex-col sm:flex-row items-start gap-5">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#FF6B5F] to-[#E85548] text-white flex items-center justify-center shrink-0 shadow-lg shadow-[#FF6B5F]/25">
+              <Target className="w-7 h-7" />
+            </div>
+
+            <div className="flex-1 pt-0.5">
+              <div className="flex flex-wrap items-center gap-2 mb-1">
+                <span className="text-xs font-bold text-[#8C877D] uppercase tracking-wider">Target Objective:</span>
+                {isEditingGoal ? (
+                  <input
+                    type="text"
+                    value={goalText}
+                    onChange={(e) => setGoalText(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') handleSaveGoal(); }}
+                    className="text-base font-bold text-[#FF857A] bg-[#16191E] px-3 py-1 rounded-xl border border-[#FF6B5F]/50 focus:outline-none focus:ring-1 focus:ring-[#FF6B5F] w-full max-w-sm"
+                    autoFocus
+                  />
+                ) : (
+                  <h2 className="text-base sm:text-lg font-black text-[#FF857A]">{learningPath.goal}</h2>
+                )}
+              </div>
+              <p className="text-xs sm:text-sm text-[#C7C2B6] leading-relaxed max-w-2xl font-medium">
+                {learningPath.title}
+              </p>
+            </div>
+
+            <Button
+              variant="outline"
+              size="sm"
+              icon={isEditingGoal ? Save : Edit3}
+              onClick={() => isEditingGoal ? handleSaveGoal() : setIsEditingGoal(true)}
+              className="shrink-0"
+            >
+              {isEditingGoal ? 'Save' : 'Edit Goal'}
+            </Button>
+          </Card>
+
+          {/* Timeline Controls & Phases List */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-bold text-[#F5F1E8]">Roadmap Phases & Modules</h3>
+              <div className="flex items-center gap-1 bg-[#111418] p-1 rounded-xl border border-white/[0.08] text-xs">
+                <button
                   onClick={() => setViewMode('timeline')}
-                  className={`flex items-center gap-1.5 px-3 py-1 rounded-md transition-colors ${viewMode === 'timeline' ? 'bg-violet-50 text-violet-700 font-medium' : 'hover:bg-slate-50'}`}
+                  className={`px-3 py-1 rounded-lg font-bold transition-colors ${
+                    viewMode === 'timeline'
+                      ? 'bg-[#FF6B5F] text-white shadow-xs'
+                      : 'text-[#8C877D] hover:text-[#F5F1E8]'
+                  }`}
                 >
                   Timeline
                 </button>
-                <button 
+                <button
                   onClick={() => setViewMode('list')}
-                  className={`flex items-center gap-1.5 px-3 py-1 rounded-md transition-colors ${viewMode === 'list' ? 'bg-violet-50 text-violet-700 font-medium' : 'hover:bg-slate-50'}`}
+                  className={`px-3 py-1 rounded-lg font-bold transition-colors ${
+                    viewMode === 'list'
+                      ? 'bg-[#FF6B5F] text-white shadow-xs'
+                      : 'text-[#8C877D] hover:text-[#F5F1E8]'
+                  }`}
                 >
                   List
                 </button>
               </div>
             </div>
-          </div>
 
-          {learningPath.phases.map((phase, index) => {
-            const { color, icon: Icon } = getStatusConfig(phase.status);
-            const isExpanded = expandedPhase === phase.phaseNumber;
-            const colors = colorMap[color];
-            const isLast = index === learningPath.phases.length - 1;
-            const totalItems = phase.resources?.length || 0;
-            const completedItems = phase.resources?.filter(r => r.completed)?.length || 0;
+            {/* Phases Loop */}
+            <div className="space-y-4">
+              {learningPath.phases?.map((phase, index) => {
+                const { color, icon: Icon } = getStatusConfig(phase.status);
+                const isExpanded = expandedPhase === phase.phaseNumber;
+                const colors = colorMap[color] || colorMap.slate;
+                const isLast = index === learningPath.phases.length - 1;
+                const totalItems = phase.resources?.length || 0;
+                const completedItems = phase.resources?.filter(r => r.completed)?.length || 0;
 
-            return (
-              <div key={phase.phaseNumber} className="relative mb-4">
-                {viewMode === 'timeline' && !isLast && <div className="absolute left-[15px] top-10 bottom-[-24px] w-0.5 bg-slate-200 z-0"></div>}
-                <div className={`flex items-start gap-4 relative z-10 ${viewMode === 'list' ? 'items-center' : ''}`}>
-                  {viewMode === 'timeline' && (
-                    <div className={`w-8 h-8 mt-4 rounded-full flex items-center justify-center shrink-0 border-4 border-[#F4F7FE] ${colors.bg} text-white shadow-sm z-10`}>
-                      <Icon className="w-3.5 h-3.5" />
-                    </div>
-                  )}
-                  <div className={`flex-1 bg-white rounded-xl border ${isExpanded ? `border-l-4 ${colors.border}` : 'border-slate-200'} shadow-sm overflow-hidden transition-all duration-300`}>
-                    <div className={`p-4 flex flex-col sm:flex-row sm:items-center justify-between cursor-pointer transition-colors ${isExpanded ? colors.bgLight : 'hover:bg-slate-50'}`} onClick={() => setExpandedPhase(isExpanded ? null : phase.phaseNumber)}>
-                      <div className="flex-1 pr-4">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h4 className={`text-sm font-bold ${colors.text}`}>{phase.title}</h4>
-                          {isExpanded && phase.status === 'completed' && <span className="bg-emerald-100 text-emerald-700 text-[9px] font-mono px-1.5 py-0.5 rounded uppercase tracking-wider">#COMPLETED</span>}
-                        </div>
-                        <p className="text-xs text-slate-500">{phase.description}</p>
-                      </div>
-                      <div className="flex items-center gap-6 mt-3 sm:mt-0">
-                        <div className="text-right">
-                          <p className={`text-[11px] font-bold ${colors.text} mb-0.5`}>{phase.completionPercentage || 0}% Complete</p>
-                          <p className="text-[10px] text-slate-400">{completedItems}/{totalItems} resources</p>
-                        </div>
-                        {isExpanded ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
-                      </div>
-                    </div>
-                    {isExpanded && phase.resources?.length > 0 && (
-                      <div className="px-5 pb-5 pt-1 bg-white">
-                        <ul className="space-y-2 mt-3">
-                          {phase.resources.map((course, idx) => (
-                            <li key={idx} className="flex items-center justify-between p-2.5 bg-slate-50/50 border border-slate-100 rounded-lg hover:border-slate-200 hover:bg-slate-50 transition-all cursor-pointer">
-                              <div className="flex items-center gap-2.5">
-                                {course.completed ? <CheckCircle2 className="w-4 h-4 text-emerald-500" /> : <PlayCircle className="w-4 h-4 text-indigo-400" />}
-                                <span className={`text-xs font-medium ${!course.completed ? 'text-slate-700' : 'text-slate-500'}`}>{course.title}</span>
-                              </div>
-                              <span className={`text-[9px] font-bold px-2 py-0.5 rounded ${course.completed ? 'bg-emerald-50 text-emerald-600' : 'bg-indigo-50 text-indigo-600'}`}>
-                                {course.completed ? 'Completed' : 'Available'}
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
+                return (
+                  <div key={phase.phaseNumber} className="relative">
+                    {viewMode === 'timeline' && !isLast && (
+                      <div className="absolute left-[19px] top-12 bottom-[-20px] w-0.5 bg-white/[0.1] z-0" />
                     )}
+
+                    <div className={`flex items-start gap-4 relative z-10 ${viewMode === 'list' ? 'items-center' : ''}`}>
+                      {viewMode === 'timeline' && (
+                        <div
+                          className={`w-10 h-10 mt-3 rounded-2xl flex items-center justify-center shrink-0 border-2 border-[#0B0D0F] ${colors.bg} text-white shadow-md z-10`}
+                        >
+                          <Icon className="w-4 h-4" />
+                        </div>
+                      )}
+
+                      <div
+                        className={`flex-1 bg-[#111418] rounded-2xl border ${
+                          isExpanded ? `border-l-4 ${colors.border}` : 'border-white/[0.08]'
+                        } shadow-lg overflow-hidden transition-all duration-300`}
+                      >
+                        <div
+                          className={`p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between cursor-pointer transition-colors ${
+                            isExpanded ? colors.bgLight : 'hover:bg-white/[0.02]'
+                          }`}
+                          onClick={() => setExpandedPhase(isExpanded ? null : phase.phaseNumber)}
+                        >
+                          <div className="flex-1 pr-4">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="text-[10px] font-mono font-bold text-[#8C877D] uppercase">
+                                Phase {phase.phaseNumber}
+                              </span>
+                              <h4 className={`text-sm font-bold ${colors.text}`}>{phase.title}</h4>
+                              {phase.status === 'completed' && (
+                                <Badge variant="success" size="sm">Completed</Badge>
+                              )}
+                            </div>
+                            <p className="text-xs text-[#C7C2B6] font-medium">{phase.description}</p>
+                          </div>
+
+                          <div className="flex items-center gap-4 mt-3 sm:mt-0">
+                            <div className="text-right">
+                              <p className={`text-xs font-black ${colors.text} mb-0.5`}>
+                                {phase.completionPercentage || 0}% Complete
+                              </p>
+                              <p className="text-[10px] text-[#8C877D] font-mono">
+                                {completedItems}/{totalItems} modules
+                              </p>
+                            </div>
+                            {isExpanded ? (
+                              <ChevronUp className="w-4 h-4 text-[#8C877D]" />
+                            ) : (
+                              <ChevronDown className="w-4 h-4 text-[#8C877D]" />
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Expanded Modules List */}
+                        {isExpanded && phase.resources?.length > 0 && (
+                          <div className="px-5 pb-5 pt-1 bg-[#0E1114] border-t border-white/[0.06]">
+                            <ul className="space-y-2.5 mt-3">
+                              {phase.resources.map((course, idx) => (
+                                <li
+                                  key={idx}
+                                  onClick={() => navigate('/courses')}
+                                  className="flex items-center justify-between p-3 bg-[#16191E] border border-white/[0.06] rounded-xl hover:border-[#FF6B5F]/40 hover:bg-[#1D2128] transition-all cursor-pointer group"
+                                >
+                                  <div className="flex items-center gap-3">
+                                    {course.completed ? (
+                                      <CheckCircle2 className="w-4 h-4 text-[#34D399]" />
+                                    ) : (
+                                      <PlayCircle className="w-4 h-4 text-[#FF6B5F] group-hover:scale-110 transition-transform" />
+                                    )}
+                                    <span className={`text-xs font-semibold ${
+                                      course.completed ? 'text-[#8C877D] line-through' : 'text-[#F5F1E8]'
+                                    }`}>
+                                      {course.title}
+                                    </span>
+                                  </div>
+                                  <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-lg ${
+                                    course.completed
+                                      ? 'bg-[#34D399]/15 text-[#34D399]'
+                                      : 'bg-[#FF6B5F]/15 text-[#FF857A]'
+                                  }`}>
+                                    {course.completed ? 'Passed' : 'Available'}
+                                  </span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column: Path Metrics & Milestone Summary */}
+        <div className="w-full xl:w-80 space-y-6 flex-shrink-0">
+          {/* Path Overview Card */}
+          <Card variant="default">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[#8C877D] mb-4">
+              Path Overview
+            </h3>
+            <ul className="space-y-3.5 text-xs">
+              <li className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-[#C7C2B6]">
+                  <Clock className="w-4 h-4 text-[#FF6B5F]" />
+                  <span>Estimated Duration</span>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+                <span className="font-bold text-[#F5F1E8]">{learningPath.totalEstimatedWeeks || 8} weeks</span>
+              </li>
 
-      {/* ── Right Column (Sidebar Widgets) ── */}
-      <div className="w-full xl:w-80 space-y-6 flex-shrink-0">
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
-          <h3 className="text-sm font-bold text-slate-900 mb-5">Path Overview</h3>
-          <ul className="space-y-3">
-            <li className="flex items-center justify-between text-xs"><div className="flex items-center gap-2 text-slate-500"><Clock className="w-4 h-4" /> Estimated Time</div><span className="font-semibold text-slate-800">{learningPath.totalEstimatedWeeks} weeks</span></li>
-            <li className="flex items-center justify-between text-xs"><div className="flex items-center gap-2 text-slate-500"><Book className="w-4 h-4" /> Total Phases</div><span className="font-semibold text-slate-800">{learningPath.phases.length}</span></li>
-            <li className="flex items-center justify-between text-xs"><div className="flex items-center gap-2 text-slate-500"><Briefcase className="w-4 h-4" /> Goal Level</div><span className="font-semibold text-slate-800">Professional</span></li>
-            <li className="pt-4 mt-3 border-t border-slate-100">
-              <div className="flex items-center justify-between text-xs mb-2">
-                <span className="text-slate-500 flex items-center gap-2"><Target className="w-4 h-4"/> Current Progress</span><span className="font-bold text-violet-700">{learningPath.overallProgress}%</span>
-              </div>
-              <div className="w-full bg-slate-100 rounded-full h-1.5">
-                <div className="bg-violet-600 h-1.5 rounded-full" style={{ width: `${learningPath.overallProgress}%` }}></div>
-              </div>
-            </li>
-          </ul>
-        </div>
-
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
-          <div className="flex items-center gap-2 mb-4">
-            <Flag className="w-5 h-5 text-violet-600" />
-            <h3 className="text-sm font-bold text-slate-900">Upcoming Milestone</h3>
-          </div>
-          <h4 className="font-bold text-slate-800 text-sm leading-snug mb-1">{currentPhaseData.milestone?.title || currentPhaseData.title}</h4>
-          <p className="text-xs text-slate-500 mb-4 leading-relaxed">{currentPhaseData.milestone?.description || currentPhaseData.description}</p>
-          <div className="text-[11px] text-slate-500 mb-4">Expected: <span className="font-semibold text-slate-700">{currentPhaseData.estimatedWeeks} weeks</span></div>
-          <button 
-            onClick={() => navigate('/courses')}
-            className="w-full bg-violet-600 hover:bg-violet-700 text-white font-semibold text-xs py-2.5 rounded-lg transition-colors shadow-sm"
-          >
-            Continue Learning
-          </button>
-        </div>
-
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
-          <div className="flex items-center gap-2 mb-5">
-            <Lightbulb className="w-4 h-4 text-slate-400" />
-            <h3 className="text-sm font-bold text-slate-900">Adaptation History</h3>
-          </div>
-          <div className="space-y-4">
-            {learningPath.adaptationHistory && learningPath.adaptationHistory.length > 0 ? (
-              learningPath.adaptationHistory.slice(-3).reverse().map((history, idx) => (
-                <div key={idx} className="flex flex-col border border-slate-100 p-3 rounded-xl bg-slate-50/50">
-                  <h4 className="text-[11px] font-bold text-slate-800 leading-tight mb-1">{history.actionTaken}</h4>
-                  <p className="text-[9px] text-slate-500 mb-1">{history.reason}</p>
-                  <span className="text-[8px] text-slate-400 font-mono mt-1">{new Date(history.timestamp).toLocaleDateString()}</span>
+              <li className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-[#C7C2B6]">
+                  <Book className="w-4 h-4 text-[#FF6B5F]" />
+                  <span>Total Phases</span>
                 </div>
-              ))
-            ) : (
-              <p className="text-xs text-slate-500">Your path is currently optimal. No adaptations needed yet.</p>
-            )}
-          </div>
+                <span className="font-bold text-[#F5F1E8]">{learningPath.phases?.length || 5}</span>
+              </li>
+
+              <li className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-[#C7C2B6]">
+                  <Briefcase className="w-4 h-4 text-[#FF6B5F]" />
+                  <span>Competency Target</span>
+                </div>
+                <span className="font-bold text-[#FF857A]">Professional</span>
+              </li>
+
+              <li className="pt-3 border-t border-white/[0.06]">
+                <div className="flex items-center justify-between text-xs mb-2">
+                  <span className="text-[#C7C2B6] font-medium flex items-center gap-2">
+                    <Target className="w-4 h-4 text-[#FF6B5F]" /> Overall Progress
+                  </span>
+                  <span className="font-black text-[#FF857A]">{learningPath.overallProgress || 68}%</span>
+                </div>
+                <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden">
+                  <div
+                    className="bg-gradient-to-r from-[#FF6B5F] to-[#E85548] h-full rounded-full transition-all duration-500"
+                    style={{ width: `${learningPath.overallProgress || 68}%` }}
+                  />
+                </div>
+              </li>
+            </ul>
+          </Card>
+
+          {/* Upcoming Milestone Card */}
+          <Card variant="glow">
+            <div className="flex items-center gap-2 mb-3">
+              <Flag className="w-4 h-4 text-[#FF6B5F]" />
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#8C877D]">
+                Upcoming Milestone
+              </h3>
+            </div>
+            <h4 className="font-bold text-[#F5F1E8] text-sm leading-snug mb-1">
+              {currentPhaseData.milestone?.title || currentPhaseData.title || 'Microservices Architecture'}
+            </h4>
+            <p className="text-xs text-[#C7C2B6] mb-4 leading-relaxed font-medium">
+              {currentPhaseData.milestone?.description || currentPhaseData.description || 'Build robust backend architectures.'}
+            </p>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => navigate('/courses')}
+              className="w-full"
+            >
+              Continue Learning
+            </Button>
+          </Card>
+
+          {/* AI Adaptation History */}
+          <Card variant="default">
+            <div className="flex items-center gap-2 mb-4">
+              <Lightbulb className="w-4 h-4 text-[#FF6B5F]" />
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#8C877D]">
+                AI Calibration History
+              </h3>
+            </div>
+            <div className="space-y-3">
+              {learningPath.adaptationHistory && learningPath.adaptationHistory.length > 0 ? (
+                learningPath.adaptationHistory.slice(-3).reverse().map((history, idx) => (
+                  <div key={idx} className="p-3 rounded-xl bg-[#16191E] border border-white/[0.06]">
+                    <h4 className="text-xs font-bold text-[#F5F1E8] mb-1">{history.actionTaken}</h4>
+                    <p className="text-[10px] text-[#C7C2B6] mb-1">{history.reason}</p>
+                    <span className="text-[9px] text-[#8C877D] font-mono">
+                      {new Date(history.timestamp).toLocaleDateString()}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <p className="text-xs text-[#8C877D]">Your path is currently optimal. No adaptations needed yet.</p>
+              )}
+            </div>
+          </Card>
         </div>
-      </div>
       </div>
     </MainLayout>
   );

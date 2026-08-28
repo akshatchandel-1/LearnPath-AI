@@ -15,14 +15,15 @@ import {
   LayoutDashboard,
   User,
   ShieldCheck,
-  GitBranch
+  Flame,
+  Zap
 } from 'lucide-react';
 
 export default function LandingPage() {
   const featureList = [
     {
       title: 'Dashboard & Profile',
-      desc: 'Central command for learning metrics and user skill profiles.',
+      desc: 'Central command for learning metrics, milestones, and user skill profiles.',
       path: '/dashboard',
       icon: LayoutDashboard,
       member: 'Member 1',
@@ -36,14 +37,14 @@ export default function LandingPage() {
     },
     {
       title: 'Courses & Assessments',
-      desc: 'Smart course recommendations and automated benchmark quizzes.',
+      desc: 'Curated curriculum modules and automated benchmark quizzes.',
       path: '/courses',
       icon: BookOpen,
       member: 'Member 3',
     },
     {
       title: 'AI Assistant & Progress',
-      desc: 'Interactive 24/7 AI mentor and real-time study analytics.',
+      desc: 'Interactive 24/7 AI tutor and real-time study analytics.',
       path: '/ai-assistant',
       icon: Bot,
       member: 'Member 4',
@@ -51,37 +52,38 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-background text-text selection:bg-primary selection:text-white flex flex-col">
-      {/* Hero Section */}
-      <div className="relative overflow-hidden pt-16 pb-24 lg:pt-24 lg:pb-32 px-4 sm:px-6 lg:px-8 border-b border-slate-800/80">
-        {/* Background glow elements */}
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-tr from-primary/20 to-secondary/20 rounded-full blur-[140px] pointer-events-none" />
+    <div className="min-h-screen bg-[#0B0D0F] text-[#F5F1E8] selection:bg-[#FF6B5F] selection:text-white flex flex-col relative overflow-x-hidden">
+      {/* Ambient Coral Glow */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#FF6B5F]/10 rounded-full blur-[160px] pointer-events-none" />
 
-        <div className="max-w-4xl mx-auto text-center relative z-10 space-y-6">
+      {/* Hero Section */}
+      <div className="relative z-10 pt-16 pb-20 lg:pt-24 lg:pb-28 px-4 sm:px-6 lg:px-8 border-b border-white/[0.06]">
+        <div className="max-w-4xl mx-auto text-center space-y-6">
           <div className="inline-flex items-center gap-2">
-            <Badge variant="primary" size="md" dot>
-              Hackathon Ready Foundation
+            <Badge variant="coral" size="md" dot>
+              HCL Hackathon Production Build
             </Badge>
-            <Badge variant="neutral" size="md">
-              MERN + AI/ML Architecture
+            <Badge variant="secondary" size="md">
+              AI-Powered SaaS
             </Badge>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#F5F1E8] leading-tight">
             AI-Powered Personalized <br />
-            <span className="gradient-text">Learning Path Recommender</span>
+            <span className="bg-gradient-to-r from-[#FF6B5F] via-[#FF857A] to-[#E85548] bg-clip-text text-transparent">
+              Learning Path Recommender
+            </span>
           </h1>
 
-          <p className="text-base sm:text-lg text-text-muted max-w-2xl mx-auto">
-            A unified, conflict-free collaborative foundation built for a 4-developer team.
-            Navigate through all modules, test the design system, and launch feature development cleanly.
+          <p className="text-sm sm:text-base text-[#C7C2B6] max-w-2xl mx-auto font-medium leading-relaxed">
+            Accelerate your engineering mastery with real-time competency gap diagnosis, adaptive AI roadmap calibration, curated courses, and 24/7 AI mentorship.
           </p>
 
           {/* Action CTAs */}
           <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
             <Link to="/dashboard">
               <Button variant="primary" size="lg" icon={ArrowRight} iconPosition="right">
-                Explore Dashboard
+                Launch App & Dashboard
               </Button>
             </Link>
             <Link to="/login">
@@ -90,25 +92,15 @@ export default function LandingPage() {
               </Button>
             </Link>
           </div>
-
-          {/* Git Branch Architecture Banner */}
-          <div className="mt-8 p-4 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-text-muted flex flex-col sm:flex-row items-center justify-center gap-4 max-w-xl mx-auto">
-            <div className="flex items-center gap-2 font-mono text-slate-300">
-              <GitBranch className="w-4 h-4 text-primary" />
-              <span>frontend branch ready</span>
-            </div>
-            <span className="hidden sm:inline text-slate-600">•</span>
-            <span>4 Independent Developer Modules</span>
-          </div>
         </div>
       </div>
 
-      {/* Feature Modules Quick Access Grid */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex-1">
+      {/* Feature Modules Grid */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex-1 relative z-10">
         <div className="text-center max-w-xl mx-auto mb-12">
-          <h2 className="text-2xl font-bold text-white">4-Member Team Feature Modules</h2>
-          <p className="text-sm text-text-muted mt-2">
-            Each team member works inside isolated feature folders with zero merge collisions.
+          <h2 className="text-2xl font-extrabold text-[#F5F1E8]">Integrated Engineering Modules</h2>
+          <p className="text-xs sm:text-sm text-[#C7C2B6] mt-1.5 font-medium">
+            Seamlessly integrated across all 4 frontend developer modules with one unified Obsidian + Ivory + Coral design system.
           </p>
         </div>
 
@@ -120,18 +112,18 @@ export default function LandingPage() {
                 <Card variant="interactive" className="h-full flex flex-col justify-between">
                   <div>
                     <div className="flex items-center justify-between mb-4">
-                      <div className="w-10 h-10 rounded-xl bg-primary/15 text-primary-300 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <div className="w-10 h-10 rounded-2xl bg-[#FF6B5F]/10 border border-[#FF6B5F]/20 text-[#FF6B5F] flex items-center justify-center group-hover:scale-110 transition-transform">
                         <Icon className="w-5 h-5" />
                       </div>
-                      <Badge variant="primary" size="sm">{feature.member}</Badge>
+                      <Badge variant="coral" size="sm">{feature.member}</Badge>
                     </div>
-                    <CardTitle className="text-base mb-1">{feature.title}</CardTitle>
-                    <CardDescription className="text-xs line-clamp-2">
+                    <CardTitle className="text-base mb-1 text-[#F5F1E8] group-hover:text-[#FF857A] transition-colors">{feature.title}</CardTitle>
+                    <CardDescription className="text-xs line-clamp-2 text-[#C7C2B6]">
                       {feature.desc}
                     </CardDescription>
                   </div>
-                  <div className="pt-4 mt-4 border-t border-slate-800 flex items-center text-xs text-primary-400 font-medium group-hover:text-primary-300">
-                    <span>Open Module</span>
+                  <div className="pt-4 mt-4 border-t border-white/[0.06] flex items-center text-xs text-[#FF857A] font-bold group-hover:text-[#FF6B5F]">
+                    <span>Explore Module</span>
                     <ArrowRight className="w-3.5 h-3.5 ml-1 transition-transform group-hover:translate-x-1" />
                   </div>
                 </Card>
@@ -141,8 +133,8 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-800 py-6 text-center text-xs text-text-subtle">
+      {/* Global Minimal Footer */}
+      <footer className="border-t border-white/[0.06] py-6 text-center text-xs text-[#8C877D] bg-[#0E1114]">
         <p>© 2026 LearnPath AI — AI-Powered Personalized Learning Path Recommender</p>
       </footer>
     </div>
