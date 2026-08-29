@@ -21,12 +21,12 @@ export default function Badge({
   const variantStyles = {
     primary: 'bg-[#FF6B5F]/15 text-[#FF857A] border border-[#FF6B5F]/30',
     coral: 'bg-[#FF6B5F]/15 text-[#FF857A] border border-[#FF6B5F]/30',
-    secondary: 'bg-white/10 text-gray-900 dark:text-[#F5F1E8] border border-white/15',
+    secondary: 'bg-white/10 text-[#F5F1E8] border border-white/15',
     success: 'bg-[#34D399]/15 text-[#34D399] border border-[#34D399]/30',
     warning: 'bg-[#FBBF24]/15 text-[#FBBF24] border border-[#FBBF24]/30',
     danger: 'bg-[#F87171]/15 text-[#F87171] border border-[#F87171]/30',
     info: 'bg-[#38BDF8]/15 text-[#38BDF8] border border-[#38BDF8]/30',
-    neutral: 'bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-[#C7C2B6] border border-gray-200 dark:border-white/10',
+    neutral: 'bg-white/5 text-[#C7C2B6] border border-white/10',
   };
 
   const dotColors = {

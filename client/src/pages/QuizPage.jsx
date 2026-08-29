@@ -76,7 +76,7 @@ export const QuizPage = () => {
             value={customSkillInput}
             onChange={(e) => setCustomSkillInput(e.target.value)}
             placeholder="e.g. Next.js, Redux, Docker, SQL..."
-            className="px-4 py-2.5 rounded-xl text-xs bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-brand-400 w-full sm:w-64"
+            className="px-4 py-2.5 rounded-xl text-xs bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-brand-400 w-full sm:w-64"
           />
           <button
             type="submit"
@@ -103,7 +103,7 @@ export const QuizPage = () => {
             {quizzes.map((q) => (
               <div
                 key={q._id}
-                className="p-6 rounded-2xl glass-card border border-gray-200 dark:border-white/10 flex flex-col justify-between space-y-4"
+                className="p-6 rounded-2xl glass-card border border-white/10 flex flex-col justify-between space-y-4"
               >
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
@@ -140,7 +140,7 @@ export const QuizPage = () => {
 
       {/* Quiz History Section */}
       {history.length > 0 && (
-        <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-white/10">
+        <div className="space-y-4 pt-4 border-t border-white/10">
           <div className="flex items-center gap-2">
             <History className="w-4 h-4 text-cyan-400" />
             <h3 className="text-lg font-bold text-white font-display">
@@ -152,7 +152,7 @@ export const QuizPage = () => {
             {history.slice(0, 6).map((item) => (
               <div
                 key={item._id}
-                className="p-4 rounded-xl glass-card border border-gray-200 dark:border-white/10 flex items-center justify-between gap-3"
+                className="p-4 rounded-xl glass-card border border-white/10 flex items-center justify-between gap-3"
               >
                 <div>
                   <p className="text-xs font-bold text-white">{item.skill} Assessment</p>

@@ -1,5 +1,4 @@
 import React from 'react';
-import { useTheme } from '../../context/ThemeContext';
 import {
   Radar,
   RadarChart,
@@ -11,9 +10,6 @@ import {
 } from 'recharts';
 
 export const SkillRadarChart = ({ skills = [] }) => {
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
-
   if (!skills || skills.length === 0) {
     return (
       <div className="py-8 text-center text-xs text-slate-400">
@@ -33,33 +29,32 @@ export const SkillRadarChart = ({ skills = [] }) => {
     <div className="w-full h-72">
       <ResponsiveContainer width="100%" height="100%">
         <RadarChart cx="50%" cy="50%" outerRadius="75%" data={radarData}>
-          <PolarGrid stroke={isDark ? "#1f2438" : "#e2e8f0"} />
+          <PolarGrid stroke="#1f2438" />
           <PolarAngleAxis
             dataKey="subject"
-            tick={{ fill: isDark ? '#cbd5e1' : '#475569', fontSize: 10 }}
+            tick={{ fill: '#cbd5e1', fontSize: 10 }}
           />
-          <PolarRadiusAxis angle={30} domain={[0, 100]} stroke={isDark ? "#475569" : "#94a3b8"} tick={{ fill: isDark ? '#64748b' : '#94a3b8', fontSize: 9 }} />
+          <PolarRadiusAxis angle={30} domain={[0, 100]} stroke="#475569" tick={{ fill: '#64748b', fontSize: 9 }} />
           <Radar
             name="Current Proficiency"
             dataKey="Current"
-            stroke="#FF6B5F"
-            fill="#FF6B5F"
+            stroke="#8b5cf6"
+            fill="#8b5cf6"
             fillOpacity={0.4}
           />
           <Radar
             name="Target Role Required"
             dataKey="Target"
-            stroke="#34D399"
-            fill="#34D399"
+            stroke="#06b6d4"
+            fill="#06b6d4"
             fillOpacity={0.2}
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: isDark ? '#12141e' : '#ffffff',
-              borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+              backgroundColor: '#12141e',
+              borderColor: 'rgba(255,255,255,0.1)',
               borderRadius: '12px',
               fontSize: '12px',
-              color: isDark ? '#ffffff' : '#000000',
             }}
           />
         </RadarChart>

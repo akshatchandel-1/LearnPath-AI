@@ -53,7 +53,7 @@ export const ProjectsPage = () => {
           {projects.map((proj) => (
             <div
               key={proj._id}
-              className="p-6 rounded-3xl glass-panel border border-gray-200 dark:border-white/10 flex flex-col justify-between space-y-6 group hover:border-brand-500/30 transition-all duration-300"
+              className="p-6 rounded-3xl glass-panel border border-white/10 flex flex-col justify-between space-y-6 group hover:border-brand-500/30 transition-all duration-300"
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -109,7 +109,7 @@ export const ProjectsPage = () => {
               </div>
 
               {/* Action */}
-              <div className="pt-4 border-t border-gray-200 dark:border-white/5 flex items-center justify-between gap-3">
+              <div className="pt-4 border-t border-white/5 flex items-center justify-between gap-3">
                 <button
                   onClick={() => setSelectedProject(proj)}
                   className="flex items-center gap-1.5 text-xs text-slate-300 hover:text-white font-medium cursor-pointer"

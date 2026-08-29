@@ -179,7 +179,7 @@ export const OnboardingPage = () => {
     <div className="min-h-[88vh] flex items-center justify-center px-4 py-10">
       <div className="w-full max-w-2xl glass-panel rounded-3xl border border-brand-500/30 p-6 sm:p-8 shadow-2xl shadow-brand-500/10 flex flex-col h-[750px] max-h-[85vh]">
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-gray-200 dark:border-white/10 shrink-0">
+        <div className="flex items-center justify-between pb-4 border-b border-white/10 shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-600 to-cyan-400 p-0.5 shadow-md shadow-brand-500/30">
               <div className="w-full h-full bg-[#0d0f17] rounded-[14px] flex items-center justify-center">
@@ -195,7 +195,7 @@ export const OnboardingPage = () => {
           </div>
 
           {/* Step Progress Pill */}
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-xs text-slate-300 font-mono">
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-slate-300 font-mono">
             <span>Step {Math.min(stepIndex + 1, steps.length)} of {steps.length}</span>
           </div>
         </div>
@@ -216,7 +216,7 @@ export const OnboardingPage = () => {
                   <div
                     className={`max-w-[85%] rounded-2xl p-4 text-xs sm:text-sm leading-relaxed ${
                       isAssistant
-                        ? 'bg-white/[0.04] border border-gray-200 dark:border-white/10 text-slate-100 shadow-md'
+                        ? 'bg-white/[0.04] border border-white/10 text-slate-100 shadow-md'
                         : 'bg-brand-600 text-white font-medium shadow-md shadow-brand-600/30'
                     }`}
                   >
@@ -237,7 +237,7 @@ export const OnboardingPage = () => {
                       <button
                         key={optIdx}
                         onClick={() => handleSelectOption(opt)}
-                        className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-gray-100 dark:bg-white/5 hover:bg-brand-500/20 text-slate-200 hover:text-brand-200 border border-gray-200 dark:border-white/10 hover:border-brand-500/40 shadow-sm transition-all text-left cursor-pointer hover:scale-[1.02]"
+                        className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-brand-500/20 text-slate-200 hover:text-brand-200 border border-white/10 hover:border-brand-500/40 shadow-sm transition-all text-left cursor-pointer hover:scale-[1.02]"
                       >
                         {opt}
                       </button>
@@ -264,14 +264,14 @@ export const OnboardingPage = () => {
 
         {/* Input Bar */}
         {!isFinalizing && (
-          <div className="pt-3 border-t border-gray-200 dark:border-white/10 shrink-0">
+          <div className="pt-3 border-t border-white/10 shrink-0">
             <form onSubmit={handleCustomSubmit} className="flex items-center gap-2">
               <input
                 type="text"
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 placeholder="Type your custom response or click an option above..."
-                className="flex-1 px-4 py-3 rounded-xl text-xs sm:text-sm bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-brand-400 transition-colors"
+                className="flex-1 px-4 py-3 rounded-xl text-xs sm:text-sm bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-brand-400 transition-colors"
               />
               <button
                 type="submit"

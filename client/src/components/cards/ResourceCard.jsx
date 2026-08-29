@@ -56,12 +56,12 @@ export const ResourceCard = ({ recommendation, onExplain }) => {
   const isUrlValid = isValidExternalUrl(resource.url);
 
   return (
-    <div className="rounded-2xl glass-card border border-gray-200 dark:border-white/10 p-5 flex flex-col justify-between transition-all duration-300 group">
+    <div className="rounded-2xl glass-card border border-white/10 p-5 flex flex-col justify-between transition-all duration-300 group">
       <div className="space-y-3">
         {/* Card Header: Type Badge & AI Score */}
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <span className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-slate-200">
+            <span className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-white/5 border border-white/10 text-slate-200">
               {getTypeIcon(resource.type)}
               <span>{resource.type}</span>
             </span>
@@ -122,7 +122,7 @@ export const ResourceCard = ({ recommendation, onExplain }) => {
       </div>
 
       {/* Footer Meta & Actions */}
-      <div className="pt-4 mt-4 border-t border-gray-200 dark:border-white/5 flex flex-col gap-3">
+      <div className="pt-4 mt-4 border-t border-white/5 flex flex-col gap-3">
         <div className="flex items-center justify-between text-xs text-slate-400">
           <span className="flex items-center gap-1">
             <Clock className="w-3.5 h-3.5 text-slate-400" />
@@ -151,7 +151,7 @@ export const ResourceCard = ({ recommendation, onExplain }) => {
               className={`p-1.5 rounded-lg border transition-colors cursor-pointer ${
                 voted === true
                   ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300'
-                  : 'bg-gray-100 dark:bg-white/5 border-gray-200 dark:border-white/10 text-slate-400 hover:text-white'
+                  : 'bg-white/5 border-white/10 text-slate-400 hover:text-white'
               }`}
               title="Helpful recommendation"
             >
@@ -162,7 +162,7 @@ export const ResourceCard = ({ recommendation, onExplain }) => {
               className={`p-1.5 rounded-lg border transition-colors cursor-pointer ${
                 voted === false
                   ? 'bg-rose-500/20 border-rose-500 text-rose-300'
-                  : 'bg-gray-100 dark:bg-white/5 border-gray-200 dark:border-white/10 text-slate-400 hover:text-white'
+                  : 'bg-white/5 border-white/10 text-slate-400 hover:text-white'
               }`}
               title="Not relevant"
             >
@@ -175,7 +175,7 @@ export const ResourceCard = ({ recommendation, onExplain }) => {
                 href={resource.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white border border-gray-200 dark:border-white/10 transition-colors"
+                className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white border border-white/10 transition-colors"
                 title="Open verified resource"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
@@ -183,7 +183,7 @@ export const ResourceCard = ({ recommendation, onExplain }) => {
             ) : (
               <button
                 onClick={() => onExplain && onExplain(recommendation)}
-                className="p-1.5 rounded-lg bg-gray-100 dark:bg-white/5 hover:bg-white/10 text-slate-300 border border-gray-200 dark:border-white/10 transition-colors cursor-pointer text-[10px]"
+                className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition-colors cursor-pointer text-[10px]"
                 title="Resource available in LearnPath AI"
               >
                 In-App

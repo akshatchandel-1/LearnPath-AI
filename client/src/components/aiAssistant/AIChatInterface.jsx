@@ -147,20 +147,20 @@ db.studySessions.aggregate([
   ];
 
   return (
-    <div className="flex flex-col h-[calc(100vh-12rem)] max-w-5xl mx-auto rounded-[24px] bg-white dark:bg-[#111418] border border-gray-200 dark:border-white/[0.08] shadow-2xl overflow-hidden animate-in fade-in duration-200">
+    <div className="flex flex-col h-[calc(100vh-12rem)] max-w-5xl mx-auto rounded-[24px] bg-[#111418] border border-white/[0.08] shadow-2xl overflow-hidden animate-in fade-in duration-200">
       
       {/* Header */}
-      <div className="p-4 sm:p-5 border-b border-gray-200 dark:border-white/[0.08] bg-gray-50 dark:bg-[#0E1114] flex items-center justify-between gap-4 shrink-0">
+      <div className="p-4 sm:p-5 border-b border-white/[0.08] bg-[#0E1114] flex items-center justify-between gap-4 shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#FF6B5F] to-[#E85548] text-white flex items-center justify-center shadow-lg shadow-[#FF6B5F]/25">
             <Bot className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-sm sm:text-base font-bold text-gray-900 dark:text-[#F5F1E8]">AI Learning Path Mentor</h3>
+              <h3 className="text-sm sm:text-base font-bold text-[#F5F1E8]">AI Learning Path Mentor</h3>
               <Badge variant="coral" size="sm" dot>Live Telemetry</Badge>
             </div>
-            <p className="text-[11px] text-gray-500 dark:text-[#8C877D]">
+            <p className="text-[11px] text-[#8C877D]">
               Calibrated for <strong className="text-[#FF857A]">{activeRole}</strong>
             </p>
           </div>
@@ -177,7 +177,7 @@ db.studySessions.aggregate([
             <div
               className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 text-xs font-bold ${
                 msg.sender === 'user'
-                  ? 'bg-white/10 text-gray-900 dark:text-[#F5F1E8]'
+                  ? 'bg-white/10 text-[#F5F1E8]'
                   : 'bg-[#FF6B5F]/15 text-[#FF857A] border border-[#FF6B5F]/30'
               }`}
             >
@@ -188,7 +188,7 @@ db.studySessions.aggregate([
               className={`relative max-w-[85%] sm:max-w-[75%] p-4 rounded-2xl text-xs sm:text-sm leading-relaxed ${
                 msg.sender === 'user'
                   ? 'bg-gradient-to-r from-[#FF6B5F] to-[#E85548] text-white font-medium shadow-md'
-                  : 'bg-gray-50 dark:bg-[#16191E] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-[#F5F1E8]'
+                  : 'bg-[#16191E] border border-white/[0.06] text-[#F5F1E8]'
               }`}
             >
               <div className="whitespace-pre-wrap font-sans">{msg.text}</div>
@@ -196,7 +196,7 @@ db.studySessions.aggregate([
               {msg.sender === 'ai' && (
                 <button
                   onClick={() => handleCopy(msg.id, msg.text)}
-                  className="absolute bottom-2 right-2 p-1.5 rounded-lg text-gray-500 dark:text-[#8C877D] hover:text-gray-900 dark:hover:text-[#F5F1E8] hover:bg-gray-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
+                  className="absolute bottom-2 right-2 p-1.5 rounded-lg text-[#8C877D] hover:text-[#F5F1E8] hover:bg-white/5 transition-colors cursor-pointer"
                   title="Copy response"
                 >
                   {copiedId === msg.id ? <Check className="w-3.5 h-3.5 text-[#34D399]" /> : <Copy className="w-3.5 h-3.5" />}
@@ -211,7 +211,7 @@ db.studySessions.aggregate([
             <div className="w-8 h-8 rounded-xl bg-[#FF6B5F]/15 text-[#FF857A] border border-[#FF6B5F]/30 flex items-center justify-center shrink-0">
               <Bot className="w-4 h-4" />
             </div>
-            <div className="p-3.5 rounded-2xl bg-gray-50 dark:bg-[#16191E] border border-gray-200 dark:border-white/[0.06] flex items-center gap-1.5">
+            <div className="p-3.5 rounded-2xl bg-[#16191E] border border-white/[0.06] flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-[#FF6B5F] animate-bounce" style={{ animationDelay: '0ms' }} />
               <span className="w-2 h-2 rounded-full bg-[#FF6B5F] animate-bounce" style={{ animationDelay: '150ms' }} />
               <span className="w-2 h-2 rounded-full bg-[#FF6B5F] animate-bounce" style={{ animationDelay: '300ms' }} />
@@ -223,8 +223,8 @@ db.studySessions.aggregate([
       </div>
 
       {/* Suggested Quick Prompt Chips */}
-      <div className="p-3 border-t border-gray-200 dark:border-white/[0.06] bg-gray-50 dark:bg-[#0E1114] flex items-center gap-2 overflow-x-auto scrollbar-none shrink-0">
-        <span className="text-[10px] font-mono text-gray-500 dark:text-[#8C877D] uppercase font-bold shrink-0 pl-1">
+      <div className="p-3 border-t border-white/[0.06] bg-[#0E1114] flex items-center gap-2 overflow-x-auto scrollbar-none shrink-0">
+        <span className="text-[10px] font-mono text-[#8C877D] uppercase font-bold shrink-0 pl-1">
           Suggestions:
         </span>
         {promptChips.map((chip, idx) => (
@@ -232,7 +232,7 @@ db.studySessions.aggregate([
             key={idx}
             type="button"
             onClick={() => handleSend(chip)}
-            className="px-3 py-1 rounded-xl text-xs font-semibold bg-gray-50 dark:bg-[#16191E] border border-gray-200 dark:border-white/[0.06] text-gray-600 dark:text-[#C7C2B6] hover:text-[#FF857A] hover:border-[#FF6B5F]/30 transition-all shrink-0 cursor-pointer whitespace-nowrap"
+            className="px-3 py-1 rounded-xl text-xs font-semibold bg-[#16191E] border border-white/[0.06] text-[#C7C2B6] hover:text-[#FF857A] hover:border-[#FF6B5F]/30 transition-all shrink-0 cursor-pointer whitespace-nowrap"
           >
             {chip}
           </button>
@@ -240,7 +240,7 @@ db.studySessions.aggregate([
       </div>
 
       {/* Input Box */}
-      <div className="p-3 sm:p-4 border-t border-gray-200 dark:border-white/[0.08] bg-gray-100 dark:bg-[#0B0D0F] shrink-0">
+      <div className="p-3 sm:p-4 border-t border-white/[0.08] bg-[#0B0D0F] shrink-0">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -253,7 +253,7 @@ db.studySessions.aggregate([
             value={inputVal}
             onChange={(e) => setInputVal(e.target.value)}
             placeholder={`Ask about ${activeRole} topics, code concepts, or study plans...`}
-            className="flex-1 bg-gray-50 dark:bg-[#16191E] border border-gray-200 dark:border-white/[0.08] text-xs sm:text-sm text-gray-900 dark:text-[#F5F1E8] rounded-xl px-4 py-2.5 focus:outline-none focus:border-[#FF6B5F] focus:ring-1 focus:ring-[#FF6B5F]/40 placeholder:text-gray-500 dark:text-[#8C877D]"
+            className="flex-1 bg-[#16191E] border border-white/[0.08] text-xs sm:text-sm text-[#F5F1E8] rounded-xl px-4 py-2.5 focus:outline-none focus:border-[#FF6B5F] focus:ring-1 focus:ring-[#FF6B5F]/40 placeholder:text-[#8C877D]"
           />
           <button
             type="submit"

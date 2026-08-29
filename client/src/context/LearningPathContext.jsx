@@ -46,16 +46,7 @@ export const LearningPathProvider = ({ children }) => {
       if (res.data?.success && res.data.learningPath) {
         setLearningPath(res.data.learningPath);
       } else {
-        const fallbackPath = generatePathForRole(currentRole);
-        setLearningPath(fallbackPath);
-        // Persist the fallback path to the backend so it's not null next time
-        api.post('/learning-path', {
-          title: fallbackPath.title,
-          goal: fallbackPath.goal,
-          targetRole: currentRole,
-          totalEstimatedWeeks: fallbackPath.totalEstimatedWeeks,
-          phases: fallbackPath.phases
-        }).catch(err => console.error('Failed to persist fallback learning path', err));
+        setLearningPath(generatePathForRole(currentRole));
       }
     } catch (err) {
       setLearningPath(generatePathForRole(currentRole));
@@ -78,17 +69,10 @@ export const LearningPathProvider = ({ children }) => {
   const fetchSkillGap = useCallback(async () => {
     try {
       const res = await api.get('/skills/gap-analysis');
-      if (res.data?.success && res.data.skillGap) {
-        setSkillGapReport(res.data.skillGap);
+      if (res.data?.success && res.data.gapReport) {
+        setSkillGapReport(res.data.gapReport);
       } else {
-        const fallbackGap = generateSkillGapsForRole(currentRole);
-        setSkillGapReport(fallbackGap);
-        // Persist fallback to backend
-        api.post('/skills/gap-analysis', {
-          targetRole: currentRole,
-          currentSkills: fallbackGap.currentSkills,
-          missingSkills: fallbackGap.missingSkills
-        }).catch(err => console.error('Failed to persist fallback skill gap', err));
+        setSkillGapReport(generateSkillGapsForRole(currentRole));
       }
     } catch (err) {
       setSkillGapReport(generateSkillGapsForRole(currentRole));

@@ -42,31 +42,31 @@ export default function EditProfileModal({ profileData, onSave, onClose, initial
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/80 dark:bg-black/80 backdrop-blur-md animate-in fade-in overflow-y-auto">
-      <div className="bg-white dark:bg-[#111418] rounded-[28px] max-w-xl w-full shadow-2xl overflow-hidden my-8 border border-white/[0.1] text-gray-900 dark:text-[#F5F1E8]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in overflow-y-auto">
+      <div className="bg-[#111418] rounded-[28px] max-w-xl w-full shadow-2xl overflow-hidden my-8 border border-white/[0.1] text-[#F5F1E8]">
         {/* Modal Header */}
-        <div className="flex items-center justify-between p-5 border-b border-gray-200 dark:border-white/[0.08] bg-gray-50 dark:bg-[#0E1114]">
+        <div className="flex items-center justify-between p-5 border-b border-white/[0.08] bg-[#0E1114]">
           <div className="flex items-center gap-2">
             <User className="w-5 h-5 text-[#FF6B5F]" />
-            <h3 className="font-bold text-gray-900 dark:text-[#F5F1E8] text-base">Edit Profile Information</h3>
+            <h3 className="font-bold text-[#F5F1E8] text-base">Edit Profile Information</h3>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl text-gray-500 dark:text-[#8C877D] hover:text-gray-900 dark:hover:text-[#F5F1E8] hover:bg-white/10 transition-colors cursor-pointer"
+            className="p-1.5 rounded-xl text-[#8C877D] hover:text-[#F5F1E8] hover:bg-white/10 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Tab Selection */}
-        <div className="flex border-b border-gray-200 dark:border-white/[0.08] px-6 pt-3 bg-white dark:bg-[#111418]">
+        <div className="flex border-b border-white/[0.08] px-6 pt-3 bg-[#111418]">
           <button
             type="button"
             onClick={() => setActiveTab('personal')}
             className={`flex items-center gap-2 pb-3 px-3 text-xs font-bold border-b-2 transition-colors cursor-pointer ${
               activeTab === 'personal'
                 ? 'border-[#FF6B5F] text-[#FF857A]'
-                : 'border-transparent text-gray-500 dark:text-[#8C877D] hover:text-gray-900 dark:hover:text-[#F5F1E8]'
+                : 'border-transparent text-[#8C877D] hover:text-[#F5F1E8]'
             }`}
           >
             <User className="w-3.5 h-3.5" />
@@ -79,7 +79,7 @@ export default function EditProfileModal({ profileData, onSave, onClose, initial
             className={`flex items-center gap-2 pb-3 px-3 text-xs font-bold border-b-2 transition-colors cursor-pointer ${
               activeTab === 'preferences'
                 ? 'border-[#FF6B5F] text-[#FF857A]'
-                : 'border-transparent text-gray-500 dark:text-[#8C877D] hover:text-gray-900 dark:hover:text-[#F5F1E8]'
+                : 'border-transparent text-[#8C877D] hover:text-[#F5F1E8]'
             }`}
           >
             <BookOpen className="w-3.5 h-3.5" />
@@ -92,7 +92,7 @@ export default function EditProfileModal({ profileData, onSave, onClose, initial
             className={`flex items-center gap-2 pb-3 px-3 text-xs font-bold border-b-2 transition-colors cursor-pointer ${
               activeTab === 'interests'
                 ? 'border-[#FF6B5F] text-[#FF857A]'
-                : 'border-transparent text-gray-500 dark:text-[#8C877D] hover:text-gray-900 dark:hover:text-[#F5F1E8]'
+                : 'border-transparent text-[#8C877D] hover:text-[#F5F1E8]'
             }`}
           >
             <Heart className="w-3.5 h-3.5" />
@@ -106,7 +106,7 @@ export default function EditProfileModal({ profileData, onSave, onClose, initial
           {activeTab === 'personal' && (
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-gray-600 dark:text-[#C7C2B6] mb-1 uppercase tracking-wider">
+                <label className="block text-xs font-bold text-[#C7C2B6] mb-1 uppercase tracking-wider">
                   Full Name
                 </label>
                 <input
@@ -115,13 +115,13 @@ export default function EditProfileModal({ profileData, onSave, onClose, initial
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="John Doe"
-                  className="w-full text-xs sm:text-sm bg-gray-50 dark:bg-[#16191E] border border-gray-200 dark:border-white/[0.08] text-gray-900 dark:text-[#F5F1E8] rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#FF6B5F] focus:ring-1 focus:ring-[#FF6B5F]/40"
+                  className="w-full text-xs sm:text-sm bg-[#16191E] border border-white/[0.08] text-[#F5F1E8] rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#FF6B5F] focus:ring-1 focus:ring-[#FF6B5F]/40"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-gray-600 dark:text-[#C7C2B6] mb-1 uppercase tracking-wider">
+                <label className="block text-xs font-bold text-[#C7C2B6] mb-1 uppercase tracking-wider">
                   Email Address
                 </label>
                 <input
@@ -130,14 +130,14 @@ export default function EditProfileModal({ profileData, onSave, onClose, initial
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="you@example.com"
-                  className="w-full text-xs sm:text-sm bg-gray-50 dark:bg-[#16191E] border border-gray-200 dark:border-white/[0.08] text-gray-900 dark:text-[#F5F1E8] rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#FF6B5F] focus:ring-1 focus:ring-[#FF6B5F]/40"
+                  className="w-full text-xs sm:text-sm bg-[#16191E] border border-white/[0.08] text-[#F5F1E8] rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#FF6B5F] focus:ring-1 focus:ring-[#FF6B5F]/40"
                   required
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-gray-600 dark:text-[#C7C2B6] mb-1 uppercase tracking-wider">
+                  <label className="block text-xs font-bold text-[#C7C2B6] mb-1 uppercase tracking-wider">
                     Location
                   </label>
                   <input
@@ -146,12 +146,12 @@ export default function EditProfileModal({ profileData, onSave, onClose, initial
                     value={formData.location}
                     onChange={handleChange}
                     placeholder="San Francisco, CA"
-                    className="w-full text-xs sm:text-sm bg-gray-50 dark:bg-[#16191E] border border-gray-200 dark:border-white/[0.08] text-gray-900 dark:text-[#F5F1E8] rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#FF6B5F]"
+                    className="w-full text-xs sm:text-sm bg-[#16191E] border border-white/[0.08] text-[#F5F1E8] rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#FF6B5F]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-600 dark:text-[#C7C2B6] mb-1 uppercase tracking-wider">
+                  <label className="block text-xs font-bold text-[#C7C2B6] mb-1 uppercase tracking-wider">
                     Education
                   </label>
                   <input
@@ -160,13 +160,13 @@ export default function EditProfileModal({ profileData, onSave, onClose, initial
                     value={formData.education}
                     onChange={handleChange}
                     placeholder="B.Tech in Computer Science"
-                    className="w-full text-xs sm:text-sm bg-gray-50 dark:bg-[#16191E] border border-gray-200 dark:border-white/[0.08] text-gray-900 dark:text-[#F5F1E8] rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#FF6B5F]"
+                    className="w-full text-xs sm:text-sm bg-[#16191E] border border-white/[0.08] text-[#F5F1E8] rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#FF6B5F]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-gray-600 dark:text-[#C7C2B6] mb-1 uppercase tracking-wider">
+                <label className="block text-xs font-bold text-[#C7C2B6] mb-1 uppercase tracking-wider">
                   Professional Tagline
                 </label>
                 <input
@@ -175,7 +175,7 @@ export default function EditProfileModal({ profileData, onSave, onClose, initial
                   value={formData.tagline}
                   onChange={handleChange}
                   placeholder="Aspiring Software Engineer & Cloud Architect"
-                  className="w-full text-xs sm:text-sm bg-gray-50 dark:bg-[#16191E] border border-gray-200 dark:border-white/[0.08] text-gray-900 dark:text-[#F5F1E8] rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#FF6B5F]"
+                  className="w-full text-xs sm:text-sm bg-[#16191E] border border-white/[0.08] text-[#F5F1E8] rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#FF6B5F]"
                 />
               </div>
             </div>
@@ -185,40 +185,40 @@ export default function EditProfileModal({ profileData, onSave, onClose, initial
           {activeTab === 'preferences' && (
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-gray-600 dark:text-[#C7C2B6] mb-1 uppercase tracking-wider">
+                <label className="block text-xs font-bold text-[#C7C2B6] mb-1 uppercase tracking-wider">
                   Preferred Learning Style
                 </label>
                 <select
                   name="preferredLearningStyle"
                   value={formData.preferredLearningStyle}
                   onChange={handleChange}
-                  className="w-full text-xs sm:text-sm bg-gray-50 dark:bg-[#16191E] border border-gray-200 dark:border-white/[0.08] text-gray-900 dark:text-[#F5F1E8] rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#FF6B5F] cursor-pointer"
+                  className="w-full text-xs sm:text-sm bg-[#16191E] border border-white/[0.08] text-[#F5F1E8] rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#FF6B5F] cursor-pointer"
                 >
-                  <option value="Hands-on Projects" className="bg-white dark:bg-[#111418]">Hands-on Projects & Labs</option>
-                  <option value="Video Lectures & Code Along" className="bg-white dark:bg-[#111418]">Video Lectures & Code Along</option>
-                  <option value="Documentation & Articles" className="bg-white dark:bg-[#111418]">Technical Docs & RFCs</option>
-                  <option value="Quiz & Benchmark Driven" className="bg-white dark:bg-[#111418]">Quiz & Benchmark Driven</option>
+                  <option value="Hands-on Projects" className="bg-[#111418]">Hands-on Projects & Labs</option>
+                  <option value="Video Lectures & Code Along" className="bg-[#111418]">Video Lectures & Code Along</option>
+                  <option value="Documentation & Articles" className="bg-[#111418]">Technical Docs & RFCs</option>
+                  <option value="Quiz & Benchmark Driven" className="bg-[#111418]">Quiz & Benchmark Driven</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-gray-600 dark:text-[#C7C2B6] mb-1 uppercase tracking-wider">
+                <label className="block text-xs font-bold text-[#C7C2B6] mb-1 uppercase tracking-wider">
                   Weekly Learning Time Commitment
                 </label>
                 <select
                   name="weeklyLearningTime"
                   value={formData.weeklyLearningTime}
                   onChange={handleChange}
-                  className="w-full text-xs sm:text-sm bg-gray-50 dark:bg-[#16191E] border border-gray-200 dark:border-white/[0.08] text-gray-900 dark:text-[#F5F1E8] rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#FF6B5F] cursor-pointer"
+                  className="w-full text-xs sm:text-sm bg-[#16191E] border border-white/[0.08] text-[#F5F1E8] rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#FF6B5F] cursor-pointer"
                 >
-                  <option value="5-8 hours/week" className="bg-white dark:bg-[#111418]">5-8 hours / week (Casual)</option>
-                  <option value="10-15 hours/week" className="bg-white dark:bg-[#111418]">10-15 hours / week (Standard)</option>
-                  <option value="15-25 hours/week" className="bg-white dark:bg-[#111418]">15-25 hours / week (Intensive)</option>
+                  <option value="5-8 hours/week" className="bg-[#111418]">5-8 hours / week (Casual)</option>
+                  <option value="10-15 hours/week" className="bg-[#111418]">10-15 hours / week (Standard)</option>
+                  <option value="15-25 hours/week" className="bg-[#111418]">15-25 hours / week (Intensive)</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-gray-600 dark:text-[#C7C2B6] mb-1 uppercase tracking-wider">
+                <label className="block text-xs font-bold text-[#C7C2B6] mb-1 uppercase tracking-wider">
                   Current Technical Focus
                 </label>
                 <input
@@ -227,7 +227,7 @@ export default function EditProfileModal({ profileData, onSave, onClose, initial
                   value={formData.currentFocus}
                   onChange={handleChange}
                   placeholder="React 18, Node.js Microservices, MongoDB"
-                  className="w-full text-xs sm:text-sm bg-gray-50 dark:bg-[#16191E] border border-gray-200 dark:border-white/[0.08] text-gray-900 dark:text-[#F5F1E8] rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#FF6B5F]"
+                  className="w-full text-xs sm:text-sm bg-[#16191E] border border-white/[0.08] text-[#F5F1E8] rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#FF6B5F]"
                 />
               </div>
             </div>
@@ -237,7 +237,7 @@ export default function EditProfileModal({ profileData, onSave, onClose, initial
           {activeTab === 'interests' && (
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-gray-600 dark:text-[#C7C2B6] mb-1 uppercase tracking-wider flex items-center gap-1">
+                <label className="block text-xs font-bold text-[#C7C2B6] mb-1 uppercase tracking-wider flex items-center gap-1">
                   <Target className="w-3.5 h-3.5 text-[#FF6B5F]" />
                   <span>Target Career Objective (48+ IT & CS Specializations)</span>
                 </label>
@@ -245,10 +245,10 @@ export default function EditProfileModal({ profileData, onSave, onClose, initial
                   name="targetRole"
                   value={formData.targetRole}
                   onChange={handleChange}
-                  className="w-full text-xs sm:text-sm bg-gray-50 dark:bg-[#16191E] border border-gray-200 dark:border-white/[0.08] text-gray-900 dark:text-[#F5F1E8] rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#FF6B5F] cursor-pointer"
+                  className="w-full text-xs sm:text-sm bg-[#16191E] border border-white/[0.08] text-[#F5F1E8] rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#FF6B5F] cursor-pointer"
                 >
                   {CAREER_OBJECTIVES.map((obj) => (
-                    <option key={obj} value={obj} className="bg-white dark:bg-[#111418] text-gray-900 dark:text-[#F5F1E8]">
+                    <option key={obj} value={obj} className="bg-[#111418] text-[#F5F1E8]">
                       {obj}
                     </option>
                   ))}
@@ -256,7 +256,7 @@ export default function EditProfileModal({ profileData, onSave, onClose, initial
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-gray-600 dark:text-[#C7C2B6] mb-1 uppercase tracking-wider">
+                <label className="block text-xs font-bold text-[#C7C2B6] mb-1 uppercase tracking-wider">
                   Areas of Interest (Comma separated)
                 </label>
                 <input
@@ -265,12 +265,12 @@ export default function EditProfileModal({ profileData, onSave, onClose, initial
                   value={formData.areasOfInterest}
                   onChange={handleChange}
                   placeholder="Web Development, Artificial Intelligence, System Architecture"
-                  className="w-full text-xs sm:text-sm bg-gray-50 dark:bg-[#16191E] border border-gray-200 dark:border-white/[0.08] text-gray-900 dark:text-[#F5F1E8] rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#FF6B5F]"
+                  className="w-full text-xs sm:text-sm bg-[#16191E] border border-white/[0.08] text-[#F5F1E8] rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#FF6B5F]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-gray-600 dark:text-[#C7C2B6] mb-1 uppercase tracking-wider">
+                <label className="block text-xs font-bold text-[#C7C2B6] mb-1 uppercase tracking-wider">
                   Interests & Key Tech Tags
                 </label>
                 <input
@@ -279,18 +279,18 @@ export default function EditProfileModal({ profileData, onSave, onClose, initial
                   value={formData.interests}
                   onChange={handleChange}
                   placeholder="Full Stack, TypeScript, Cloud, System Design"
-                  className="w-full text-xs sm:text-sm bg-gray-50 dark:bg-[#16191E] border border-gray-200 dark:border-white/[0.08] text-gray-900 dark:text-[#F5F1E8] rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#FF6B5F]"
+                  className="w-full text-xs sm:text-sm bg-[#16191E] border border-white/[0.08] text-[#F5F1E8] rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#FF6B5F]"
                 />
               </div>
             </div>
           )}
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-end gap-3 pt-5 border-t border-gray-200 dark:border-white/[0.08]">
+          <div className="flex items-center justify-end gap-3 pt-5 border-t border-white/[0.08]">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 text-xs font-bold text-gray-500 dark:text-[#8C877D] hover:text-gray-900 dark:hover:text-[#F5F1E8] hover:bg-gray-100 dark:hover:bg-white/5 cursor-pointer"
+              className="px-4 py-2.5 rounded-xl border border-white/10 text-xs font-bold text-[#8C877D] hover:text-[#F5F1E8] hover:bg-white/5 cursor-pointer"
             >
               Cancel
             </button>

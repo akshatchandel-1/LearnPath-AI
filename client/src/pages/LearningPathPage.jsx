@@ -33,7 +33,7 @@ const colorMap = {
   coral:   { bg: 'bg-[#FF6B5F]', bgLight: 'bg-[#FF6B5F]/10', text: 'text-[#FF857A]', border: 'border-[#FF6B5F]/40' },
   amber:   { bg: 'bg-[#FBBF24]', bgLight: 'bg-[#FBBF24]/10', text: 'text-[#FBBF24]', border: 'border-[#FBBF24]/40' },
   blue:    { bg: 'bg-[#38BDF8]', bgLight: 'bg-[#38BDF8]/10', text: 'text-[#38BDF8]', border: 'border-[#38BDF8]/40' },
-  slate:   { bg: 'bg-gray-200 dark:bg-white/20',  bgLight: 'bg-gray-100 dark:bg-white/[0.04]', text: 'text-gray-500 dark:text-[#8C877D]', border: 'border-gray-200 dark:border-white/10' },
+  slate:   { bg: 'bg-white/20',  bgLight: 'bg-white/[0.04]', text: 'text-[#8C877D]', border: 'border-white/10' },
 };
 
 const getStatusConfig = (status) => {
@@ -131,8 +131,8 @@ export default function LearningPathPage() {
 
       <div className="flex flex-col xl:flex-row gap-6 max-w-[1500px] mx-auto w-full relative pb-10">
         {isAdapting && (
-          <div className="absolute inset-0 bg-white/80 dark:bg-black/80 backdrop-blur-md z-50 flex items-center justify-center rounded-3xl animate-in fade-in">
-            <div className="flex flex-col items-center gap-3 p-6 bg-white dark:bg-[#111418] border border-gray-200 dark:border-white/10 rounded-2xl shadow-2xl">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center rounded-3xl animate-in fade-in">
+            <div className="flex flex-col items-center gap-3 p-6 bg-[#111418] border border-white/10 rounded-2xl shadow-2xl">
               <div className="w-8 h-8 border-3 border-[#FF6B5F]/20 border-t-[#FF6B5F] rounded-full animate-spin" />
               <p className="text-[#FF857A] font-bold text-sm">Recalibrating your roadmap with AI...</p>
             </div>
@@ -157,15 +157,15 @@ export default function LearningPathPage() {
 
             <div className="flex-1 pt-0.5">
               <div className="flex flex-wrap items-center gap-2 mb-1">
-                <span className="text-xs font-bold text-gray-500 dark:text-[#8C877D] uppercase tracking-wider">Target Objective:</span>
+                <span className="text-xs font-bold text-[#8C877D] uppercase tracking-wider">Target Objective:</span>
                 {isEditingGoal ? (
                   <select
                     value={goalText}
                     onChange={(e) => setGoalText(e.target.value)}
-                    className="text-sm font-black text-[#FF857A] bg-gray-50 dark:bg-[#16191E] px-3 py-1.5 rounded-xl border border-[#FF6B5F]/40 focus:outline-none focus:ring-2 focus:ring-[#FF6B5F] w-full max-w-sm cursor-pointer"
+                    className="text-sm font-black text-[#FF857A] bg-[#16191E] px-3 py-1.5 rounded-xl border border-[#FF6B5F]/40 focus:outline-none focus:ring-2 focus:ring-[#FF6B5F] w-full max-w-sm cursor-pointer"
                   >
                     {CAREER_OBJECTIVES.map((obj) => (
-                      <option key={obj} value={obj} className="bg-white dark:bg-[#111418] text-gray-900 dark:text-[#F5F1E8]">
+                      <option key={obj} value={obj} className="bg-[#111418] text-[#F5F1E8]">
                         {obj}
                       </option>
                     ))}
@@ -174,7 +174,7 @@ export default function LearningPathPage() {
                   <h2 className="text-base sm:text-lg font-black text-[#FF857A]">{pathData.goal}</h2>
                 )}
               </div>
-              <p className="text-xs sm:text-sm text-gray-600 dark:text-[#C7C2B6] leading-relaxed max-w-2xl">
+              <p className="text-xs sm:text-sm text-[#C7C2B6] leading-relaxed max-w-2xl">
                 {pathData.title}
               </p>
             </div>
@@ -194,21 +194,21 @@ export default function LearningPathPage() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <Badge variant="coral" size="sm" dot>Curriculum Phases</Badge>
-                <span className="text-xs text-gray-500 dark:text-[#8C877D] font-mono">{pathData.phases?.length || 4} Total Stages</span>
+                <span className="text-xs text-[#8C877D] font-mono">{pathData.phases?.length || 4} Total Stages</span>
               </div>
 
-              <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-[#8C877D]">
+              <div className="flex items-center gap-2 text-xs text-[#8C877D]">
                 <span>View as:</span>
-                <div className="flex bg-white dark:bg-[#111418] p-1 rounded-xl border border-gray-200 dark:border-white/[0.08]">
+                <div className="flex bg-[#111418] p-1 rounded-xl border border-white/[0.08]">
                   <button 
                     onClick={() => setViewMode('timeline')}
-                    className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${viewMode === 'timeline' ? 'bg-[#FF6B5F] text-white shadow-md shadow-[#FF6B5F]/20' : 'text-gray-500 dark:text-[#8C877D] hover:text-gray-900 dark:hover:text-[#F5F1E8]'}`}
+                    className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${viewMode === 'timeline' ? 'bg-[#FF6B5F] text-white shadow-md shadow-[#FF6B5F]/20' : 'text-[#8C877D] hover:text-[#F5F1E8]'}`}
                   >
                     Timeline
                   </button>
                   <button 
                     onClick={() => setViewMode('list')}
-                    className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${viewMode === 'list' ? 'bg-[#FF6B5F] text-white shadow-md shadow-[#FF6B5F]/20' : 'text-gray-500 dark:text-[#8C877D] hover:text-gray-900 dark:hover:text-[#F5F1E8]'}`}
+                    className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${viewMode === 'list' ? 'bg-[#FF6B5F] text-white shadow-md shadow-[#FF6B5F]/20' : 'text-[#8C877D] hover:text-[#F5F1E8]'}`}
                   >
                     List
                   </button>
@@ -227,7 +227,7 @@ export default function LearningPathPage() {
               return (
                 <div key={phase.phaseNumber} className="relative mb-4">
                   {viewMode === 'timeline' && !isLast && (
-                    <div className="absolute left-[15px] top-10 bottom-[-24px] w-0.5 bg-gray-200 dark:bg-white/[0.08] z-0" />
+                    <div className="absolute left-[15px] top-10 bottom-[-24px] w-0.5 bg-white/[0.08] z-0" />
                   )}
                   <div className={`flex items-start gap-4 relative z-10 ${viewMode === 'list' ? 'items-center' : ''}`}>
                     {viewMode === 'timeline' && (
@@ -235,9 +235,9 @@ export default function LearningPathPage() {
                         <Icon className="w-4 h-4 text-white" />
                       </div>
                     )}
-                    <div className={`flex-1 bg-white dark:bg-[#111418] rounded-2xl border ${isExpanded ? `border-l-4 ${colors.border}` : 'border-gray-200 dark:border-white/[0.08]'} shadow-sm overflow-hidden transition-all duration-300`}>
+                    <div className={`flex-1 bg-[#111418] rounded-2xl border ${isExpanded ? `border-l-4 ${colors.border}` : 'border-white/[0.08]'} shadow-sm overflow-hidden transition-all duration-300`}>
                       <div
-                        className={`p-5 flex flex-col sm:flex-row sm:items-center justify-between cursor-pointer transition-colors ${isExpanded ? 'bg-gray-50 dark:bg-[#16191E]' : 'hover:bg-gray-50 dark:hover:bg-white/[0.02]'}`}
+                        className={`p-5 flex flex-col sm:flex-row sm:items-center justify-between cursor-pointer transition-colors ${isExpanded ? 'bg-[#16191E]' : 'hover:bg-white/[0.02]'}`}
                         onClick={() => setExpandedPhase(isExpanded ? null : phase.phaseNumber)}
                       >
                         <div className="flex-1 pr-4">
@@ -254,24 +254,24 @@ export default function LearningPathPage() {
                               </span>
                             )}
                           </div>
-                          <p className="text-xs text-gray-500 dark:text-[#8C877D] leading-relaxed">{phase.description}</p>
+                          <p className="text-xs text-[#8C877D] leading-relaxed">{phase.description}</p>
                         </div>
                         <div className="flex items-center gap-6 mt-3 sm:mt-0 shrink-0">
                           <div className="text-right">
                             <p className={`text-xs font-bold ${colors.text} mb-0.5 font-mono`}>{phase.completionPercentage || 0}% Complete</p>
-                            <p className="text-[10px] text-gray-500 dark:text-[#8C877D]">{completedItems}/{totalItems} resources</p>
+                            <p className="text-[10px] text-[#8C877D]">{completedItems}/{totalItems} resources</p>
                           </div>
-                          {isExpanded ? <ChevronUp className="w-4 h-4 text-gray-500 dark:text-[#8C877D]" /> : <ChevronDown className="w-4 h-4 text-gray-500 dark:text-[#8C877D]" />}
+                          {isExpanded ? <ChevronUp className="w-4 h-4 text-[#8C877D]" /> : <ChevronDown className="w-4 h-4 text-[#8C877D]" />}
                         </div>
                       </div>
 
                       {isExpanded && phase.resources?.length > 0 && (
-                        <div className="px-5 pb-5 pt-2 bg-gray-50 dark:bg-[#0E1114] border-t border-gray-200 dark:border-white/[0.06]">
+                        <div className="px-5 pb-5 pt-2 bg-[#0E1114] border-t border-white/[0.06]">
                           <ul className="space-y-2.5 mt-2">
                             {phase.resources.map((course, idx) => (
                               <li
                                 key={idx}
-                                className="flex items-center justify-between p-3 bg-white dark:bg-[#111418] border border-gray-200 dark:border-white/[0.06] rounded-xl hover:border-[#FF6B5F]/30 hover:bg-gray-50 dark:hover:bg-[#16191E] transition-all cursor-pointer group"
+                                className="flex items-center justify-between p-3 bg-[#111418] border border-white/[0.06] rounded-xl hover:border-[#FF6B5F]/30 hover:bg-[#16191E] transition-all cursor-pointer group"
                                 onClick={() => navigate('/courses')}
                               >
                                 <div className="flex items-center gap-3">
@@ -280,7 +280,7 @@ export default function LearningPathPage() {
                                   ) : (
                                     <PlayCircle className="w-4 h-4 text-[#FF857A] group-hover:scale-110 transition-transform" />
                                   )}
-                                  <span className={`text-xs font-semibold ${!course.completed ? 'text-gray-900 dark:text-[#F5F1E8]' : 'text-gray-500 dark:text-[#8C877D] line-through'}`}>
+                                  <span className={`text-xs font-semibold ${!course.completed ? 'text-[#F5F1E8]' : 'text-[#8C877D] line-through'}`}>
                                     {course.title}
                                   </span>
                                 </div>
@@ -304,34 +304,34 @@ export default function LearningPathPage() {
         <div className="w-full xl:w-80 space-y-6 flex-shrink-0">
           {/* Path Overview Card */}
           <Card variant="default">
-            <h3 className="text-sm font-bold text-gray-900 dark:text-[#F5F1E8] mb-4">Roadmap Overview</h3>
+            <h3 className="text-sm font-bold text-[#F5F1E8] mb-4">Roadmap Overview</h3>
             <ul className="space-y-3.5">
               <li className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2 text-gray-500 dark:text-[#8C877D]">
+                <div className="flex items-center gap-2 text-[#8C877D]">
                   <Clock className="w-4 h-4 text-[#FF6B5F]" /> Estimated Time
                 </div>
-                <span className="font-bold text-gray-900 dark:text-[#F5F1E8] font-mono">{pathData.totalEstimatedWeeks} weeks</span>
+                <span className="font-bold text-[#F5F1E8] font-mono">{pathData.totalEstimatedWeeks} weeks</span>
               </li>
               <li className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2 text-gray-500 dark:text-[#8C877D]">
+                <div className="flex items-center gap-2 text-[#8C877D]">
                   <Book className="w-4 h-4 text-[#FF6B5F]" /> Total Phases
                 </div>
-                <span className="font-bold text-gray-900 dark:text-[#F5F1E8] font-mono">{pathData.phases?.length || 4}</span>
+                <span className="font-bold text-[#F5F1E8] font-mono">{pathData.phases?.length || 4}</span>
               </li>
               <li className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2 text-gray-500 dark:text-[#8C877D]">
+                <div className="flex items-center gap-2 text-[#8C877D]">
                   <Briefcase className="w-4 h-4 text-[#FF6B5F]" /> Goal Level
                 </div>
-                <span className="font-bold text-gray-900 dark:text-[#F5F1E8]">Professional</span>
+                <span className="font-bold text-[#F5F1E8]">Professional</span>
               </li>
-              <li className="pt-3 mt-3 border-t border-gray-200 dark:border-white/[0.06]">
+              <li className="pt-3 mt-3 border-t border-white/[0.06]">
                 <div className="flex items-center justify-between text-xs mb-2">
-                  <span className="text-gray-500 dark:text-[#8C877D] flex items-center gap-1.5">
+                  <span className="text-[#8C877D] flex items-center gap-1.5">
                     <Target className="w-3.5 h-3.5 text-[#FF6B5F]" /> Current Progress
                   </span>
                   <span className="font-black text-[#FF857A] font-mono">{pathData.overallProgress}%</span>
                 </div>
-                <div className="w-full bg-gray-100 dark:bg-white/5 rounded-full h-2 overflow-hidden">
+                <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden">
                   <div className="bg-gradient-to-r from-[#FF6B5F] to-[#E85548] h-full rounded-full transition-all duration-500" style={{ width: `${pathData.overallProgress}%` }} />
                 </div>
               </li>
@@ -344,15 +344,15 @@ export default function LearningPathPage() {
               <div className="w-7 h-7 rounded-lg bg-[#FF6B5F]/15 text-[#FF857A] flex items-center justify-center">
                 <Flag className="w-4 h-4" />
               </div>
-              <h3 className="text-sm font-bold text-gray-900 dark:text-[#F5F1E8]">Upcoming Milestone</h3>
+              <h3 className="text-sm font-bold text-[#F5F1E8]">Upcoming Milestone</h3>
             </div>
-            <h4 className="font-bold text-gray-900 dark:text-[#F5F1E8] text-sm leading-snug mb-1.5">
+            <h4 className="font-bold text-[#F5F1E8] text-sm leading-snug mb-1.5">
               {currentPhaseData.milestone?.title || currentPhaseData.title}
             </h4>
-            <p className="text-xs text-gray-500 dark:text-[#8C877D] mb-4 leading-relaxed">
+            <p className="text-xs text-[#8C877D] mb-4 leading-relaxed">
               {currentPhaseData.milestone?.description || currentPhaseData.description}
             </p>
-            <div className="text-[11px] text-gray-500 dark:text-[#8C877D] mb-4">
+            <div className="text-[11px] text-[#8C877D] mb-4">
               Expected Duration: <span className="font-bold text-[#FF857A] font-mono">{currentPhaseData.estimatedWeeks || 3} weeks</span>
             </div>
             <Button
@@ -371,19 +371,19 @@ export default function LearningPathPage() {
           <Card variant="default">
             <div className="flex items-center gap-2 mb-4">
               <Lightbulb className="w-4 h-4 text-[#FBBF24]" />
-              <h3 className="text-sm font-bold text-gray-900 dark:text-[#F5F1E8]">AI Adaptation Log</h3>
+              <h3 className="text-sm font-bold text-[#F5F1E8]">AI Adaptation Log</h3>
             </div>
             <div className="space-y-3">
               {pathData.adaptationHistory && pathData.adaptationHistory.length > 0 ? (
                 pathData.adaptationHistory.slice(0, 3).map((history, idx) => (
-                  <div key={idx} className="flex flex-col border border-gray-200 dark:border-white/[0.06] p-3 rounded-xl bg-gray-50 dark:bg-[#0E1114]">
-                    <h4 className="text-xs font-bold text-gray-900 dark:text-[#F5F1E8] leading-tight mb-1">{history.actionTaken}</h4>
-                    <p className="text-[11px] text-gray-500 dark:text-[#8C877D] mb-1 leading-relaxed">{history.reason}</p>
+                  <div key={idx} className="flex flex-col border border-white/[0.06] p-3 rounded-xl bg-[#0E1114]">
+                    <h4 className="text-xs font-bold text-[#F5F1E8] leading-tight mb-1">{history.actionTaken}</h4>
+                    <p className="text-[11px] text-[#8C877D] mb-1 leading-relaxed">{history.reason}</p>
                     <span className="text-[9px] text-[#FF857A] font-mono mt-0.5">{new Date(history.timestamp).toLocaleDateString()}</span>
                   </div>
                 ))
               ) : (
-                <p className="text-xs text-gray-500 dark:text-[#8C877D]">Your path is currently optimal. No adaptations needed yet.</p>
+                <p className="text-xs text-[#8C877D]">Your path is currently optimal. No adaptations needed yet.</p>
               )}
             </div>
           </Card>

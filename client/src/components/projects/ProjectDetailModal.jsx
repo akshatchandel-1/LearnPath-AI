@@ -40,10 +40,10 @@ export const ProjectDetailModal = ({ project, isOpen, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/80 dark:bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
       <div className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto glass-panel rounded-3xl border border-brand-500/30 p-6 sm:p-8 shadow-2xl shadow-brand-500/20 text-slate-100 space-y-6">
         {/* Header */}
-        <div className="flex items-start justify-between gap-4 pb-4 border-b border-gray-200 dark:border-white/10">
+        <div className="flex items-start justify-between gap-4 pb-4 border-b border-white/10">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-brand-500/20 text-brand-300 border border-brand-500/30">
@@ -54,14 +54,14 @@ export const ProjectDetailModal = ({ project, isOpen, onClose }) => {
                 ~{project.estimatedHours} Hours
               </span>
             </div>
-            <h2 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white font-display">
+            <h2 className="text-xl sm:text-2xl font-black text-white font-display">
               {project.title}
             </h2>
           </div>
 
           <button
             onClick={onClose}
-            className="p-2 rounded-xl bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 text-slate-400 hover:text-gray-900 dark:hover:text-white border border-gray-200 dark:border-white/10 transition-colors cursor-pointer"
+            className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white border border-white/10 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -80,7 +80,7 @@ export const ProjectDetailModal = ({ project, isOpen, onClose }) => {
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {(project.features || []).map((feat, idx) => (
-              <div key={idx} className="p-3 rounded-xl bg-white/[0.03] border border-gray-200 dark:border-white/5 flex items-start gap-2.5">
+              <div key={idx} className="p-3 rounded-xl bg-white/[0.03] border border-white/5 flex items-start gap-2.5">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                 <span className="text-xs text-slate-200">{feat}</span>
               </div>
@@ -123,12 +123,12 @@ export const ProjectDetailModal = ({ project, isOpen, onClose }) => {
         )}
 
         {/* Action Footer */}
-        <div className="pt-4 border-t border-gray-200 dark:border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
           <a
             href={project.starterRepoUrl || 'https://github.com/vercel/next.js/tree/canary/examples'}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs font-semibold bg-gray-100 dark:bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-gray-200 dark:border-white/10 transition-colors flex items-center justify-center gap-2"
+            className="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/10 transition-colors flex items-center justify-center gap-2"
           >
             <FolderGit2 className="w-4 h-4 text-cyan-400" />
             <span>Open Reference Template</span>

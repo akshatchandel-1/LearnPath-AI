@@ -113,14 +113,14 @@ export const AIMentorPage = () => {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Left Side: Active Learner Context Summary Card (1 Col) */}
         <div className="space-y-4">
-          <div className="p-5 rounded-2xl glass-panel border border-gray-200 dark:border-white/10 space-y-4">
+          <div className="p-5 rounded-2xl glass-panel border border-white/10 space-y-4">
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
               <Map className="w-4 h-4 text-cyan-400" />
               Live Learner Context
             </h3>
 
             <div className="space-y-3 text-xs">
-              <div className="p-3 rounded-xl bg-white/[0.03] border border-gray-200 dark:border-white/5 space-y-1">
+              <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5 space-y-1">
                 <p className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">Career Goal</p>
                 <p className="font-bold text-white">{user?.careerGoal || 'Full Stack Developer'}</p>
               </div>
@@ -131,7 +131,7 @@ export const AIMentorPage = () => {
                 <p className="text-[11px] text-slate-300">Milestone: {currentPhase?.milestone}</p>
               </div>
 
-              <div className="p-3 rounded-xl bg-white/[0.03] border border-gray-200 dark:border-white/5 space-y-1.5">
+              <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5 space-y-1.5">
                 <p className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">Prioritized Skill Gaps</p>
                 <div className="flex flex-wrap gap-1">
                   {(skillGapReport?.skills || user?.skills || []).slice(0, 4).map((sk, idx) => (
@@ -174,7 +174,7 @@ export const AIMentorPage = () => {
                     <div
                       className={`max-w-[85%] rounded-2xl p-4 text-xs sm:text-sm leading-relaxed ${
                         isAssistant
-                          ? 'glass-card border border-gray-200 dark:border-white/10 text-slate-100 shadow-md'
+                          ? 'glass-card border border-white/10 text-slate-100 shadow-md'
                           : 'bg-brand-600 text-white font-medium shadow-md shadow-brand-600/30'
                       }`}
                     >
@@ -203,13 +203,13 @@ export const AIMentorPage = () => {
           </div>
 
           {/* Suggested Prompts Bar */}
-          <div className="p-3 border-t border-gray-200 dark:border-white/5 bg-black/20">
+          <div className="p-3 border-t border-white/5 bg-black/20">
             <div className="flex flex-wrap gap-1.5">
               {suggestedPrompts.slice(0, 3).map((p, i) => (
                 <button
                   key={i}
                   onClick={() => handleSendMessage(p)}
-                  className="px-3 py-1 rounded-lg text-xs font-medium bg-white/[0.04] hover:bg-brand-500/20 hover:text-brand-300 border border-gray-200 dark:border-white/10 text-slate-300 transition-colors text-left"
+                  className="px-3 py-1 rounded-lg text-xs font-medium bg-white/[0.04] hover:bg-brand-500/20 hover:text-brand-300 border border-white/10 text-slate-300 transition-colors text-left"
                 >
                   {p}
                 </button>
@@ -218,7 +218,7 @@ export const AIMentorPage = () => {
           </div>
 
           {/* Chat Input Box */}
-          <div className="p-4 border-t border-gray-200 dark:border-white/10 bg-[#0d0f17]">
+          <div className="p-4 border-t border-white/10 bg-[#0d0f17]">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -231,7 +231,7 @@ export const AIMentorPage = () => {
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 placeholder="Ask the AI Mentor anything about your path, concepts, or roadblocks..."
-                className="flex-1 px-4 py-3 rounded-xl text-xs sm:text-sm bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-brand-400 transition-colors"
+                className="flex-1 px-4 py-3 rounded-xl text-xs sm:text-sm bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-brand-400 transition-colors"
               />
               <button
                 type="submit"
