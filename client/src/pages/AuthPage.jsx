@@ -89,7 +89,7 @@ export default function AuthPage({ defaultIsLogin = true }) {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#0B0D0F] dark:bg-[#0B0D0F] text-[#F5F1E8] p-4 relative overflow-hidden selection:bg-[#FF6B5F] selection:text-white">
+    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-gray-100 dark:bg-[#0B0D0F] dark:bg-[#0B0D0F] text-gray-900 dark:text-[#F5F1E8] p-4 relative overflow-hidden selection:bg-[#FF6B5F] selection:text-white">
       {/* Ambient Coral Background Glow */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#FF6B5F]/10 rounded-full blur-[160px] pointer-events-none" />
       <div className="absolute bottom-10 right-1/4 w-[500px] h-[500px] bg-white/[0.02] rounded-full blur-[140px] pointer-events-none" />
@@ -101,22 +101,22 @@ export default function AuthPage({ defaultIsLogin = true }) {
             <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#FF6B5F] to-[#E85548] flex items-center justify-center shadow-xl shadow-[#FF6B5F]/30 group-hover:scale-105 transition-transform">
               <Sparkles className="w-6 h-6 text-white" />
             </div>
-            <span className="font-black text-2xl tracking-tight text-[#F5F1E8]">
+            <span className="font-black text-2xl tracking-tight text-gray-900 dark:text-[#F5F1E8]">
               LearnPath <span className="text-[#FF6B5F]">AI</span>
             </span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-black tracking-tight text-[#F5F1E8]">
+          <h1 className="text-xl sm:text-2xl font-black tracking-tight text-gray-900 dark:text-[#F5F1E8]">
             {isLogin ? 'Welcome Back' : 'Launch Your Career Path'}
           </h1>
-          <p className="text-xs sm:text-sm text-[#8C877D] mt-1">
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-[#8C877D] mt-1">
             {isLogin ? 'Sign in to continue your personalized learning roadmap' : 'Create your learner profile and get an adaptive curriculum'}
           </p>
         </div>
 
         {/* Auth Card */}
-        <div className="bg-[#111418] border border-white/[0.08] rounded-[24px] p-6 sm:p-8 shadow-2xl relative overflow-hidden backdrop-blur-xl">
+        <div className="bg-white dark:bg-[#111418] border border-gray-200 dark:border-white/[0.08] rounded-[24px] p-6 sm:p-8 shadow-2xl relative overflow-hidden backdrop-blur-xl">
           {/* Tabs Switcher */}
-          <div className="flex bg-[#0E1114] p-1 rounded-xl border border-white/[0.06] mb-6">
+          <div className="flex bg-gray-50 dark:bg-[#0E1114] p-1 rounded-xl border border-gray-200 dark:border-white/[0.06] mb-6">
             <button
               type="button"
               onClick={() => {
@@ -127,7 +127,7 @@ export default function AuthPage({ defaultIsLogin = true }) {
               className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                 isLogin
                   ? 'bg-[#FF6B5F] text-white shadow-md shadow-[#FF6B5F]/20'
-                  : 'text-[#8C877D] hover:text-[#F5F1E8]'
+                  : 'text-gray-500 dark:text-[#8C877D] hover:text-gray-900 dark:hover:text-[#F5F1E8]'
               }`}
             >
               Sign In
@@ -142,7 +142,7 @@ export default function AuthPage({ defaultIsLogin = true }) {
               className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                 !isLogin
                   ? 'bg-[#FF6B5F] text-white shadow-md shadow-[#FF6B5F]/20'
-                  : 'text-[#8C877D] hover:text-[#F5F1E8]'
+                  : 'text-gray-500 dark:text-[#8C877D] hover:text-gray-900 dark:hover:text-[#F5F1E8]'
               }`}
             >
               Create Account
@@ -160,54 +160,54 @@ export default function AuthPage({ defaultIsLogin = true }) {
           <form onSubmit={handleSubmit} className="space-y-4">
             {!isLogin && (
               <div>
-                <label className="block text-xs font-bold text-[#C7C2B6] mb-1.5 uppercase tracking-wider">
+                <label className="block text-xs font-bold text-gray-600 dark:text-[#C7C2B6] mb-1.5 uppercase tracking-wider">
                   Full Name
                 </label>
                 <div className="relative">
-                  <User className="w-4 h-4 text-[#8C877D] absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <User className="w-4 h-4 text-gray-500 dark:text-[#8C877D] absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="John Doe"
-                    className="w-full bg-[#16191E] border border-white/[0.08] text-xs sm:text-sm text-[#F5F1E8] rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:border-[#FF6B5F] focus:ring-1 focus:ring-[#FF6B5F]/40 placeholder:text-[#8C877D] transition-all"
+                    className="w-full bg-gray-50 dark:bg-[#16191E] border border-gray-200 dark:border-white/[0.08] text-xs sm:text-sm text-gray-900 dark:text-[#F5F1E8] rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:border-[#FF6B5F] focus:ring-1 focus:ring-[#FF6B5F]/40 placeholder:text-gray-500 dark:text-[#8C877D] transition-all"
                   />
                 </div>
               </div>
             )}
 
             <div>
-              <label className="block text-xs font-bold text-[#C7C2B6] mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-bold text-gray-600 dark:text-[#C7C2B6] mb-1.5 uppercase tracking-wider">
                 Email Address
               </label>
               <div className="relative">
-                <Mail className="w-4 h-4 text-[#8C877D] absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Mail className="w-4 h-4 text-gray-500 dark:text-[#8C877D] absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className="w-full bg-[#16191E] border border-white/[0.08] text-xs sm:text-sm text-[#F5F1E8] rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:border-[#FF6B5F] focus:ring-1 focus:ring-[#FF6B5F]/40 placeholder:text-[#8C877D] transition-all"
+                  className="w-full bg-gray-50 dark:bg-[#16191E] border border-gray-200 dark:border-white/[0.08] text-xs sm:text-sm text-gray-900 dark:text-[#F5F1E8] rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:border-[#FF6B5F] focus:ring-1 focus:ring-[#FF6B5F]/40 placeholder:text-gray-500 dark:text-[#8C877D] transition-all"
                 />
               </div>
             </div>
 
             {!isLogin && (
               <div>
-                <label className="block text-xs font-bold text-[#C7C2B6] mb-1.5 uppercase tracking-wider">
+                <label className="block text-xs font-bold text-gray-600 dark:text-[#C7C2B6] mb-1.5 uppercase tracking-wider">
                   Target Career Objective
                 </label>
                 <div className="relative">
-                  <Target className="w-4 h-4 text-[#8C877D] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <Target className="w-4 h-4 text-gray-500 dark:text-[#8C877D] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                   <select
                     value={targetRole}
                     onChange={(e) => setTargetRole(e.target.value)}
-                    className="w-full bg-[#16191E] border border-white/[0.08] text-xs sm:text-sm text-[#F5F1E8] rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:border-[#FF6B5F] focus:ring-1 focus:ring-[#FF6B5F]/40 transition-all cursor-pointer"
+                    className="w-full bg-gray-50 dark:bg-[#16191E] border border-gray-200 dark:border-white/[0.08] text-xs sm:text-sm text-gray-900 dark:text-[#F5F1E8] rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:border-[#FF6B5F] focus:ring-1 focus:ring-[#FF6B5F]/40 transition-all cursor-pointer"
                   >
                     {CAREER_OBJECTIVES.map((obj) => (
-                      <option key={obj} value={obj} className="bg-[#111418] text-[#F5F1E8]">
+                      <option key={obj} value={obj} className="bg-white dark:bg-[#111418] text-gray-900 dark:text-[#F5F1E8]">
                         {obj}
                       </option>
                     ))}
@@ -218,24 +218,24 @@ export default function AuthPage({ defaultIsLogin = true }) {
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-bold text-[#C7C2B6] uppercase tracking-wider">
+                <label className="text-xs font-bold text-gray-600 dark:text-[#C7C2B6] uppercase tracking-wider">
                   Password
                 </label>
               </div>
               <div className="relative">
-                <Lock className="w-4 h-4 text-[#8C877D] absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Lock className="w-4 h-4 text-gray-500 dark:text-[#8C877D] absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder={isLogin ? 'Enter your password' : 'Create a strong password'}
-                  className="w-full bg-[#16191E] border border-white/[0.08] text-xs sm:text-sm text-[#F5F1E8] rounded-xl pl-10 pr-10 py-2.5 focus:outline-none focus:border-[#FF6B5F] focus:ring-1 focus:ring-[#FF6B5F]/40 placeholder:text-[#8C877D] transition-all font-mono"
+                  className="w-full bg-gray-50 dark:bg-[#16191E] border border-gray-200 dark:border-white/[0.08] text-xs sm:text-sm text-gray-900 dark:text-[#F5F1E8] rounded-xl pl-10 pr-10 py-2.5 focus:outline-none focus:border-[#FF6B5F] focus:ring-1 focus:ring-[#FF6B5F]/40 placeholder:text-gray-500 dark:text-[#8C877D] transition-all font-mono"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8C877D] hover:text-[#F5F1E8] cursor-pointer"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-[#8C877D] hover:text-gray-900 dark:hover:text-[#F5F1E8] cursor-pointer"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -244,23 +244,23 @@ export default function AuthPage({ defaultIsLogin = true }) {
 
             {!isLogin && (
               <div>
-                <label className="block text-xs font-bold text-[#C7C2B6] mb-1.5 uppercase tracking-wider">
+                <label className="block text-xs font-bold text-gray-600 dark:text-[#C7C2B6] mb-1.5 uppercase tracking-wider">
                   Confirm Password
                 </label>
                 <div className="relative">
-                  <Lock className="w-4 h-4 text-[#8C877D] absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <Lock className="w-4 h-4 text-gray-500 dark:text-[#8C877D] absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
                     type={showConfirmPassword ? 'text' : 'password'}
                     required
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Confirm your password"
-                    className="w-full bg-[#16191E] border border-white/[0.08] text-xs sm:text-sm text-[#F5F1E8] rounded-xl pl-10 pr-10 py-2.5 focus:outline-none focus:border-[#FF6B5F] focus:ring-1 focus:ring-[#FF6B5F]/40 placeholder:text-[#8C877D] transition-all font-mono"
+                    className="w-full bg-gray-50 dark:bg-[#16191E] border border-gray-200 dark:border-white/[0.08] text-xs sm:text-sm text-gray-900 dark:text-[#F5F1E8] rounded-xl pl-10 pr-10 py-2.5 focus:outline-none focus:border-[#FF6B5F] focus:ring-1 focus:ring-[#FF6B5F]/40 placeholder:text-gray-500 dark:text-[#8C877D] transition-all font-mono"
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8C877D] hover:text-[#F5F1E8] cursor-pointer"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-[#8C877D] hover:text-gray-900 dark:hover:text-[#F5F1E8] cursor-pointer"
                   >
                     {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -286,7 +286,7 @@ export default function AuthPage({ defaultIsLogin = true }) {
         </div>
 
         {/* Footer info */}
-        <p className="text-center text-xs text-[#8C877D] mt-6">
+        <p className="text-center text-xs text-gray-500 dark:text-[#8C877D] mt-6">
           LearnPath AI — Personalized Learning Path & Competency Recommender
         </p>
       </div>

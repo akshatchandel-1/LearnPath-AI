@@ -90,7 +90,7 @@ export const MentorDrawer = ({ isOpen, onClose }) => {
       <div className="absolute inset-y-0 right-0 max-w-full flex pl-10">
         <div className="w-screen max-w-md glass-panel border-l border-brand-500/30 flex flex-col shadow-2xl">
           {/* Drawer Header */}
-          <div className="p-4 sm:p-5 border-b border-white/10 flex items-center justify-between bg-gradient-to-r from-brand-950/60 to-[#0e1019]">
+          <div className="p-4 sm:p-5 border-b border-gray-200 dark:border-white/10 flex items-center justify-between bg-gradient-to-r from-brand-950/60 to-[#0e1019]">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-cyan-400 p-0.5 shadow-md shadow-brand-500/30">
                 <div className="w-full h-full bg-[#0d0f17] rounded-[10px] flex items-center justify-center">
@@ -145,7 +145,7 @@ export const MentorDrawer = ({ isOpen, onClose }) => {
                     <div
                       className={`max-w-[85%] rounded-2xl p-3.5 text-xs sm:text-sm leading-relaxed ${
                         isAssistant
-                          ? 'glass-card border border-white/10 text-slate-100'
+                          ? 'glass-card border border-gray-200 dark:border-white/10 text-slate-100'
                           : 'bg-brand-600 text-white shadow-md shadow-brand-600/20'
                       }`}
                     >
@@ -174,7 +174,7 @@ export const MentorDrawer = ({ isOpen, onClose }) => {
           </div>
 
           {/* Quick Suggested Prompts Pills */}
-          <div className="p-3 border-t border-white/5 bg-black/20">
+          <div className="p-3 border-t border-gray-200 dark:border-white/5 bg-black/20">
             <p className="text-[10px] uppercase tracking-wider font-bold text-slate-400 mb-1.5">
               Suggested Questions
             </p>
@@ -183,7 +183,7 @@ export const MentorDrawer = ({ isOpen, onClose }) => {
                 <button
                   key={i}
                   onClick={() => handleSendMessage(p)}
-                  className="px-2.5 py-1 rounded-lg text-[11px] font-medium bg-white/[0.04] hover:bg-brand-500/20 hover:text-brand-300 border border-white/10 text-slate-300 transition-colors text-left"
+                  className="px-2.5 py-1 rounded-lg text-[11px] font-medium bg-white/[0.04] hover:bg-brand-500/20 hover:text-brand-300 border border-gray-200 dark:border-white/10 text-slate-300 transition-colors text-left"
                 >
                   {p}
                 </button>
@@ -192,7 +192,7 @@ export const MentorDrawer = ({ isOpen, onClose }) => {
           </div>
 
           {/* Message Input Box */}
-          <div className="p-3 sm:p-4 border-t border-white/10 bg-[#0d0f17]">
+          <div className="p-3 sm:p-4 border-t border-gray-200 dark:border-white/10 bg-[#0d0f17]">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -205,7 +205,7 @@ export const MentorDrawer = ({ isOpen, onClose }) => {
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 placeholder="Ask mentor a question..."
-                className="flex-1 px-3.5 py-2 rounded-xl text-xs sm:text-sm bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-brand-400 transition-colors"
+                className="flex-1 px-3.5 py-2 rounded-xl text-xs sm:text-sm bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-brand-400 transition-colors"
               />
               <button
                 type="submit"

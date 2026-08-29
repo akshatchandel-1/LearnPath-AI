@@ -55,7 +55,7 @@ export const ResourcesPage = () => {
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl glass-panel border border-white/10">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl glass-panel border border-gray-200 dark:border-white/10">
         <div className="relative w-full sm:w-80">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
@@ -63,7 +63,7 @@ export const ResourcesPage = () => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by topic, skill, or title..."
-            className="w-full pl-10 pr-4 py-2 rounded-xl text-xs bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-brand-400"
+            className="w-full pl-10 pr-4 py-2 rounded-xl text-xs bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-brand-400"
           />
         </div>
 
@@ -75,7 +75,7 @@ export const ResourcesPage = () => {
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 typeFilter === t
                   ? 'bg-brand-600 text-white shadow-sm'
-                  : 'bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white'
+                  : 'bg-gray-100 dark:bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white'
               }`}
             >
               {t}
@@ -91,7 +91,7 @@ export const ResourcesPage = () => {
           <p className="text-xs text-slate-400">Loading resources...</p>
         </div>
       ) : resources.length === 0 ? (
-        <div className="py-16 text-center text-slate-400 glass-panel rounded-2xl border border-white/10">
+        <div className="py-16 text-center text-slate-400 glass-panel rounded-2xl border border-gray-200 dark:border-white/10">
           No resources found matching your search.
         </div>
       ) : (

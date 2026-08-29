@@ -163,7 +163,7 @@ export const QuizModal = ({ skillName, isOpen, onClose }) => {
                         className={`w-full p-4 rounded-xl text-left text-sm font-medium transition-all flex items-start gap-3 border ${
                           isSelected
                             ? 'bg-brand-600/30 border-brand-400 text-white shadow-md shadow-brand-500/20'
-                            : 'bg-white/[0.03] border-white/10 text-slate-300 hover:bg-white/[0.07] hover:text-white'
+                            : 'bg-white/[0.03] border-gray-200 dark:border-white/10 text-slate-300 hover:bg-white/[0.07] hover:text-white'
                         }`}
                       >
                         <span
@@ -184,11 +184,11 @@ export const QuizModal = ({ skillName, isOpen, onClose }) => {
             )}
 
             {/* Step Navigation Controls */}
-            <div className="flex items-center justify-between pt-4 border-t border-white/10">
+            <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-white/10">
               <button
                 disabled={currentQuestionIdx === 0}
                 onClick={() => setCurrentQuestionIdx(prev => prev - 1)}
-                className="px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 text-slate-300 disabled:opacity-40"
+                className="px-4 py-2 rounded-xl text-xs font-semibold bg-gray-100 dark:bg-white/5 hover:bg-white/10 text-slate-300 disabled:opacity-40"
               >
                 Previous
               </button>
@@ -245,7 +245,7 @@ export const QuizModal = ({ skillName, isOpen, onClose }) => {
             </div>
 
             {/* Skill Level Delta Calibration Box */}
-            <div className="p-4 rounded-xl bg-gradient-to-r from-brand-950/60 to-cyan-950/60 border border-white/10 text-left space-y-3">
+            <div className="p-4 rounded-xl bg-gradient-to-r from-brand-950/60 to-cyan-950/60 border border-gray-200 dark:border-white/10 text-left space-y-3">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs font-bold text-brand-300 uppercase">

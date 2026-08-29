@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import api from '../../services/api';
 import { INITIAL_COURSES } from '../../data/coursesAndAssessmentsData';
 import {
   Flame,
@@ -35,32 +36,49 @@ export default function DashboardOverview() {
   const [activeModal, setActiveModal] = useState(null); // 'milestone' | 'course' | null
   const [selectedCourse, setSelectedCourse] = useState(null);
 
-  const [courses, setCourses] = useState(() => {
-    try {
-      const saved = localStorage.getItem('m3_courses_data');
-      if (saved) return JSON.parse(saved);
-    } catch (e) {}
-    return INITIAL_COURSES;
-  });
+  const [inProgressCourses, setInProgressCourses] = useState([]);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem('m3_courses_data');
-      if (saved) setCourses(JSON.parse(saved));
-    } catch (e) {}
+    const fetchEnrolled = async () => {
+      try {
+        const token = localStorage.getItem('learnpath_token');
+        if (!token) return;
+        const res = await api.get('/courses/enrolled');
+        if (res.data?.success) {
+          const mapped = res.data.enrolledCourses.map(record => ({
+            id: record.resource._id,
+            title: record.resource.title,
+            category: record.resource.skills?.[0] || 'Tech',
+            tagline: record.resource.description,
+            progress: record.progressPercent || 0,
+            completedLessons: record.progressPercent >= 100 ? 1 : 0,
+            totalLessons: 1,
+            duration: record.resource.duration || '2 hrs',
+          }));
+          setInProgressCourses(mapped);
+        }
+      } catch (err) {
+        console.error('Failed to fetch enrolled courses', err);
+      }
+    };
+    fetchEnrolled();
   }, []);
 
-  const inProgressCourses = courses.filter((c) => c.enrolled);
   const activeCoursesCount = inProgressCourses.length;
   const milestonesDoneCount = user?.completedMilestonesCount || 0;
 
-  const skillsData = user?.skills || [
-    { name: 'HTML & CSS', progress: 85 },
-    { name: 'JavaScript ES6+', progress: 75 },
-    { name: 'React.js', progress: 60 },
-    { name: 'Node.js & Express', progress: 50 },
-    { name: 'MongoDB', progress: 45 },
+  const rawSkills = user?.skills?.length > 0 ? user.skills : [
+    { name: 'HTML & CSS', level: 85 },
+    { name: 'JavaScript ES6+', level: 75 },
+    { name: 'React.js', level: 60 },
+    { name: 'Node.js & Express', level: 50 },
+    { name: 'MongoDB', level: 45 },
   ];
+
+  const skillsData = rawSkills.map(s => ({
+    name: s.name,
+    progress: s.progress ?? s.level ?? 0
+  }));
 
   const handleOpenCourse = (course) => {
     setSelectedCourse(course);
@@ -72,10 +90,10 @@ export default function DashboardOverview() {
       {/* Header Greeting */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <div>
-          <h1 className={`text-2xl sm:text-3xl font-black tracking-tight flex items-center gap-2 ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
+          <h1 className={`text-2xl sm:text-3xl font-black tracking-tight flex items-center gap-2 ${isDark ? 'text-gray-900 dark:text-[#F5F1E8]' : 'text-[#111418]'}`}>
             Welcome back, {userName} 👋
           </h1>
-          <p className="text-xs sm:text-sm text-[#8C877D] mt-1">
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-[#8C877D] mt-1">
             Track your personalized engineering roadmap for <strong className="text-[#FF857A]">{targetRole}</strong>.
           </p>
         </div>
@@ -93,19 +111,19 @@ export default function DashboardOverview() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Card 1: Current Streak */}
         <div className={`p-5 rounded-2xl border transition-all shadow-sm hover:shadow-md ${
-          isDark ? 'bg-[#111418] border-white/[0.08]' : 'bg-white border-black/[0.08]'
+          isDark ? 'bg-white dark:bg-[#111418] border-gray-200 dark:border-white/[0.08]' : 'bg-white border-black/[0.08]'
         }`}>
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-[#FF6B5F]/15 border border-[#FF6B5F]/30 text-[#FF857A] flex items-center justify-center shrink-0">
               <Flame className="w-6 h-6 fill-current" />
             </div>
             <div>
-              <p className="text-xs font-bold text-[#8C877D] uppercase tracking-wider">Current Streak</p>
+              <p className="text-xs font-bold text-gray-500 dark:text-[#8C877D] uppercase tracking-wider">Current Streak</p>
               <div className="flex items-baseline gap-1.5 mt-0.5">
-                <span className={`text-2xl font-black font-mono ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
+                <span className={`text-2xl font-black font-mono ${isDark ? 'text-gray-900 dark:text-[#F5F1E8]' : 'text-[#111418]'}`}>
                   {userStreak}
                 </span>
-                <span className="text-xs font-medium text-[#8C877D]">days</span>
+                <span className="text-xs font-medium text-gray-500 dark:text-[#8C877D]">days</span>
               </div>
             </div>
           </div>
@@ -113,15 +131,15 @@ export default function DashboardOverview() {
 
         {/* Card 2: Active Courses */}
         <div className={`p-5 rounded-2xl border transition-all shadow-sm hover:shadow-md ${
-          isDark ? 'bg-[#111418] border-white/[0.08]' : 'bg-white border-black/[0.08]'
+          isDark ? 'bg-white dark:bg-[#111418] border-gray-200 dark:border-white/[0.08]' : 'bg-white border-black/[0.08]'
         }`}>
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-[#34D399]/15 border border-[#34D399]/30 text-[#34D399] flex items-center justify-center shrink-0">
               <BookOpen className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-xs font-bold text-[#8C877D] uppercase tracking-wider">Courses Active</p>
-              <span className={`text-2xl font-black font-mono block mt-0.5 ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
+              <p className="text-xs font-bold text-gray-500 dark:text-[#8C877D] uppercase tracking-wider">Courses Active</p>
+              <span className={`text-2xl font-black font-mono block mt-0.5 ${isDark ? 'text-gray-900 dark:text-[#F5F1E8]' : 'text-[#111418]'}`}>
                 {activeCoursesCount}
               </span>
             </div>
@@ -130,15 +148,15 @@ export default function DashboardOverview() {
 
         {/* Card 3: Milestones Done */}
         <div className={`p-5 rounded-2xl border transition-all shadow-sm hover:shadow-md ${
-          isDark ? 'bg-[#111418] border-white/[0.08]' : 'bg-white border-black/[0.08]'
+          isDark ? 'bg-white dark:bg-[#111418] border-gray-200 dark:border-white/[0.08]' : 'bg-white border-black/[0.08]'
         }`}>
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-[#38BDF8]/15 border border-[#38BDF8]/30 text-[#38BDF8] flex items-center justify-center shrink-0">
               <FolderCheck className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-xs font-bold text-[#8C877D] uppercase tracking-wider">Milestones Done</p>
-              <span className={`text-2xl font-black font-mono block mt-0.5 ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
+              <p className="text-xs font-bold text-gray-500 dark:text-[#8C877D] uppercase tracking-wider">Milestones Done</p>
+              <span className={`text-2xl font-black font-mono block mt-0.5 ${isDark ? 'text-gray-900 dark:text-[#F5F1E8]' : 'text-[#111418]'}`}>
                 {milestonesDoneCount}
               </span>
             </div>
@@ -147,15 +165,15 @@ export default function DashboardOverview() {
 
         {/* Card 4: Total XP */}
         <div className={`p-5 rounded-2xl border transition-all shadow-sm hover:shadow-md ${
-          isDark ? 'bg-[#111418] border-white/[0.08]' : 'bg-white border-black/[0.08]'
+          isDark ? 'bg-white dark:bg-[#111418] border-gray-200 dark:border-white/[0.08]' : 'bg-white border-black/[0.08]'
         }`}>
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-[#FBBF24]/15 border border-[#FBBF24]/30 text-[#FBBF24] flex items-center justify-center shrink-0">
               <Award className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-xs font-bold text-[#8C877D] uppercase tracking-wider">Total XP Earned</p>
-              <span className={`text-2xl font-black font-mono block mt-0.5 ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
+              <p className="text-xs font-bold text-gray-500 dark:text-[#8C877D] uppercase tracking-wider">Total XP Earned</p>
+              <span className={`text-2xl font-black font-mono block mt-0.5 ${isDark ? 'text-gray-900 dark:text-[#F5F1E8]' : 'text-[#111418]'}`}>
                 +{userXp} XP
               </span>
             </div>
@@ -167,28 +185,28 @@ export default function DashboardOverview() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Your Learning Path Card */}
         <div className={`p-6 rounded-2xl border flex flex-col justify-between space-y-5 ${
-          isDark ? 'bg-[#111418] border-white/[0.08]' : 'bg-white border-black/[0.08]'
+          isDark ? 'bg-white dark:bg-[#111418] border-gray-200 dark:border-white/[0.08]' : 'bg-white border-black/[0.08]'
         }`}>
           <div>
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-bold text-[#8C877D] uppercase tracking-wider">
+              <span className="text-xs font-bold text-gray-500 dark:text-[#8C877D] uppercase tracking-wider">
                 Your Learning Path
               </span>
               <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#FF6B5F]/15 text-[#FF857A] border border-[#FF6B5F]/30 font-mono">
                 Active Roadmap
               </span>
             </div>
-            <h3 className={`text-lg font-black mb-4 ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
+            <h3 className={`text-lg font-black mb-4 ${isDark ? 'text-gray-900 dark:text-[#F5F1E8]' : 'text-[#111418]'}`}>
               {targetRole}
             </h3>
 
             {/* Progress Bar */}
             <div className="space-y-2">
-              <div className="flex justify-between items-center text-xs text-[#8C877D]">
+              <div className="flex justify-between items-center text-xs text-gray-500 dark:text-[#8C877D]">
                 <span>Overall Curriculum Progress</span>
                 <span className="font-bold text-[#FF857A] font-mono">65% Complete</span>
               </div>
-              <div className="w-full bg-white/5 rounded-full h-2.5 overflow-hidden">
+              <div className="w-full bg-gray-100 dark:bg-white/5 rounded-full h-2.5 overflow-hidden">
                 <div
                   className="bg-gradient-to-r from-[#FF6B5F] to-[#E85548] h-full rounded-full transition-all duration-500"
                   style={{ width: '65%' }}
@@ -196,9 +214,9 @@ export default function DashboardOverview() {
               </div>
             </div>
 
-            <div className="mt-5 pt-4 border-t border-white/[0.06]">
-              <p className="text-xs text-[#8C877D] font-medium">Current Milestone Phase</p>
-              <p className={`text-sm font-bold mt-0.5 ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
+            <div className="mt-5 pt-4 border-t border-gray-200 dark:border-white/[0.06]">
+              <p className="text-xs text-gray-500 dark:text-[#8C877D] font-medium">Current Milestone Phase</p>
+              <p className={`text-sm font-bold mt-0.5 ${isDark ? 'text-gray-900 dark:text-[#F5F1E8]' : 'text-[#111418]'}`}>
                 Phase 2: Core Engineering Architecture & APIs
               </p>
             </div>
@@ -217,11 +235,11 @@ export default function DashboardOverview() {
 
         {/* Next Milestone Card */}
         <div className={`p-6 rounded-2xl border flex flex-col justify-between space-y-5 ${
-          isDark ? 'bg-[#111418] border-white/[0.08]' : 'bg-white border-black/[0.08]'
+          isDark ? 'bg-white dark:bg-[#111418] border-gray-200 dark:border-white/[0.08]' : 'bg-white border-black/[0.08]'
         }`}>
           <div>
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-bold text-[#8C877D] uppercase tracking-wider">
+              <span className="text-xs font-bold text-gray-500 dark:text-[#8C877D] uppercase tracking-wider">
                 Upcoming Milestone
               </span>
               <span className="flex items-center gap-1 text-xs font-bold text-[#FBBF24] font-mono">
@@ -229,19 +247,19 @@ export default function DashboardOverview() {
                 Target: Next Week
               </span>
             </div>
-            <h3 className={`text-lg font-black mb-2 ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
+            <h3 className={`text-lg font-black mb-2 ${isDark ? 'text-gray-900 dark:text-[#F5F1E8]' : 'text-[#111418]'}`}>
               Production Architecture Project Milestone
             </h3>
-            <p className="text-xs text-[#8C877D] leading-relaxed mb-4">
+            <p className="text-xs text-gray-500 dark:text-[#8C877D] leading-relaxed mb-4">
               Construct a multi-service system with live data feeds and containerization to verify Phase 2 readiness.
             </p>
 
             <div className="space-y-2">
-              <div className="flex justify-between items-center text-xs text-[#8C877D]">
+              <div className="flex justify-between items-center text-xs text-gray-500 dark:text-[#8C877D]">
                 <span>Milestone Tasks Completed</span>
                 <span className="font-bold text-[#34D399] font-mono">2 of 3 tasks (68%)</span>
               </div>
-              <div className="w-full bg-white/5 rounded-full h-2.5 overflow-hidden">
+              <div className="w-full bg-gray-100 dark:bg-white/5 rounded-full h-2.5 overflow-hidden">
                 <div
                   className="bg-gradient-to-r from-[#34D399] to-[#059669] h-full rounded-full transition-all duration-500"
                   style={{ width: '68%' }}
@@ -254,7 +272,7 @@ export default function DashboardOverview() {
             <button
               onClick={() => setActiveModal('milestone')}
               className={`w-full sm:w-auto px-5 py-2.5 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
-                isDark ? 'border-white/10 bg-[#16191E] text-[#F5F1E8] hover:bg-white/5' : 'border-black/10 bg-[#F5F1E8] text-[#111418] hover:bg-black/5'
+                isDark ? 'border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-[#16191E] text-gray-900 dark:text-[#F5F1E8] hover:bg-gray-100 dark:hover:bg-white/5' : 'border-black/10 bg-[#F5F1E8] text-[#111418] hover:bg-black/5'
               }`}
             >
               View Milestone Details
@@ -267,10 +285,10 @@ export default function DashboardOverview() {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className={`text-lg font-black ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
+            <h3 className={`text-lg font-black ${isDark ? 'text-gray-900 dark:text-[#F5F1E8]' : 'text-[#111418]'}`}>
               Active Courses in Progress
             </h3>
-            <p className="text-xs text-[#8C877D]">Pick up where you left off in your modules</p>
+            <p className="text-xs text-gray-500 dark:text-[#8C877D]">Pick up where you left off in your modules</p>
           </div>
           <button
             onClick={() => navigate('/courses')}
@@ -288,7 +306,7 @@ export default function DashboardOverview() {
                 key={course.id}
                 onClick={() => handleOpenCourse(course)}
                 className={`p-5 rounded-2xl border transition-all cursor-pointer group hover:border-[#FF6B5F]/40 ${
-                  isDark ? 'bg-[#111418] border-white/[0.08]' : 'bg-white border-black/[0.08]'
+                  isDark ? 'bg-white dark:bg-[#111418] border-gray-200 dark:border-white/[0.08]' : 'bg-white border-black/[0.08]'
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
@@ -301,22 +319,22 @@ export default function DashboardOverview() {
                 </div>
 
                 <h4 className={`text-sm font-bold line-clamp-1 mb-1 group-hover:text-[#FF857A] transition-colors ${
-                  isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'
+                  isDark ? 'text-gray-900 dark:text-[#F5F1E8]' : 'text-[#111418]'
                 }`}>
                   {course.title}
                 </h4>
-                <p className="text-xs text-[#8C877D] line-clamp-1 mb-3">
+                <p className="text-xs text-gray-500 dark:text-[#8C877D] line-clamp-1 mb-3">
                   {course.tagline || 'Curated module track'}
                 </p>
 
-                <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden mb-3">
+                <div className="w-full bg-gray-100 dark:bg-white/5 rounded-full h-2 overflow-hidden mb-3">
                   <div
                     className="bg-gradient-to-r from-[#FF6B5F] to-[#E85548] h-full rounded-full"
                     style={{ width: `${course.progress || 0}%` }}
                   />
                 </div>
 
-                <div className="flex items-center justify-between text-[11px] text-[#8C877D] pt-1">
+                <div className="flex items-center justify-between text-[11px] text-gray-500 dark:text-[#8C877D] pt-1">
                   <span>{course.completedLessons || 0}/{course.totalLessons || 8} lessons</span>
                   <span className="font-mono">{course.duration}</span>
                 </div>
@@ -324,9 +342,9 @@ export default function DashboardOverview() {
             ))}
           </div>
         ) : (
-          <div className="p-8 rounded-2xl bg-[#111418] border border-white/[0.08] text-center space-y-3">
-            <BookOpen className="w-8 h-8 text-[#8C877D] mx-auto opacity-50" />
-            <p className="text-xs text-[#8C877D]">No courses currently enrolled. Start a learning track matched to your goals!</p>
+          <div className="p-8 rounded-2xl bg-white dark:bg-[#111418] border border-gray-200 dark:border-white/[0.08] text-center space-y-3">
+            <BookOpen className="w-8 h-8 text-gray-500 dark:text-[#8C877D] mx-auto opacity-50" />
+            <p className="text-xs text-gray-500 dark:text-[#8C877D]">No courses currently enrolled. Start a learning track matched to your goals!</p>
             <button
               onClick={() => navigate('/courses')}
               className="px-4 py-2 rounded-xl bg-[#FF6B5F] hover:bg-[#E85548] text-white text-xs font-bold transition-all cursor-pointer"
@@ -341,10 +359,10 @@ export default function DashboardOverview() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Skill Competency Bars */}
         <div className={`p-6 rounded-2xl border lg:col-span-2 space-y-4 ${
-          isDark ? 'bg-[#111418] border-white/[0.08]' : 'bg-white border-black/[0.08]'
+          isDark ? 'bg-white dark:bg-[#111418] border-gray-200 dark:border-white/[0.08]' : 'bg-white border-black/[0.08]'
         }`}>
           <div className="flex items-center justify-between">
-            <h3 className={`text-base font-bold ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
+            <h3 className={`text-base font-bold ${isDark ? 'text-gray-900 dark:text-[#F5F1E8]' : 'text-[#111418]'}`}>
               Verified Skill Competency
             </h3>
             <button
@@ -359,12 +377,12 @@ export default function DashboardOverview() {
             {skillsData.map((skill, idx) => (
               <div key={idx} className="space-y-1">
                 <div className="flex justify-between text-xs">
-                  <span className={`font-semibold ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
+                  <span className={`font-semibold ${isDark ? 'text-gray-900 dark:text-[#F5F1E8]' : 'text-[#111418]'}`}>
                     {skill.name}
                   </span>
-                  <span className="text-[#8C877D] font-mono font-bold">{skill.progress}%</span>
+                  <span className="text-gray-500 dark:text-[#8C877D] font-mono font-bold">{skill.progress}%</span>
                 </div>
-                <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden">
+                <div className="w-full bg-gray-100 dark:bg-white/5 rounded-full h-2 overflow-hidden">
                   <div
                     className="bg-gradient-to-r from-[#FF6B5F] to-[#E85548] h-full rounded-full"
                     style={{ width: `${skill.progress}%` }}
@@ -377,23 +395,23 @@ export default function DashboardOverview() {
 
         {/* Weekly Goal Progress */}
         <div className={`p-6 rounded-2xl border space-y-4 flex flex-col justify-between ${
-          isDark ? 'bg-[#111418] border-white/[0.08]' : 'bg-white border-black/[0.08]'
+          isDark ? 'bg-white dark:bg-[#111418] border-gray-200 dark:border-white/[0.08]' : 'bg-white border-black/[0.08]'
         }`}>
           <div>
             <div className="flex items-center gap-2 mb-3">
               <Clock className="w-4 h-4 text-[#FF6B5F]" />
-              <h3 className={`text-base font-bold ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
+              <h3 className={`text-base font-bold ${isDark ? 'text-gray-900 dark:text-[#F5F1E8]' : 'text-[#111418]'}`}>
                 Weekly Study Goal
               </h3>
             </div>
-            <div className={`text-3xl font-black font-mono my-2 ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
+            <div className={`text-3xl font-black font-mono my-2 ${isDark ? 'text-gray-900 dark:text-[#F5F1E8]' : 'text-[#111418]'}`}>
               {user?.completedHours || 0} / 12 hrs
             </div>
-            <p className="text-xs text-[#8C877D] leading-relaxed mb-4">
+            <p className="text-xs text-gray-500 dark:text-[#8C877D] leading-relaxed mb-4">
               Maintain your daily study cadence to keep milestone pacing optimal!
             </p>
 
-            <div className="w-full bg-white/5 rounded-full h-2.5 overflow-hidden">
+            <div className="w-full bg-gray-100 dark:bg-white/5 rounded-full h-2.5 overflow-hidden">
               <div
                 className="bg-gradient-to-r from-[#FF6B5F] to-[#E85548] h-full rounded-full"
                 style={{ width: `${Math.min(100, Math.round(((user?.completedHours || 0) / 12) * 100))}%` }}
@@ -404,7 +422,7 @@ export default function DashboardOverview() {
           <button
             onClick={() => navigate('/progress')}
             className={`w-full py-2.5 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
-              isDark ? 'border-white/10 bg-[#16191E] text-[#F5F1E8] hover:bg-white/5' : 'border-black/10 bg-[#F5F1E8] text-[#111418] hover:bg-black/5'
+              isDark ? 'border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-[#16191E] text-gray-900 dark:text-[#F5F1E8] hover:bg-gray-100 dark:hover:bg-white/5' : 'border-black/10 bg-[#F5F1E8] text-[#111418] hover:bg-black/5'
             }`}
           >
             View Detailed Analytics
@@ -414,13 +432,13 @@ export default function DashboardOverview() {
 
       {/* Interactive Modal for Milestone / Course Details */}
       {activeModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/80 dark:bg-black/80 backdrop-blur-md animate-in fade-in">
           <div className={`w-full max-w-lg p-6 sm:p-8 rounded-[28px] border shadow-2xl relative ${
-            isDark ? 'bg-[#111418] border-white/10 text-[#F5F1E8]' : 'bg-white border-black/10 text-[#111418]'
+            isDark ? 'bg-white dark:bg-[#111418] border-gray-200 dark:border-white/10 text-gray-900 dark:text-[#F5F1E8]' : 'bg-white border-black/10 text-[#111418]'
           }`}>
             <button
               onClick={() => setActiveModal(null)}
-              className="absolute top-5 right-5 p-2 rounded-xl text-[#8C877D] hover:text-[#F5F1E8] cursor-pointer"
+              className="absolute top-5 right-5 p-2 rounded-xl text-gray-500 dark:text-[#8C877D] hover:text-gray-900 dark:hover:text-[#F5F1E8] cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -431,10 +449,10 @@ export default function DashboardOverview() {
                   <Target className="w-5 h-5" />
                 </div>
                 <h3 className="text-xl font-black">Production Architecture Project</h3>
-                <p className="text-xs text-[#8C877D] leading-relaxed">
+                <p className="text-xs text-gray-500 dark:text-[#8C877D] leading-relaxed">
                   This milestone tests component hierarchy, custom hooks, and server-side state synchronization with MongoDB.
                 </p>
-                <div className="p-3.5 rounded-xl bg-[#0E1114] border border-white/[0.06] space-y-2 text-xs">
+                <div className="p-3.5 rounded-xl bg-gray-50 dark:bg-[#0E1114] border border-gray-200 dark:border-white/[0.06] space-y-2 text-xs">
                   <div className="flex items-center gap-2 text-[#34D399]">
                     <CheckCircle2 className="w-4 h-4" />
                     <span>State Management Setup (Complete)</span>
@@ -469,15 +487,15 @@ export default function DashboardOverview() {
                   <span className="text-xs font-bold text-[#FBBF24] font-mono">★ {selectedCourse.rating || 4.9}</span>
                 </div>
                 <h3 className="text-xl font-black">{selectedCourse.title}</h3>
-                <p className="text-xs text-[#8C877D] leading-relaxed">
+                <p className="text-xs text-gray-500 dark:text-[#8C877D] leading-relaxed">
                   {selectedCourse.tagline || selectedCourse.description}
                 </p>
                 <div className="space-y-1">
-                  <div className="flex justify-between text-xs text-[#8C877D]">
+                  <div className="flex justify-between text-xs text-gray-500 dark:text-[#8C877D]">
                     <span>Progress</span>
                     <span className="font-mono font-bold text-[#FF857A]">{selectedCourse.progress || 0}%</span>
                   </div>
-                  <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden">
+                  <div className="w-full bg-gray-100 dark:bg-white/5 rounded-full h-2 overflow-hidden">
                     <div
                       className="bg-gradient-to-r from-[#FF6B5F] to-[#E85548] h-full rounded-full"
                       style={{ width: `${selectedCourse.progress || 0}%` }}

@@ -22,7 +22,7 @@ export const RoadmapTimeline = ({ onOpenQuiz, onExplainResource }) => {
 
   if (!learningPath || !learningPath.phases || learningPath.phases.length === 0) {
     return (
-      <div className="p-8 text-center glass-panel rounded-2xl border border-white/10">
+      <div className="p-8 text-center glass-panel rounded-2xl border border-gray-200 dark:border-white/10">
         <p className="text-slate-400">No active roadmap found. Complete onboarding or generate a new path.</p>
       </div>
     );
@@ -50,7 +50,7 @@ export const RoadmapTimeline = ({ onOpenQuiz, onExplainResource }) => {
               </span>
             )}
           </div>
-          <h2 className="text-xl sm:text-2xl font-black text-white font-display">
+          <h2 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white font-display">
             {title}
           </h2>
           <div className="flex flex-wrap items-center gap-4 mt-2 text-xs text-slate-300">
@@ -101,7 +101,7 @@ export const RoadmapTimeline = ({ onOpenQuiz, onExplainResource }) => {
                   ? 'border-brand-500/60 shadow-xl shadow-brand-500/10 bg-[#141829]'
                   : isCompleted
                   ? 'border-emerald-500/30 bg-[#0e171b]'
-                  : 'border-white/5 opacity-75 bg-[#0e1017]'
+                  : 'border-gray-200 dark:border-white/5 opacity-75 bg-[#0e1017]'
               }`}
             >
               {/* Timeline Bullet Node */}
@@ -147,7 +147,7 @@ export const RoadmapTimeline = ({ onOpenQuiz, onExplainResource }) => {
                     </span>
                   </div>
 
-                  <h3 className="text-lg font-bold text-white font-display">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white font-display">
                     {phase.title}
                   </h3>
                   <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">
@@ -161,7 +161,7 @@ export const RoadmapTimeline = ({ onOpenQuiz, onExplainResource }) => {
                       {phase.adaptiveNotes}
                     </span>
                   )}
-                  <button className="p-1 text-slate-400 hover:text-white">
+                  <button className="p-1 text-slate-400 hover:text-gray-900 dark:hover:text-white">
                     {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
                   </button>
                 </div>
@@ -169,7 +169,7 @@ export const RoadmapTimeline = ({ onOpenQuiz, onExplainResource }) => {
 
               {/* Expanded Phase Details (Skills, Resources, Quiz, Project) */}
               {isExpanded && (
-                <div className="px-5 sm:px-6 pb-6 pt-2 border-t border-white/5 space-y-4">
+                <div className="px-5 sm:px-6 pb-6 pt-2 border-t border-gray-200 dark:border-white/5 space-y-4">
                   {/* Skills Target Badges */}
                   <div>
                     <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">
@@ -188,14 +188,14 @@ export const RoadmapTimeline = ({ onOpenQuiz, onExplainResource }) => {
                   </div>
 
                   {/* Phase Milestone Box */}
-                  <div className="p-3.5 rounded-xl bg-gradient-to-r from-brand-950/40 to-cyan-950/40 border border-white/10 flex items-center justify-between gap-3">
+                  <div className="p-3.5 rounded-xl bg-gradient-to-r from-brand-950/40 to-cyan-950/40 border border-gray-200 dark:border-white/10 flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
                       <Sparkles className="w-5 h-5 text-cyan-400 shrink-0" />
                       <div>
                         <p className="text-[11px] text-cyan-300 uppercase font-bold tracking-wider">
                           Phase Milestone Deliverable
                         </p>
-                        <p className="text-xs sm:text-sm font-semibold text-white">
+                        <p className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white">
                           {phase.milestone}
                         </p>
                       </div>
@@ -205,11 +205,11 @@ export const RoadmapTimeline = ({ onOpenQuiz, onExplainResource }) => {
                   {/* Actions (Checkpoint Quiz & Project) */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                     {/* Checkpoint Quiz Button */}
-                    <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/10 flex items-center justify-between gap-3">
+                    <div className="p-3.5 rounded-xl bg-white/[0.02] border border-gray-200 dark:border-white/10 flex items-center justify-between gap-3">
                       <div className="flex items-center gap-2.5">
                         <Award className="w-5 h-5 text-amber-400 shrink-0" />
                         <div>
-                          <p className="text-xs font-bold text-white line-clamp-1">{phase.quizTitle || 'Checkpoint Quiz'}</p>
+                          <p className="text-xs font-bold text-gray-900 dark:text-white line-clamp-1">{phase.quizTitle || 'Checkpoint Quiz'}</p>
                           <p className="text-[11px] text-slate-400">
                             {phase.quizScore !== null ? `Score: ${phase.quizScore}%` : '5 Question Assessment'}
                           </p>
@@ -224,11 +224,11 @@ export const RoadmapTimeline = ({ onOpenQuiz, onExplainResource }) => {
                     </div>
 
                     {/* Milestone Project Preview */}
-                    <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/10 flex items-center justify-between gap-3">
+                    <div className="p-3.5 rounded-xl bg-white/[0.02] border border-gray-200 dark:border-white/10 flex items-center justify-between gap-3">
                       <div className="flex items-center gap-2.5">
                         <Sparkles className="w-5 h-5 text-brand-400 shrink-0" />
                         <div>
-                          <p className="text-xs font-bold text-white line-clamp-1">{phase.projectTitle || 'Capstone Milestone'}</p>
+                          <p className="text-xs font-bold text-gray-900 dark:text-white line-clamp-1">{phase.projectTitle || 'Capstone Milestone'}</p>
                           <p className="text-[11px] text-slate-400">Hands-on Portfolio Build</p>
                         </div>
                       </div>
