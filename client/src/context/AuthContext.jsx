@@ -1,11 +1,43 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { mockUser } from '../utils/mockData';
+import api from '../services/api';
 
 const AuthContext = createContext(null);
 
+export const defaultUser = {
+  id: 'usr_default_101',
+  name: 'Learner',
+  email: 'learner@learnpath.ai',
+  avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+  targetRole: 'Full Stack Developer',
+  tagline: 'Aspiring Software Engineer & Cloud Architect',
+  location: 'San Francisco, CA',
+  education: 'B.Tech in Computer Science',
+  experienceLevel: 'Intermediate',
+  weeklyGoalHours: 12,
+  completedHours: 0,
+  overallProgress: 0,
+  streakDays: 0,
+  totalXp: 0,
+  bio: 'Passionate developer building scalable web architectures, mastering full-stack systems and cloud engineering.',
+  areasOfInterest: 'Web Development, Artificial Intelligence, System Architecture',
+  preferredLearningStyle: 'Hands-on Projects',
+  weeklyLearningTime: '12-15 hours/week',
+  currentFocus: 'React 18, Node.js Microservices, MongoDB',
+  careerGoal: 'Full Stack Developer',
+  interests: ['Full Stack Development', 'TypeScript', 'System Design', 'Cloud Architecture'],
+  skills: [
+    { name: 'HTML & CSS', progress: 85 },
+    { name: 'JavaScript ES6+', progress: 75 },
+    { name: 'React.js', progress: 60 },
+    { name: 'Node.js & Express', progress: 50 },
+    { name: 'MongoDB', progress: 45 },
+  ],
+  completedMilestonesCount: 0,
+  activeCoursesCount: 0,
+};
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
-    // Check if user session exists in localStorage, otherwise default to demo user for seamless team preview
     const saved = localStorage.getItem('learnpath_user');
     if (saved) {
       try {
@@ -14,10 +46,29 @@ export function AuthProvider({ children }) {
         console.error('Error parsing stored user:', e);
       }
     }
-    return mockUser;
+    return null;
   });
 
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const initAuth = async () => {
+      const token = localStorage.getItem('learnpath_token');
+      if (token) {
+        try {
+          const res = await api.get('/auth/me');
+          if (res.data?.success) {
+            setUser(res.data.user);
+          }
+        } catch (err) {
+          if (err.response?.status === 401) {
+            logout();
+          }
+        }
+      }
+    };
+    initAuth();
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -31,37 +82,37 @@ export function AuthProvider({ children }) {
   const login = async (email, password) => {
     setLoading(true);
     try {
-      // Basic login placeholder (will connect to backend later)
-      const simulatedUser = {
-        ...mockUser,
-        email: email || mockUser.email,
-      };
-      setUser(simulatedUser);
-      localStorage.setItem('learnpath_token', 'demo_token_xyz_123');
-      setLoading(false);
-      return { success: true, user: simulatedUser };
+      const res = await api.post('/auth/login', { email, password });
+      if (res.data?.success) {
+        setUser(res.data.user);
+        localStorage.setItem('learnpath_token', res.data.token);
+        setLoading(false);
+        return { success: true, user: res.data.user };
+      }
     } catch (err) {
       setLoading(false);
-      return { success: false, error: err.message };
+      return { success: false, error: err.response?.data?.message || err.message };
     }
   };
 
   const signup = async (name, email, password, targetRole) => {
     setLoading(true);
     try {
-      const newUser = {
-        ...mockUser,
-        name: name || 'Learner',
-        email: email || 'learner@learnpath.ai',
-        targetRole: targetRole || 'Full Stack Developer',
-      };
-      setUser(newUser);
-      localStorage.setItem('learnpath_token', 'demo_token_xyz_123');
-      setLoading(false);
-      return { success: true, user: newUser };
+      const res = await api.post('/auth/signup', { 
+        name, 
+        email, 
+        password, 
+        careerGoal: targetRole || 'Full Stack Developer'
+      });
+      if (res.data?.success) {
+        setUser(res.data.user);
+        localStorage.setItem('learnpath_token', res.data.token);
+        setLoading(false);
+        return { success: true, user: res.data.user };
+      }
     } catch (err) {
       setLoading(false);
-      return { success: false, error: err.message };
+      return { success: false, error: err.response?.data?.message || err.message };
     }
   };
 
@@ -69,15 +120,74 @@ export function AuthProvider({ children }) {
     setUser(null);
     localStorage.removeItem('learnpath_user');
     localStorage.removeItem('learnpath_token');
+    localStorage.removeItem('m3_courses_data');
+    localStorage.removeItem('m3_assessments_data');
   };
 
-  const loginAsDemo = () => {
-    setUser(mockUser);
-    localStorage.setItem('learnpath_token', 'demo_token_xyz_123');
+  const updateUserProfile = async (updatedFields) => {
+    try {
+      // Map frontend fields to backend schema
+      const payload = {
+        careerGoal: updatedFields.targetRole || updatedFields.careerGoal,
+        interests: typeof updatedFields.interests === 'string' ? updatedFields.interests.split(',').map(s => s.trim()) : updatedFields.interests,
+        preferredLearningStyle: updatedFields.preferredLearningStyle,
+        weeklyStudyHours: parseInt(updatedFields.weeklyLearningTime) || 12, // backend expects weeklyStudyHours
+      };
+      
+      const res = await api.put('/profile', payload);
+      if (res.data?.success) {
+        setUser((prev) => {
+          const updated = { ...prev, ...updatedFields };
+          localStorage.setItem('learnpath_user', JSON.stringify(updated));
+          return updated;
+        });
+        return { success: true };
+      }
+    } catch (err) {
+      console.error('Error updating profile:', err);
+      return { success: false, error: err.message };
+    }
+  };
+
+  const awardXp = (amount = 100) => {
+    setUser((prev) => {
+      if (!prev) return prev;
+      const newXp = (prev.totalXp || 0) + amount;
+      const updated = { ...prev, totalXp: newXp };
+      localStorage.setItem('learnpath_user', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const updateSkillMastery = (skillName, newLevel) => {
+    setUser((prev) => {
+      if (!prev) return prev;
+      const skills = prev.skills || [];
+      const index = skills.findIndex(s => s.name.toLowerCase() === skillName.toLowerCase());
+      let updatedSkills;
+      if (index >= 0) {
+        updatedSkills = skills.map((s, i) => i === index ? { ...s, progress: Math.min(100, Math.max(s.progress, newLevel)) } : s);
+      } else {
+        updatedSkills = [...skills, { name: skillName, progress: newLevel }];
+      }
+      const updated = { ...prev, skills: updatedSkills };
+      localStorage.setItem('learnpath_user', JSON.stringify(updated));
+      return updated;
+    });
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, signup, logout, loginAsDemo }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      loading, 
+      login, 
+      signup, 
+      logout, 
+      updateUserProfile,
+      awardXp,
+      updateSkillMastery,
+      isAuthenticated: !!user 
+    }}>
       {children}
     </AuthContext.Provider>
   );

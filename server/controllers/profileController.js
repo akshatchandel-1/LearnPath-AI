@@ -32,31 +32,63 @@ const updateProfile = async (req, res, next) => {
   try {
     const { careerGoal, skills, interests, preferredLearningStyle, weeklyStudyHours, preferredDifficulty } = req.body;
 
+    // Validation
+    if (careerGoal !== undefined && typeof careerGoal !== 'string') {
+      return res.status(400).json({ success: false, message: 'careerGoal must be a string' });
+    }
+    
+    if (skills !== undefined) {
+      if (!Array.isArray(skills)) {
+        return res.status(400).json({ success: false, message: 'skills must be an array' });
+      }
+      for (const skill of skills) {
+        if (!skill.name || typeof skill.name !== 'string') {
+          return res.status(400).json({ success: false, message: 'Each skill must have a valid string name' });
+        }
+      }
+    }
+
+    const validLearningStyles = ['Video', 'Reading', 'Hands-on Projects', 'Practice Problems', 'Mixed'];
+    if (preferredLearningStyle !== undefined && !validLearningStyles.includes(preferredLearningStyle)) {
+      return res.status(400).json({ success: false, message: 'Invalid preferredLearningStyle' });
+    }
+
+    if (weeklyStudyHours !== undefined && (typeof weeklyStudyHours !== 'number' || weeklyStudyHours <= 0)) {
+      return res.status(400).json({ success: false, message: 'weeklyStudyHours must be a positive number' });
+    }
+
+    const validDifficulties = ['Beginner', 'Intermediate', 'Advanced'];
+    if (preferredDifficulty !== undefined && !validDifficulties.includes(preferredDifficulty)) {
+      return res.status(400).json({ success: false, message: 'Invalid preferredDifficulty' });
+    }
+
     let profile = await LearnerProfile.findOne({ user: req.user._id });
     if (!profile) {
       profile = new LearnerProfile({ user: req.user._id });
     }
 
-    if (careerGoal) profile.careerGoal = careerGoal;
-    if (skills) profile.skills = skills;
-    if (interests) profile.interests = interests;
-    if (preferredLearningStyle) profile.preferredLearningStyle = preferredLearningStyle;
-    if (weeklyStudyHours) profile.weeklyStudyHours = weeklyStudyHours;
-    if (preferredDifficulty) profile.preferredDifficulty = preferredDifficulty;
+    if (careerGoal !== undefined) profile.careerGoal = careerGoal;
+    if (skills !== undefined) profile.skills = skills;
+    if (interests !== undefined) profile.interests = interests;
+    if (preferredLearningStyle !== undefined) profile.preferredLearningStyle = preferredLearningStyle;
+    if (weeklyStudyHours !== undefined) profile.weeklyStudyHours = weeklyStudyHours;
+    if (preferredDifficulty !== undefined) profile.preferredDifficulty = preferredDifficulty;
 
     await profile.save();
 
     // Update user document
-    const user = await User.findById(req.user._id);
-    if (careerGoal) user.careerGoal = careerGoal;
-    if (skills) user.skills = skills;
-    if (preferredLearningStyle) user.preferredLearningStyle = preferredLearningStyle;
-    if (weeklyStudyHours) user.weeklyHours = weeklyStudyHours;
+    const user = await User.findById(req.user._id).select('-password');
+    if (careerGoal !== undefined) user.careerGoal = careerGoal;
+    if (skills !== undefined) user.skills = skills;
+    if (preferredLearningStyle !== undefined) user.preferredLearningStyle = preferredLearningStyle;
+    if (weeklyStudyHours !== undefined) user.weeklyHours = weeklyStudyHours;
     await user.save();
 
-    // Regenerate roadmap & recommendations to reflect new profile
-    await adaptivePathService.generateLearningPath(req.user._id);
-    await recommendationEngine.generateRecommendationsForUser(req.user._id);
+    // Regenerate roadmap & recommendations to reflect new profile asynchronously (Fire-and-forget)
+    Promise.all([
+      adaptivePathService.generateLearningPath(req.user._id),
+      recommendationEngine.generateRecommendationsForUser(req.user._id)
+    ]).catch(err => console.error('Background AI Processing Error:', err.message));
 
     res.json({ success: true, profile, user });
   } catch (error) {

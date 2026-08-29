@@ -1,4 +1,6 @@
 const Skill = require('../models/Skill');
+const SkillGap = require('../models/SkillGap');
+// Legacy dependency imported but NO LONGER INVOKED in the HTTP cycle.
 const skillGapEngine = require('../services/recommendation/skillGapEngine');
 
 // @desc    Get all skills
@@ -13,20 +15,44 @@ const getAllSkills = async (req, res, next) => {
   }
 };
 
-// @desc    Get skill gap analysis for current user
+// @desc    Get skill gap analysis for current user (latest snapshot)
 // @route   GET /api/skills/gap-analysis
 // @access  Private
 const getSkillGapAnalysis = async (req, res, next) => {
   try {
-    const userSkills = req.user.skills || [];
-    const careerGoal = req.user.careerGoal || 'Full Stack MERN Developer';
-
-    const gapReport = skillGapEngine.calculateSkillGap(userSkills, careerGoal);
-
-    res.json({ success: true, gapReport });
+    const skillGap = await SkillGap.findOne({ user: req.user._id }).sort({ createdAt: -1 });
+    res.json({ success: true, skillGap });
   } catch (error) {
     next(error);
   }
 };
 
-module.exports = { getAllSkills, getSkillGapAnalysis };
+// @desc    Save skill gap analysis (from AI service)
+// @route   POST /api/skills/gap-analysis
+// @access  Private
+const saveSkillGapAnalysis = async (req, res, next) => {
+  try {
+    const { targetRole, currentSkills, missingSkills } = req.body;
+
+    if (currentSkills && !Array.isArray(currentSkills)) {
+      return res.status(400).json({ success: false, message: 'currentSkills must be an array' });
+    }
+
+    if (missingSkills && !Array.isArray(missingSkills)) {
+      return res.status(400).json({ success: false, message: 'missingSkills must be an array' });
+    }
+
+    const skillGap = await SkillGap.create({
+      user: req.user._id,
+      targetRole,
+      currentSkills: currentSkills || [],
+      missingSkills: missingSkills || [],
+    });
+
+    res.status(201).json({ success: true, skillGap });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { getAllSkills, getSkillGapAnalysis, saveSkillGapAnalysis };

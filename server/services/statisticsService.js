@@ -81,7 +81,7 @@ class StatisticsService {
     const avgMastery =
       skills.length > 0
         ? Math.round(skills.reduce((sum, s) => sum + (s.level || 0), 0) / skills.length)
-        : 65;
+        : 0;
 
     // Update user document to keep cached fields in sync
     user.points = totalXP;
@@ -93,7 +93,7 @@ class StatisticsService {
       streak: currentStreak,
       totalStudyHours,
       mastery: avgMastery,
-      averageQuizScore: 85,
+      averageQuizScore: 0,
     };
   }
 

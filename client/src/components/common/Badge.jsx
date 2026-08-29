@@ -2,7 +2,8 @@ import React from 'react';
 
 /**
  * Common Badge Component
- * Variants: success, warning, info, danger, neutral, primary
+ * Obsidian + Ivory + Coral Palette
+ * Variants: primary, secondary, coral, success, warning, danger, info, neutral
  * Sizes: sm, md
  */
 export default function Badge({
@@ -13,28 +14,30 @@ export default function Badge({
   className = '',
 }) {
   const sizeStyles = {
-    sm: 'text-[11px] px-2 py-0.5 font-medium',
-    md: 'text-xs px-2.5 py-1 font-medium',
+    sm: 'text-[10px] sm:text-[11px] px-2 py-0.5 font-bold',
+    md: 'text-xs px-2.5 py-1 font-bold',
   };
 
   const variantStyles = {
-    primary: 'bg-primary/15 text-primary-300 border border-primary/30',
-    secondary: 'bg-secondary/15 text-purple-300 border border-secondary/30',
-    success: 'bg-status-success/15 text-emerald-300 border border-status-success/30',
-    warning: 'bg-status-warning/15 text-amber-300 border border-status-warning/30',
-    danger: 'bg-status-danger/15 text-rose-300 border border-status-danger/30',
-    info: 'bg-status-info/15 text-sky-300 border border-status-info/30',
-    neutral: 'bg-slate-800/80 text-slate-300 border border-slate-700/60',
+    primary: 'bg-[#FF6B5F]/15 text-[#FF857A] border border-[#FF6B5F]/30',
+    coral: 'bg-[#FF6B5F]/15 text-[#FF857A] border border-[#FF6B5F]/30',
+    secondary: 'bg-white/10 text-[#F5F1E8] border border-white/15',
+    success: 'bg-[#34D399]/15 text-[#34D399] border border-[#34D399]/30',
+    warning: 'bg-[#FBBF24]/15 text-[#FBBF24] border border-[#FBBF24]/30',
+    danger: 'bg-[#F87171]/15 text-[#F87171] border border-[#F87171]/30',
+    info: 'bg-[#38BDF8]/15 text-[#38BDF8] border border-[#38BDF8]/30',
+    neutral: 'bg-white/5 text-[#C7C2B6] border border-white/10',
   };
 
   const dotColors = {
-    primary: 'bg-primary',
-    secondary: 'bg-secondary',
-    success: 'bg-status-success',
-    warning: 'bg-status-warning',
-    danger: 'bg-status-danger',
-    info: 'bg-status-info',
-    neutral: 'bg-slate-400',
+    primary: 'bg-[#FF6B5F]',
+    coral: 'bg-[#FF6B5F]',
+    secondary: 'bg-[#F5F1E8]',
+    success: 'bg-[#34D399]',
+    warning: 'bg-[#FBBF24]',
+    danger: 'bg-[#F87171]',
+    info: 'bg-[#38BDF8]',
+    neutral: 'bg-[#8C877D]',
   };
 
   return (

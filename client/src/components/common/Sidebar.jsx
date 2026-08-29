@@ -1,5 +1,6 @@
 import React from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import {
   LayoutDashboard,
   User,
@@ -10,112 +11,109 @@ import {
   Bot,
   TrendingUp,
   X,
-  Code2
+  Sparkles,
+  Flame,
+  LogOut
 } from 'lucide-react';
-import Badge from './Badge';
 
-/**
- * 8 Major Navigation Routes & Member Assignments
- */
 export const navigationItems = [
   {
     name: 'Dashboard',
     path: '/dashboard',
     icon: LayoutDashboard,
-    member: 'Member 1',
     description: 'Overview & metrics'
   },
   {
     name: 'My Profile',
     path: '/profile',
     icon: User,
-    member: 'Member 1',
     description: 'Skills & preferences'
   },
   {
     name: 'Learning Path',
     path: '/learning-path',
     icon: Compass,
-    member: 'Member 2',
     description: 'Roadmap & timeline'
   },
   {
     name: 'Skill Gaps',
     path: '/skill-gaps',
     icon: Target,
-    member: 'Member 2',
     description: 'Analysis & radar'
   },
   {
     name: 'Courses',
     path: '/courses',
     icon: BookOpen,
-    member: 'Member 3',
     description: 'Curated modules'
   },
   {
     name: 'Assessments',
     path: '/assessments',
     icon: ClipboardCheck,
-    member: 'Member 3',
     description: 'Quizzes & tests'
   },
   {
     name: 'AI Assistant',
     path: '/ai-assistant',
     icon: Bot,
-    member: 'Member 4',
     description: 'Mentor & tutor'
   },
   {
     name: 'Progress',
     path: '/progress',
     icon: TrendingUp,
-    member: 'Member 4',
     description: 'Analytics & stats'
   },
 ];
 
-/**
- * Shared Sidebar Component
- * Renders the primary navigation list with active highlighting, icons, and member tags.
- * Works seamlessly on desktop and inside mobile drawer.
- */
 export default function Sidebar({ isOpen, onClose }) {
+  const { user, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const userStreak = user?.streakDays ?? user?.streak ?? 0;
+
+  const handleSignOut = () => {
+    logout();
+    navigate('/login');
+    if (onClose) onClose();
+  };
 
   const sidebarContent = (
-    <div className="flex flex-col h-full bg-background/95 lg:bg-background border-r border-slate-800/80 w-64 select-none">
-      {/* Mobile Header (Close button) */}
-      <div className="flex items-center justify-between p-4 border-b border-slate-800 lg:hidden">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center text-white font-bold text-xs">
-            LP
+    <div className="flex flex-col h-full border-r w-64 select-none bg-[#111418] dark:bg-[#111418] border-white/[0.06] text-[#C7C2B6] shadow-2xl relative z-20">
+      {/* Brand Header */}
+      <div className="p-5 border-b border-white/[0.06] flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#FF6B5F] to-[#E85548] flex items-center justify-center text-white shadow-lg shadow-[#FF6B5F]/25">
+            <Sparkles className="w-5 h-5" />
           </div>
-          <span className="text-sm font-semibold text-white">Menu Navigation</span>
+          <div>
+            <h2 className="text-sm font-extrabold text-[#F5F1E8] tracking-tight">
+              LearnPath AI
+            </h2>
+            <p className="text-[10px] text-[#8C877D] font-medium">
+              Intelligent Learning Platform
+            </p>
+          </div>
         </div>
+
+        {/* Mobile close button */}
         <button
           onClick={onClose}
-          className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
-          aria-label="Close sidebar"
+          className="p-1 rounded-lg text-[#8C877D] hover:text-[#F5F1E8] hover:bg-white/10 lg:hidden cursor-pointer"
+          aria-label="Close navigation sidebar"
         >
           <X className="w-5 h-5" />
         </button>
       </div>
 
-      {/* Team Architecture Notice (Subtle helper badge) */}
-      <div className="p-3 mx-3 mt-3 bg-slate-900/90 rounded-xl border border-slate-800/80">
-        <div className="flex items-center gap-1.5 text-[11px] font-medium text-slate-300">
-          <Code2 className="w-3.5 h-3.5 text-primary" />
-          <span>Team Feature Workspace</span>
+      {/* Navigation Modules Section */}
+      <nav className="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto" aria-label="Main Navigation">
+        <div className="px-3 pb-2 text-[10px] font-mono tracking-widest text-[#8C877D] uppercase font-bold">
+          Navigation
         </div>
-        <p className="text-[10px] text-text-subtle mt-0.5">
-          4 Developers • 8 Feature Modules
-        </p>
-      </div>
 
-      {/* Navigation List */}
-      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
         {navigationItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.path;
@@ -124,50 +122,80 @@ export default function Sidebar({ isOpen, onClose }) {
             <NavLink
               key={item.path}
               to={item.path}
-              onClick={onClose}
-              className={({ isActive: linkActive }) =>
-                `flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all group ${
-                  linkActive
-                    ? 'bg-primary/15 text-primary-300 border border-primary/30 shadow-sm shadow-primary/10'
-                    : 'text-slate-400 hover:text-slate-100 hover:bg-slate-900/60 border border-transparent'
-                }`
-              }
+              onClick={() => {
+                if (onClose) onClose();
+              }}
+              className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all group ${
+                isActive
+                  ? 'bg-[#FF6B5F] text-white shadow-md shadow-[#FF6B5F]/20'
+                  : 'text-[#C7C2B6] hover:text-[#F5F1E8] hover:bg-white/[0.04]'
+              }`}
             >
               <div className="flex items-center gap-3 min-w-0">
                 <Icon
-                  className={`w-4 h-4 shrink-0 transition-colors ${
-                    isActive ? 'text-primary' : 'text-slate-400 group-hover:text-slate-200'
+                  className={`w-4 h-4 shrink-0 transition-transform group-hover:scale-110 ${
+                    isActive ? 'text-white' : 'text-[#FF857A]'
                   }`}
                 />
                 <span className="truncate">{item.name}</span>
               </div>
-
-              <span
-                className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
-                  isActive
-                    ? 'bg-primary/20 text-primary-300'
-                    : 'text-slate-400 bg-slate-900 group-hover:text-slate-300'
-                }`}
-              >
-                {item.member.replace('Member ', 'M')}
-              </span>
             </NavLink>
           );
         })}
       </nav>
 
-      {/* Sidebar Footer: System Status */}
-      <div className="p-4 border-t border-slate-800/80 text-xs text-text-subtle">
-        <div className="flex items-center justify-between mb-1">
-          <span className="font-mono text-[10px]">BRANCH READY</span>
-          <span className="flex items-center gap-1 text-emerald-400 text-[10px]">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            STABLE
+      {/* Learning Streak Card */}
+      <div className="p-3.5 m-3 rounded-2xl bg-[#16191E] border border-white/[0.08] text-white shadow-xl relative overflow-hidden">
+        <div className="relative z-10">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-[11px] font-bold text-[#FF857A] flex items-center gap-1.5">
+              <Flame className="w-3.5 h-3.5 fill-current" />
+              Learning Streak
+            </span>
+          </div>
+          <div className="text-xl font-extrabold text-[#F5F1E8] tracking-tight font-mono">
+            {userStreak} Days
+          </div>
+          <div className="text-[10px] text-[#8C877D] mt-0.5 flex items-center justify-between">
+            <span>{userStreak > 0 ? 'Keep it up! 🔥' : 'Start your streak today!'}</span>
+            <span className="text-[#FF6B5F] font-semibold">+50 XP</span>
+          </div>
+        </div>
+
+        {/* Glowing Coral Neon Chart Curve */}
+        <svg
+          className="w-full h-8 mt-1 text-[#FF6B5F]"
+          viewBox="0 0 100 30"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+        >
+          <path
+            d="M0,25 Q25,28 50,18 T100,8"
+            className="stroke-[#FF6B5F] drop-shadow-[0_0_8px_rgba(255,107,95,0.8)]"
+          />
+          <circle cx="98" cy="8" r="3" className="fill-[#FFA49E] animate-ping" />
+          <circle cx="98" cy="8" r="2.5" className="fill-white" />
+        </svg>
+      </div>
+
+      {/* Sidebar Footer & Logout */}
+      <div className="p-3 border-t border-white/[0.06] space-y-2">
+        <button
+          onClick={handleSignOut}
+          className="w-full flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-[#F87171] hover:bg-[#F87171]/10 transition-colors cursor-pointer"
+        >
+          <LogOut className="w-4 h-4" />
+          <span>Sign Out</span>
+        </button>
+
+        <div className="flex items-center justify-between px-1 text-[10px] text-[#8C877D]">
+          <span className="font-mono">STATUS</span>
+          <span className="flex items-center gap-1 text-[#34D399] font-medium font-mono">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#34D399] animate-pulse" />
+            ONLINE
           </span>
         </div>
-        <p className="text-[10px] text-slate-400">
-          LearnPath AI v1.0.0 (Foundation)
-        </p>
       </div>
     </div>
   );
@@ -182,14 +210,11 @@ export default function Sidebar({ isOpen, onClose }) {
       {/* Mobile Slide-over Drawer with Backdrop */}
       {isOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm transition-opacity"
+            className="fixed inset-0 bg-black/70 backdrop-blur-xs transition-opacity"
             onClick={onClose}
             aria-hidden="true"
           />
-
-          {/* Drawer content */}
           <div className="fixed inset-y-0 left-0 max-w-full flex z-10 animate-in slide-in-from-left duration-200">
             {sidebarContent}
           </div>

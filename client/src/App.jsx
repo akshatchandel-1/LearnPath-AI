@@ -2,121 +2,127 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { LearningPathProvider } from './context/LearningPathContext';
 import ProtectedRoute from './components/common/ProtectedRoute';
 
-// Public Pages
-import LandingPage from './pages/LandingPage';
-import LoginPage from './pages/LoginPage';
-import SignupPage from './pages/SignupPage';
+// Canonical Authentication Page (Obsidian + Ivory + Coral)
+import AuthPage from './pages/AuthPage';
 
-// Member 1 Feature Pages
+// Member 1 Feature Pages (Dashboard + Profile)
 import DashboardPage from './pages/DashboardPage';
 import ProfilePage from './pages/ProfilePage';
 
-// Member 2 Feature Pages
+// Member 2 Feature Pages (Learning Path + Skill Gaps)
 import LearningPathPage from './pages/LearningPathPage';
 import SkillGapsPage from './pages/SkillGapsPage';
 
-// Member 3 Feature Pages
+// Member 3 Feature Pages (Courses + Assessments)
 import CoursesPage from './pages/CoursesPage';
 import AssessmentsPage from './pages/AssessmentsPage';
 
-// Member 4 Feature Pages
+// Member 4 Feature Pages (AI Assistant + Progress)
 import AIAssistantPage from './pages/AIAssistantPage';
 import ProgressPage from './pages/ProgressPage';
 
 /**
- * Main Application Routes Setup
- * App.jsx contains strictly route definitions and global context providers.
- * Feature development occurs inside isolated pages/ and components/ folders.
+ * Unified Canonical LearnPath AI Router Architecture
+ * All 8 feature modules integrated into a single protected environment.
  */
 export default function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <BrowserRouter>
-          <Routes>
-            {/* Public Entry Routes */}
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignupPage />} />
+        <LearningPathProvider>
+          <BrowserRouter>
+            <Routes>
+              {/* Public Entry Routes (Landing removed, direct Auth interface) */}
+              <Route path="/" element={<AuthPage defaultIsLogin={true} />} />
+              <Route path="/login" element={<AuthPage defaultIsLogin={true} />} />
+              <Route path="/signup" element={<AuthPage defaultIsLogin={false} />} />
 
-            {/* Member 1 Routes */}
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <DashboardPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/profile"
-              element={
-                <ProtectedRoute>
-                  <ProfilePage />
-                </ProtectedRoute>
-              }
-            />
+              {/* Member 1 Routes */}
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <DashboardPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <ProfilePage />
+                  </ProtectedRoute>
+                }
+              />
 
-            {/* Member 2 Routes */}
-            <Route
-              path="/learning-path"
-              element={
-                <ProtectedRoute>
-                  <LearningPathPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/skill-gaps"
-              element={
-                <ProtectedRoute>
-                  <SkillGapsPage />
-                </ProtectedRoute>
-              }
-            />
+              {/* Member 2 Routes */}
+              <Route
+                path="/learning-path"
+                element={
+                  <ProtectedRoute>
+                    <LearningPathPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/skill-gaps"
+                element={
+                  <ProtectedRoute>
+                    <SkillGapsPage />
+                  </ProtectedRoute>
+                }
+              />
 
-            {/* Member 3 Routes */}
-            <Route
-              path="/courses"
-              element={
-                <ProtectedRoute>
-                  <CoursesPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/assessments"
-              element={
-                <ProtectedRoute>
-                  <AssessmentsPage />
-                </ProtectedRoute>
-              }
-            />
+              {/* Member 3 Routes */}
+              <Route
+                path="/courses"
+                element={
+                  <ProtectedRoute>
+                    <CoursesPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/assessments"
+                element={
+                  <ProtectedRoute>
+                    <AssessmentsPage />
+                  </ProtectedRoute>
+                }
+              />
 
-            {/* Member 4 Routes */}
-            <Route
-              path="/ai-assistant"
-              element={
-                <ProtectedRoute>
-                  <AIAssistantPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/progress"
-              element={
-                <ProtectedRoute>
-                  <ProgressPage />
-                </ProtectedRoute>
-              }
-            />
+              {/* Member 4 Routes */}
+              <Route
+                path="/ai-assistant"
+                element={
+                  <ProtectedRoute>
+                    <AIAssistantPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/progress"
+                element={
+                  <ProtectedRoute>
+                    <ProgressPage />
+                  </ProtectedRoute>
+                }
+              />
 
-            {/* Fallback Catch-all */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </BrowserRouter>
+              {/* Legacy Route Aliases */}
+              <Route path="/roadmap" element={<Navigate to="/learning-path" replace />} />
+              <Route path="/skills" element={<Navigate to="/skill-gaps" replace />} />
+              <Route path="/analytics" element={<Navigate to="/progress" replace />} />
+              <Route path="/resources" element={<Navigate to="/courses" replace />} />
+
+              {/* Fallback Catch-all */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </BrowserRouter>
+        </LearningPathProvider>
       </AuthProvider>
     </ThemeProvider>
   );

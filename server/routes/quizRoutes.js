@@ -1,11 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const { generateQuiz, submitQuiz, getQuizHistory } = require('../controllers/quizController');
+const { getQuizzes, getQuizById, generateQuiz, submitQuiz, getQuizHistory } = require('../controllers/quizController');
 const { protect } = require('../middleware/authMiddleware');
 
 router.use(protect);
+router.get('/', getQuizzes);
+router.get('/history', getQuizHistory);
+router.get('/:id', getQuizById);
 router.post('/generate', generateQuiz);
 router.post('/submit', submitQuiz);
-router.get('/history', getQuizHistory);
 
 module.exports = router;
