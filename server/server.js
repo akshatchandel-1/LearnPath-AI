@@ -25,6 +25,7 @@ app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/profile', require('./routes/profileRoutes'));
 app.use('/api/skills', require('./routes/skillRoutes'));
 app.use('/api/resources', require('./routes/resourceRoutes'));
+app.use('/api/courses', require('./routes/courseRoutes'));
 app.use('/api/recommendations', require('./routes/recommendationRoutes'));
 app.use('/api/learning-path', require('./routes/learningPathRoutes'));
 app.use('/api/progress', require('./routes/progressRoutes'));
@@ -32,6 +33,7 @@ app.use('/api/quiz', require('./routes/quizRoutes'));
 app.use('/api/ai', require('./routes/aiRoutes'));
 app.use('/api/analytics', require('./routes/analyticsRoutes'));
 app.use('/api/projects', require('./routes/projectRoutes'));
+app.use('/api/notifications', require('./routes/notificationRoutes'));
 
 // API Root Endpoint
 app.get('/api', (req, res) => {
@@ -45,6 +47,7 @@ app.get('/api', (req, res) => {
       profile: '/api/profile',
       skills: '/api/skills',
       resources: '/api/resources',
+      courses: '/api/courses',
       recommendations: '/api/recommendations',
       learningPath: '/api/learning-path',
       progress: '/api/progress',
@@ -113,6 +116,8 @@ const startServer = async () => {
   }
 };
 
-startServer();
+if (require.main === module) {
+  startServer();
+}
 
 module.exports = app;

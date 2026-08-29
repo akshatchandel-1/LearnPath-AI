@@ -14,6 +14,10 @@ const userSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
       trim: true,
+      match: [
+        /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+        'Please provide a valid email',
+      ],
     },
     password: {
       type: String,
@@ -89,8 +93,36 @@ const userSchema = new mongoose.Schema(
         description: String,
       },
     ],
+    resume: {
+      fileName: { type: String, default: null },
+      filePath: { type: String, default: null },
+      uploadedAt: { type: Date, default: null }
+    },
+    resumeData: {
+      name: { type: String, default: null },
+      email: { type: String, default: null },
+      phone: { type: String, default: null },
+      location: { type: String, default: null },
+      linkedin: { type: String, default: null },
+      github: { type: String, default: null },
+      portfolio: { type: String, default: null },
+      education: { type: Array, default: [] },
+      experience: { type: Array, default: [] },
+      skills: { type: Array, default: [] },
+      projects: { type: Array, default: [] },
+      certifications: { type: Array, default: [] },
+      achievements: { type: Array, default: [] }
+    }
   },
-  { timestamps: true }
+  { 
+    timestamps: true,
+    toJSON: {
+      transform: (doc, ret) => {
+        delete ret.password;
+        return ret;
+      }
+    }
+  }
 );
 
 userSchema.pre('save', async function (next) {

@@ -66,6 +66,8 @@ const registerUser = async (req, res, next) => {
         streak: stats.streak,
         points: stats.xp,
         skills: user.skills,
+        resume: user.resume,
+        resumeData: user.resumeData,
       },
     });
   } catch (error) {
@@ -99,6 +101,8 @@ const loginUser = async (req, res, next) => {
           points: stats.xp,
           skills: user.skills,
           isDemoUser: user.isDemoUser,
+          resume: user.resume,
+          resumeData: user.resumeData,
         },
       });
     } else {
@@ -200,6 +204,8 @@ const demoLogin = async (req, res, next) => {
         points: stats.xp,
         skills: demoUser.skills,
         isDemoUser: true,
+        resume: demoUser.resume,
+        resumeData: demoUser.resumeData,
       },
     });
   } catch (error) {
@@ -231,6 +237,8 @@ const getMe = async (req, res, next) => {
         skills: user.skills,
         isDemoUser: user.isDemoUser,
         badges: user.badges,
+        resume: user.resume,
+        resumeData: user.resumeData,
       },
     });
   } catch (error) {
@@ -238,9 +246,21 @@ const getMe = async (req, res, next) => {
   }
 };
 
+// @desc    Logout user / clear cookie
+// @route   POST /api/auth/logout
+// @access  Public
+const logoutUser = (req, res) => {
+  res.cookie('token', '', {
+    httpOnly: true,
+    expires: new Date(0),
+  });
+  res.status(200).json({ success: true, message: 'Logged out successfully' });
+};
+
 module.exports = {
   registerUser,
   loginUser,
   demoLogin,
   getMe,
+  logoutUser,
 };
