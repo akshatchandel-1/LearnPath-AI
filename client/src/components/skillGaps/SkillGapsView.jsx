@@ -21,8 +21,8 @@ export default function SkillGapsView() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <Badge variant="coral" size="sm">Target Benchmark</Badge>
-            <h2 className="text-xl font-bold text-[#F5F1E8] mt-1">Skill Gap Analysis for {targetRole}</h2>
-            <p className="text-xs text-[#8C877D] mt-0.5 font-medium">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-[#F5F1E8] mt-1">Skill Gap Analysis for {targetRole}</h2>
+            <p className="text-xs text-gray-500 dark:text-[#8C877D] mt-0.5 font-medium">
               Identifies disparity between current proficiency vs industry role expectations.
             </p>
           </div>
@@ -36,13 +36,13 @@ export default function SkillGapsView() {
       <Card variant="default">
         <CardHeader>
           <CardTitle>Skill Matrix Comparison</CardTitle>
-          <span className="text-xs text-[#8C877D]">Current vs Required Level</span>
+          <span className="text-xs text-gray-500 dark:text-[#8C877D]">Current vs Required Level</span>
         </CardHeader>
         <CardContent className="space-y-4">
           {skills.map((skill, idx) => (
-            <div key={idx} className="p-3.5 rounded-xl bg-[#16191E] border border-white/[0.06] space-y-2">
+            <div key={idx} className="p-3.5 rounded-xl bg-gray-50 dark:bg-[#16191E] border border-gray-200 dark:border-white/[0.06] space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-[#F5F1E8]">{skill.name}</span>
+                <span className="text-sm font-semibold text-gray-900 dark:text-[#F5F1E8]">{skill.name}</span>
                 <Badge variant={gapBadgeVariant[skill.gap]} size="sm">
                   {skill.gap}
                 </Badge>
@@ -50,11 +50,11 @@ export default function SkillGapsView() {
 
               {/* Progress bars comparison */}
               <div className="space-y-1">
-                <div className="flex justify-between text-[11px] text-[#8C877D]">
+                <div className="flex justify-between text-[11px] text-gray-500 dark:text-[#8C877D]">
                   <span>Current: {skill.current}%</span>
                   <span>Target: {skill.required}%</span>
                 </div>
-                <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden relative">
+                <div className="w-full bg-gray-100 dark:bg-white/5 rounded-full h-2 overflow-hidden relative">
                   <div
                     className="absolute top-0 bottom-0 bg-white/10 w-full"
                     style={{ width: `${skill.required}%` }}

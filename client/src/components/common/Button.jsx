@@ -32,10 +32,10 @@ export default function Button({
   const variantStyles = {
     primary: 'bg-gradient-to-r from-[#FF6B5F] to-[#E85548] hover:from-[#FF857A] hover:to-[#FF6B5F] text-white shadow-lg shadow-[#FF6B5F]/25 focus:ring-[#FF6B5F]',
     coral: 'bg-gradient-to-r from-[#FF6B5F] to-[#E85548] hover:from-[#FF857A] hover:to-[#FF6B5F] text-white shadow-lg shadow-[#FF6B5F]/25 focus:ring-[#FF6B5F]',
-    secondary: 'bg-white/10 hover:bg-white/15 text-[#F5F1E8] border border-white/10 focus:ring-white/30',
-    outline: 'bg-transparent hover:bg-white/5 text-[#F5F1E8] border border-white/15 hover:border-[#FF6B5F]/50 focus:ring-[#FF6B5F]',
+    secondary: 'bg-white/10 hover:bg-white/15 text-gray-900 dark:text-[#F5F1E8] border border-gray-200 dark:border-white/10 focus:ring-white/30',
+    outline: 'bg-transparent hover:bg-gray-100 dark:hover:bg-white/5 text-gray-900 dark:text-[#F5F1E8] border border-white/15 hover:border-[#FF6B5F]/50 focus:ring-[#FF6B5F]',
     danger: 'bg-[#F87171] hover:bg-[#EF4444] text-white shadow-md shadow-red-500/20 focus:ring-red-500',
-    ghost: 'bg-transparent hover:bg-white/5 text-[#C7C2B6] hover:text-[#F5F1E8] focus:ring-white/20',
+    ghost: 'bg-transparent hover:bg-gray-100 dark:hover:bg-white/5 text-gray-600 dark:text-[#C7C2B6] hover:text-gray-900 dark:hover:text-[#F5F1E8] focus:ring-white/20',
   };
 
   const isBtnDisabled = disabled || isLoading;

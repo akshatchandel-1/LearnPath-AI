@@ -38,4 +38,19 @@ api.interceptors.response.use(
   }
 );
 
+// Resume Feature API Methods
+export const uploadResume = (file) => {
+  const formData = new FormData();
+  formData.append('resume', file);
+  return api.post('/profile/resume', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+};
+
+export const parseResume = () => api.post('/profile/resume/parse');
+
+export const saveResumeData = (data) => api.put('/profile/resume-data', data);
+
+export const deleteResume = () => api.delete('/profile/resume');
+
 export default api;

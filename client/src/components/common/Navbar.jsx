@@ -162,7 +162,7 @@ export default function Navbar({ onMobileMenuToggle, isMobileMenuOpen }) {
     <header
       className={`sticky top-0 z-30 w-full transition-colors border-b shadow-sm ${
         isDark
-          ? 'bg-[#0B0D0F]/90 backdrop-blur-xl border-white/[0.06]'
+          ? 'bg-gray-100 dark:bg-[#0B0D0F]/90 backdrop-blur-xl border-gray-200 dark:border-white/[0.06]'
           : 'bg-[#FAF7F2]/90 backdrop-blur-xl border-black/[0.06]'
       }`}
     >
@@ -176,7 +176,7 @@ export default function Navbar({ onMobileMenuToggle, isMobileMenuOpen }) {
                 type="button"
                 onClick={onMobileMenuToggle}
                 className={`p-2 rounded-xl lg:hidden focus:outline-none cursor-pointer transition-colors ${
-                  isDark ? 'text-[#8C877D] hover:text-[#F5F1E8] hover:bg-white/5' : 'text-[#7C786E] hover:text-[#111418] hover:bg-black/5'
+                  isDark ? 'text-gray-500 dark:text-[#8C877D] hover:text-gray-900 dark:hover:text-[#F5F1E8] hover:bg-gray-100 dark:hover:bg-white/5' : 'text-[#7C786E] hover:text-[#111418] hover:bg-black/5'
                 }`}
                 aria-label="Toggle navigation menu"
               >
@@ -189,10 +189,10 @@ export default function Navbar({ onMobileMenuToggle, isMobileMenuOpen }) {
                 <Sparkles className="w-5 h-5 text-white" />
               </div>
               <div className="flex flex-col">
-                <span className={`font-extrabold text-base tracking-tight flex items-center gap-1 ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
+                <span className={`font-extrabold text-base tracking-tight flex items-center gap-1 ${isDark ? 'text-gray-900 dark:text-[#F5F1E8]' : 'text-[#111418]'}`}>
                   LearnPath <span className="text-[#FF6B5F]">AI</span>
                 </span>
-                <span className="text-[10px] font-mono uppercase tracking-wider text-[#8C877D] hidden sm:inline">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-gray-500 dark:text-[#8C877D] hidden sm:inline">
                   Intelligent Learning Platform
                 </span>
               </div>
@@ -203,7 +203,7 @@ export default function Navbar({ onMobileMenuToggle, isMobileMenuOpen }) {
           {!isAuthPage && (
             <div ref={searchRef} className="hidden md:flex items-center flex-1 max-w-md mx-4 relative">
               <form onSubmit={handleSearchSubmit} className="relative w-full">
-                <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8C877D]" />
+                <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 dark:text-[#8C877D]" />
                 <input
                   type="text"
                   value={searchQuery}
@@ -215,13 +215,13 @@ export default function Navbar({ onMobileMenuToggle, isMobileMenuOpen }) {
                   placeholder="Search roadmaps, skills, courses, assessments..."
                   className={`w-full text-xs rounded-xl pl-9 pr-12 py-2 transition-all focus:outline-none focus:ring-1 focus:ring-[#FF6B5F]/40 ${
                     isDark
-                      ? 'bg-[#111418] border border-white/[0.08] text-[#F5F1E8] placeholder:text-[#8C877D] focus:border-[#FF6B5F]'
+                      ? 'bg-white dark:bg-[#111418] border border-gray-200 dark:border-white/[0.08] text-gray-900 dark:text-[#F5F1E8] placeholder:text-gray-500 dark:text-[#8C877D] focus:border-[#FF6B5F]'
                       : 'bg-white border border-black/[0.1] text-[#111418] placeholder:text-[#7C786E] focus:border-[#FF6B5F]'
                   }`}
                 />
                 <kbd
                   onClick={() => setIsSearchOpen(true)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[#8C877D] cursor-pointer"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono px-1.5 py-0.5 rounded bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-500 dark:text-[#8C877D] cursor-pointer"
                 >
                   ⌘K
                 </kbd>
@@ -231,10 +231,10 @@ export default function Navbar({ onMobileMenuToggle, isMobileMenuOpen }) {
               {isSearchOpen && (
                 <div
                   className={`absolute top-full left-0 right-0 mt-2 rounded-2xl border shadow-2xl p-2 z-50 animate-in fade-in zoom-in-95 max-h-96 overflow-y-auto ${
-                    isDark ? 'bg-[#111418] border-white/10 text-[#F5F1E8]' : 'bg-white border-black/10 text-[#111418]'
+                    isDark ? 'bg-white dark:bg-[#111418] border-gray-200 dark:border-white/10 text-gray-900 dark:text-[#F5F1E8]' : 'bg-white border-black/10 text-[#111418]'
                   }`}
                 >
-                  <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-[#8C877D] font-bold flex justify-between items-center">
+                  <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-gray-500 dark:text-[#8C877D] font-bold flex justify-between items-center">
                     <span>{searchQuery ? 'Search Results' : 'Suggested Quick Links'}</span>
                     <span className="text-[9px] lowercase">press esc to close</span>
                   </div>
@@ -248,7 +248,7 @@ export default function Navbar({ onMobileMenuToggle, isMobileMenuOpen }) {
                             key={idx}
                             onClick={() => handleSearchResultClick(item.path)}
                             className={`flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all group ${
-                              isDark ? 'hover:bg-white/5' : 'hover:bg-black/5'
+                              isDark ? 'hover:bg-gray-100 dark:hover:bg-white/5' : 'hover:bg-black/5'
                             }`}
                           >
                             <div className="flex items-center gap-3">
@@ -259,17 +259,17 @@ export default function Navbar({ onMobileMenuToggle, isMobileMenuOpen }) {
                                 <p className="text-xs font-bold leading-tight group-hover:text-[#FF857A] transition-colors">
                                   {item.title}
                                 </p>
-                                <span className="text-[10px] text-[#8C877D] font-mono">
+                                <span className="text-[10px] text-gray-500 dark:text-[#8C877D] font-mono">
                                   {item.category}
                                 </span>
                               </div>
                             </div>
-                            <ArrowRight className="w-3.5 h-3.5 text-[#8C877D] group-hover:text-[#FF857A] group-hover:translate-x-0.5 transition-all" />
+                            <ArrowRight className="w-3.5 h-3.5 text-gray-500 dark:text-[#8C877D] group-hover:text-[#FF857A] group-hover:translate-x-0.5 transition-all" />
                           </div>
                         );
                       })
                     ) : (
-                      <div className="p-4 text-center text-xs text-[#8C877D]">
+                      <div className="p-4 text-center text-xs text-gray-500 dark:text-[#8C877D]">
                         No matching results found for "{searchQuery}"
                       </div>
                     )}
@@ -288,7 +288,7 @@ export default function Navbar({ onMobileMenuToggle, isMobileMenuOpen }) {
               onClick={toggleTheme}
               className={`p-2 rounded-xl transition-colors cursor-pointer ${
                 isDark
-                  ? 'text-[#8C877D] hover:text-[#F5F1E8] hover:bg-white/5'
+                  ? 'text-gray-500 dark:text-[#8C877D] hover:text-gray-900 dark:hover:text-[#F5F1E8] hover:bg-gray-100 dark:hover:bg-white/5'
                   : 'text-[#7C786E] hover:text-[#111418] hover:bg-black/5'
               }`}
               title={isDark ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
@@ -315,7 +315,7 @@ export default function Navbar({ onMobileMenuToggle, isMobileMenuOpen }) {
                     }}
                     className={`relative p-2 rounded-xl transition-colors cursor-pointer ${
                       isDark
-                        ? 'text-[#8C877D] hover:text-[#F5F1E8] hover:bg-white/5'
+                        ? 'text-gray-500 dark:text-[#8C877D] hover:text-gray-900 dark:hover:text-[#F5F1E8] hover:bg-gray-100 dark:hover:bg-white/5'
                         : 'text-[#7C786E] hover:text-[#111418] hover:bg-black/5'
                     }`}
                     aria-label="Notifications"
@@ -333,10 +333,10 @@ export default function Navbar({ onMobileMenuToggle, isMobileMenuOpen }) {
                   {isNotifOpen && (
                     <div
                       className={`absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl border shadow-2xl p-3 z-50 text-xs animate-in fade-in zoom-in-95 ${
-                        isDark ? 'bg-[#111418] border-white/10 text-[#F5F1E8]' : 'bg-white border-black/10 text-[#111418]'
+                        isDark ? 'bg-white dark:bg-[#111418] border-gray-200 dark:border-white/10 text-gray-900 dark:text-[#F5F1E8]' : 'bg-white border-black/10 text-[#111418]'
                       }`}
                     >
-                      <div className="flex items-center justify-between pb-2 mb-2 border-b border-white/[0.08]">
+                      <div className="flex items-center justify-between pb-2 mb-2 border-b border-gray-200 dark:border-white/[0.08]">
                         <span className="font-bold text-xs">Notifications</span>
                         {unreadNotifs > 0 && (
                           <button
@@ -358,15 +358,15 @@ export default function Navbar({ onMobileMenuToggle, isMobileMenuOpen }) {
                                   ? 'bg-[#FF6B5F]/5 border-[#FF6B5F]/20'
                                   : 'bg-[#FF6B5F]/10 border-[#FF6B5F]/30'
                                 : isDark
-                                ? 'bg-white/[0.02] border-white/[0.04]'
+                                ? 'bg-white/[0.02] border-gray-200 dark:border-white/[0.04]'
                                 : 'bg-black/[0.02] border-black/[0.04]'
                             }`}
                           >
                             <div className="flex items-start justify-between gap-2">
                               <h4 className="font-bold text-xs leading-tight">{n.title}</h4>
-                              <span className="text-[9px] text-[#8C877D] font-mono shrink-0">{n.time}</span>
+                              <span className="text-[9px] text-gray-500 dark:text-[#8C877D] font-mono shrink-0">{n.time}</span>
                             </div>
-                            <p className="text-[11px] text-[#8C877D] mt-1 leading-relaxed">{n.desc}</p>
+                            <p className="text-[11px] text-gray-500 dark:text-[#8C877D] mt-1 leading-relaxed">{n.desc}</p>
                           </div>
                         ))}
                       </div>
@@ -384,7 +384,7 @@ export default function Navbar({ onMobileMenuToggle, isMobileMenuOpen }) {
                     }}
                     className={`flex items-center gap-2 p-1.5 rounded-xl border transition-colors cursor-pointer ${
                       isDark
-                        ? 'border-white/[0.08] bg-[#111418] hover:bg-white/5'
+                        ? 'border-gray-200 dark:border-white/[0.08] bg-white dark:bg-[#111418] hover:bg-gray-100 dark:hover:bg-white/5'
                         : 'border-black/[0.08] bg-white hover:bg-black/5'
                     }`}
                   >
@@ -392,26 +392,26 @@ export default function Navbar({ onMobileMenuToggle, isMobileMenuOpen }) {
                       {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
                     </div>
                     <div className="hidden sm:flex flex-col text-left">
-                      <span className={`text-xs font-bold leading-tight ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
+                      <span className={`text-xs font-bold leading-tight ${isDark ? 'text-gray-900 dark:text-[#F5F1E8]' : 'text-[#111418]'}`}>
                         {user.name || 'Learner'}
                       </span>
-                      <span className="text-[10px] text-[#8C877D] font-mono truncate max-w-[110px]">
+                      <span className="text-[10px] text-gray-500 dark:text-[#8C877D] font-mono truncate max-w-[110px]">
                         {user.targetRole || 'Full Stack'}
                       </span>
                     </div>
-                    <ChevronDown className="w-3.5 h-3.5 hidden sm:inline text-[#8C877D]" />
+                    <ChevronDown className="w-3.5 h-3.5 hidden sm:inline text-gray-500 dark:text-[#8C877D]" />
                   </button>
 
                   {/* Profile Dropdown Menu */}
                   {isProfileOpen && (
                     <div
                       className={`absolute right-0 mt-2 w-56 rounded-2xl border shadow-2xl p-2 z-50 text-xs animate-in zoom-in-95 ${
-                        isDark ? 'bg-[#111418] border-white/10 text-[#F5F1E8]' : 'bg-white border-black/10 text-[#111418]'
+                        isDark ? 'bg-white dark:bg-[#111418] border-gray-200 dark:border-white/10 text-gray-900 dark:text-[#F5F1E8]' : 'bg-white border-black/10 text-[#111418]'
                       }`}
                     >
-                      <div className="p-2.5 border-b border-white/10 mb-1">
+                      <div className="p-2.5 border-b border-gray-200 dark:border-white/10 mb-1">
                         <p className="font-bold truncate">{user.name || 'Learner'}</p>
-                        <p className="text-[11px] text-[#8C877D] truncate">{user.email}</p>
+                        <p className="text-[11px] text-gray-500 dark:text-[#8C877D] truncate">{user.email}</p>
                       </div>
 
                       <button
@@ -420,7 +420,7 @@ export default function Navbar({ onMobileMenuToggle, isMobileMenuOpen }) {
                           navigate('/profile');
                         }}
                         className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl font-medium transition-colors cursor-pointer ${
-                          isDark ? 'text-[#C7C2B6] hover:text-[#F5F1E8] hover:bg-white/5' : 'text-[#4A4740] hover:text-[#111418] hover:bg-black/5'
+                          isDark ? 'text-gray-600 dark:text-[#C7C2B6] hover:text-gray-900 dark:hover:text-[#F5F1E8] hover:bg-gray-100 dark:hover:bg-white/5' : 'text-[#4A4740] hover:text-[#111418] hover:bg-black/5'
                         }`}
                       >
                         <User className="w-4 h-4 text-[#FF6B5F]" />
@@ -433,14 +433,14 @@ export default function Navbar({ onMobileMenuToggle, isMobileMenuOpen }) {
                           navigate('/dashboard');
                         }}
                         className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl font-medium transition-colors cursor-pointer ${
-                          isDark ? 'text-[#C7C2B6] hover:text-[#F5F1E8] hover:bg-white/5' : 'text-[#4A4740] hover:text-[#111418] hover:bg-black/5'
+                          isDark ? 'text-gray-600 dark:text-[#C7C2B6] hover:text-gray-900 dark:hover:text-[#F5F1E8] hover:bg-gray-100 dark:hover:bg-white/5' : 'text-[#4A4740] hover:text-[#111418] hover:bg-black/5'
                         }`}
                       >
                         <LayoutDashboard className="w-4 h-4 text-[#FF6B5F]" />
                         <span>Dashboard</span>
                       </button>
 
-                      <div className="border-t border-white/10 my-1 pt-1">
+                      <div className="border-t border-gray-200 dark:border-white/10 my-1 pt-1">
                         <button
                           onClick={() => {
                             setIsProfileOpen(false);

@@ -81,18 +81,18 @@ export default function Sidebar({ isOpen, onClose }) {
   };
 
   const sidebarContent = (
-    <div className="flex flex-col h-full border-r w-64 select-none bg-[#111418] dark:bg-[#111418] border-white/[0.06] text-[#C7C2B6] shadow-2xl relative z-20">
+    <div className="flex flex-col h-full border-r w-64 select-none bg-white dark:bg-[#111418] border-gray-200 dark:border-white/[0.06] text-gray-600 dark:text-[#C7C2B6] shadow-2xl relative z-20">
       {/* Brand Header */}
-      <div className="p-5 border-b border-white/[0.06] flex items-center justify-between">
+      <div className="p-5 border-b border-gray-200 dark:border-white/[0.06] flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#FF6B5F] to-[#E85548] flex items-center justify-center text-white shadow-lg shadow-[#FF6B5F]/25">
             <Sparkles className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-sm font-extrabold text-[#F5F1E8] tracking-tight">
+            <h2 className="text-sm font-extrabold text-gray-900 dark:text-[#F5F1E8] tracking-tight">
               LearnPath AI
             </h2>
-            <p className="text-[10px] text-[#8C877D] font-medium">
+            <p className="text-[10px] text-gray-500 dark:text-[#8C877D] font-medium">
               Intelligent Learning Platform
             </p>
           </div>
@@ -101,7 +101,7 @@ export default function Sidebar({ isOpen, onClose }) {
         {/* Mobile close button */}
         <button
           onClick={onClose}
-          className="p-1 rounded-lg text-[#8C877D] hover:text-[#F5F1E8] hover:bg-white/10 lg:hidden cursor-pointer"
+          className="p-1 rounded-lg text-gray-500 dark:text-[#8C877D] hover:text-gray-900 dark:hover:text-gray-900 dark:hover:text-[#F5F1E8] hover:bg-gray-100 dark:hover:bg-white/10 lg:hidden cursor-pointer"
           aria-label="Close navigation sidebar"
         >
           <X className="w-5 h-5" />
@@ -110,7 +110,7 @@ export default function Sidebar({ isOpen, onClose }) {
 
       {/* Navigation Modules Section */}
       <nav className="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto" aria-label="Main Navigation">
-        <div className="px-3 pb-2 text-[10px] font-mono tracking-widest text-[#8C877D] uppercase font-bold">
+        <div className="px-3 pb-2 text-[10px] font-mono tracking-widest text-gray-500 dark:text-[#8C877D] uppercase font-bold">
           Navigation
         </div>
 
@@ -128,7 +128,7 @@ export default function Sidebar({ isOpen, onClose }) {
               className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all group ${
                 isActive
                   ? 'bg-[#FF6B5F] text-white shadow-md shadow-[#FF6B5F]/20'
-                  : 'text-[#C7C2B6] hover:text-[#F5F1E8] hover:bg-white/[0.04]'
+                  : 'text-gray-600 dark:text-[#C7C2B6] hover:text-gray-900 dark:hover:text-gray-900 dark:hover:text-[#F5F1E8] hover:bg-gray-100 dark:hover:bg-white/[0.04]'
               }`}
             >
               <div className="flex items-center gap-3 min-w-0">
@@ -145,7 +145,7 @@ export default function Sidebar({ isOpen, onClose }) {
       </nav>
 
       {/* Learning Streak Card */}
-      <div className="p-3.5 m-3 rounded-2xl bg-[#16191E] border border-white/[0.08] text-white shadow-xl relative overflow-hidden">
+      <div className="p-3.5 m-3 rounded-2xl bg-gray-50 dark:bg-[#16191E] border border-gray-200 dark:border-white/[0.08] text-gray-900 dark:text-white shadow-xl relative overflow-hidden">
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[11px] font-bold text-[#FF857A] flex items-center gap-1.5">
@@ -153,10 +153,10 @@ export default function Sidebar({ isOpen, onClose }) {
               Learning Streak
             </span>
           </div>
-          <div className="text-xl font-extrabold text-[#F5F1E8] tracking-tight font-mono">
+          <div className="text-xl font-extrabold text-gray-900 dark:text-[#F5F1E8] tracking-tight font-mono">
             {userStreak} Days
           </div>
-          <div className="text-[10px] text-[#8C877D] mt-0.5 flex items-center justify-between">
+          <div className="text-[10px] text-gray-500 dark:text-[#8C877D] mt-0.5 flex items-center justify-between">
             <span>{userStreak > 0 ? 'Keep it up! 🔥' : 'Start your streak today!'}</span>
             <span className="text-[#FF6B5F] font-semibold">+50 XP</span>
           </div>
@@ -180,7 +180,7 @@ export default function Sidebar({ isOpen, onClose }) {
       </div>
 
       {/* Sidebar Footer & Logout */}
-      <div className="p-3 border-t border-white/[0.06] space-y-2">
+      <div className="p-3 border-t border-gray-200 dark:border-white/[0.06] space-y-2">
         <button
           onClick={handleSignOut}
           className="w-full flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-[#F87171] hover:bg-[#F87171]/10 transition-colors cursor-pointer"
@@ -189,7 +189,7 @@ export default function Sidebar({ isOpen, onClose }) {
           <span>Sign Out</span>
         </button>
 
-        <div className="flex items-center justify-between px-1 text-[10px] text-[#8C877D]">
+        <div className="flex items-center justify-between px-1 text-[10px] text-gray-500 dark:text-[#8C877D]">
           <span className="font-mono">STATUS</span>
           <span className="flex items-center gap-1 text-[#34D399] font-medium font-mono">
             <span className="w-1.5 h-1.5 rounded-full bg-[#34D399] animate-pulse" />

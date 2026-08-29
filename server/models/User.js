@@ -93,6 +93,26 @@ const userSchema = new mongoose.Schema(
         description: String,
       },
     ],
+    resume: {
+      fileName: { type: String, default: null },
+      filePath: { type: String, default: null },
+      uploadedAt: { type: Date, default: null }
+    },
+    resumeData: {
+      name: { type: String, default: null },
+      email: { type: String, default: null },
+      phone: { type: String, default: null },
+      location: { type: String, default: null },
+      linkedin: { type: String, default: null },
+      github: { type: String, default: null },
+      portfolio: { type: String, default: null },
+      education: { type: Array, default: [] },
+      experience: { type: Array, default: [] },
+      skills: { type: Array, default: [] },
+      projects: { type: Array, default: [] },
+      certifications: { type: Array, default: [] },
+      achievements: { type: Array, default: [] }
+    }
   },
   { 
     timestamps: true,

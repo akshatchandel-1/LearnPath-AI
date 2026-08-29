@@ -2,6 +2,8 @@ const LearnerProfile = require('../models/LearnerProfile');
 const User = require('../models/User');
 const adaptivePathService = require('../services/adaptive/adaptivePathService');
 const recommendationEngine = require('../services/recommendation/recommendationEngine');
+const fs = require('fs');
+const { parseResumeFromBuffer } = require('../utils/resumeParser');
 
 // @desc    Get user learner profile
 // @route   GET /api/profile
@@ -19,7 +21,16 @@ const getProfile = async (req, res, next) => {
       });
     }
 
-    res.json({ success: true, profile });
+    const user = await User.findById(req.user._id).select('resume resumeData');
+
+    res.json({ 
+      success: true, 
+      profile: {
+        ...profile.toObject(),
+        resume: user.resume,
+        resumeData: user.resumeData
+      }
+    });
   } catch (error) {
     next(error);
   }
@@ -96,4 +107,165 @@ const updateProfile = async (req, res, next) => {
   }
 };
 
-module.exports = { getProfile, updateProfile };
+// @desc    Upload Resume
+// @route   POST /api/profile/resume
+// @access  Private
+const uploadResume = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'Please upload a file' });
+    }
+
+    const user = await User.findById(req.user._id);
+    
+    // Delete old resume file if it exists
+    if (user.resume && user.resume.filePath && fs.existsSync(user.resume.filePath)) {
+      try {
+        fs.unlinkSync(user.resume.filePath);
+      } catch (err) {
+        console.error('Failed to delete old resume:', err);
+      }
+    }
+
+    user.resume = {
+      fileName: req.file.originalname,
+      filePath: req.file.path,
+      uploadedAt: Date.now()
+    };
+    
+    await user.save();
+
+    res.json({
+      success: true,
+      resume: user.resume
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Parse Resume
+// @route   POST /api/profile/resume/parse
+// @access  Private
+const parseResume = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user.resume || !user.resume.filePath) {
+      return res.status(404).json({ success: false, message: 'No resume found. Please upload a resume first.' });
+    }
+
+    if (!fs.existsSync(user.resume.filePath)) {
+      return res.status(404).json({ success: false, message: 'Resume file not found on server.' });
+    }
+
+    const buffer = fs.readFileSync(user.resume.filePath);
+    
+    // Determine mimetype based on extension
+    const ext = user.resume.fileName.split('.').pop().toLowerCase();
+    let mimetype = 'application/pdf';
+    if (ext === 'docx' || ext === 'doc') {
+      mimetype = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+    }
+
+    const parsedData = await parseResumeFromBuffer(buffer, mimetype);
+
+    res.json({
+      success: true,
+      data: parsedData
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Save Confirmed Resume Data
+// @route   PUT /api/profile/resume-data
+// @access  Private
+const saveResumeData = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id);
+    let profile = await LearnerProfile.findOne({ user: req.user._id });
+    
+    user.resumeData = {
+      name: req.body.name || user.resumeData?.name,
+      email: req.body.email || user.resumeData?.email,
+      phone: req.body.phone || user.resumeData?.phone,
+      location: req.body.location || user.resumeData?.location,
+      linkedin: req.body.linkedin || user.resumeData?.linkedin,
+      github: req.body.github || user.resumeData?.github,
+      portfolio: req.body.portfolio || user.resumeData?.portfolio,
+      education: req.body.education || [],
+      experience: req.body.experience || [],
+      skills: req.body.skills || [],
+      projects: req.body.projects || [],
+      certifications: req.body.certifications || [],
+      achievements: req.body.achievements || []
+    };
+
+    // Auto-fill core profile details from resume
+    if (req.body.name) user.name = req.body.name;
+    // We intentionally do not overwrite user.email to prevent login issues.
+
+    // Merge skills into LearnerProfile & User
+    if (profile && req.body.skills && req.body.skills.length > 0) {
+      const existingSkillNames = profile.skills.map(s => s.name.toLowerCase());
+      req.body.skills.forEach(skillStr => {
+         if (!existingSkillNames.includes(skillStr.toLowerCase())) {
+            const newSkill = { name: skillStr, level: 10, category: 'Extracted' };
+            profile.skills.push(newSkill);
+            user.skills.push(newSkill);
+         }
+      });
+      await profile.save();
+    }
+
+    await user.save();
+
+    res.json({
+      success: true,
+      profile: {
+        name: user.name,
+        skills: profile ? profile.skills : user.skills,
+        resumeData: user.resumeData
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Delete Resume
+// @route   DELETE /api/profile/resume
+// @access  Private
+const deleteResume = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id);
+    
+    if (user.resume && user.resume.filePath && fs.existsSync(user.resume.filePath)) {
+      try {
+        fs.unlinkSync(user.resume.filePath);
+      } catch (err) {
+        console.error('Failed to delete resume file:', err);
+      }
+    }
+
+    user.resume = { fileName: null, filePath: null, uploadedAt: null };
+    user.resumeData = {
+      name: null, email: null, phone: null, location: null, 
+      linkedin: null, github: null, portfolio: null,
+      education: [], experience: [], skills: [], projects: [], 
+      certifications: [], achievements: []
+    };
+
+    await user.save();
+
+    res.json({
+      success: true,
+      message: 'Resume removed successfully'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { getProfile, updateProfile, uploadResume, parseResume, saveResumeData, deleteResume };

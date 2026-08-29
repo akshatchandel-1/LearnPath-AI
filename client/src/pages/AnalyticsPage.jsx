@@ -69,7 +69,7 @@ export const AnalyticsPage = () => {
 
       {/* Top Stat Cards Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-5 rounded-2xl glass-panel border border-white/10 flex items-center gap-4">
+        <div className="p-5 rounded-2xl glass-panel border border-gray-200 dark:border-white/10 flex items-center gap-4">
           <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
             <TrendingUp className="w-6 h-6 text-purple-400" />
           </div>
@@ -79,7 +79,7 @@ export const AnalyticsPage = () => {
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl glass-panel border border-white/10 flex items-center gap-4">
+        <div className="p-5 rounded-2xl glass-panel border border-gray-200 dark:border-white/10 flex items-center gap-4">
           <div className="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center">
             <Clock className="w-6 h-6 text-cyan-400" />
           </div>
@@ -89,7 +89,7 @@ export const AnalyticsPage = () => {
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl glass-panel border border-white/10 flex items-center gap-4">
+        <div className="p-5 rounded-2xl glass-panel border border-gray-200 dark:border-white/10 flex items-center gap-4">
           <div className="w-12 h-12 rounded-xl bg-amber-500/20 flex items-center justify-center">
             <Award className="w-6 h-6 text-amber-400" />
           </div>
@@ -99,7 +99,7 @@ export const AnalyticsPage = () => {
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl glass-panel border border-white/10 flex items-center gap-4">
+        <div className="p-5 rounded-2xl glass-panel border border-gray-200 dark:border-white/10 flex items-center gap-4">
           <div className="w-12 h-12 rounded-xl bg-orange-500/20 flex items-center justify-center">
             <Flame className="w-6 h-6 text-orange-400 fill-orange-400" />
           </div>
@@ -119,7 +119,7 @@ export const AnalyticsPage = () => {
           {/* Row 1: Weekly Study Activity & Learning Style Distribution */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Weekly Hours Bar Chart (2 Cols) */}
-            <div className="lg:col-span-2 p-6 rounded-3xl glass-panel border border-white/10 space-y-4">
+            <div className="lg:col-span-2 p-6 rounded-3xl glass-panel border border-gray-200 dark:border-white/10 space-y-4">
               <h3 className="text-base font-bold text-white font-display flex items-center gap-2">
                 <BarChart3 className="w-4 h-4 text-cyan-400" />
                 Weekly Study Activity (Hours per Day)
@@ -145,7 +145,7 @@ export const AnalyticsPage = () => {
             </div>
 
             {/* Learning Format Donut Chart (1 Col) */}
-            <div className="p-6 rounded-3xl glass-panel border border-white/10 space-y-4 flex flex-col justify-between">
+            <div className="p-6 rounded-3xl glass-panel border border-gray-200 dark:border-white/10 space-y-4 flex flex-col justify-between">
               <h3 className="text-base font-bold text-white font-display">
                 Learning Format Affinity
               </h3>
@@ -188,7 +188,7 @@ export const AnalyticsPage = () => {
           </div>
 
           {/* Row 2: Skill Growth Line Trajectory */}
-          <div className="p-6 rounded-3xl glass-panel border border-white/10 space-y-4">
+          <div className="p-6 rounded-3xl glass-panel border border-gray-200 dark:border-white/10 space-y-4">
             <h3 className="text-base font-bold text-white font-display flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-brand-400" />
               Verified Competency Growth Trajectory (Baseline vs Current Level)

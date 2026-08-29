@@ -13,10 +13,10 @@ export function Card({
   ...props
 }) {
   const variantStyles = {
-    default: 'bg-[#111418] border border-white/[0.08] text-[#F5F1E8]',
-    interactive: 'bg-[#111418] border border-white/[0.08] hover:border-[#FF6B5F]/40 hover:bg-[#16191E] text-[#F5F1E8] transition-all duration-200 hover:-translate-y-0.5 cursor-pointer shadow-md hover:shadow-xl hover:shadow-[#FF6B5F]/10',
-    glow: 'bg-[#111418] border border-[#FF6B5F]/30 text-[#F5F1E8] shadow-[0_0_25px_-5px_rgba(255,107,95,0.25)]',
-    flat: 'bg-[#16191E] border border-white/[0.06] text-[#F5F1E8]',
+    default: 'bg-white dark:bg-[#111418] border border-gray-200 dark:border-white/[0.08] text-gray-900 dark:text-[#F5F1E8]',
+    interactive: 'bg-white dark:bg-[#111418] border border-gray-200 dark:border-white/[0.08] hover:border-[#FF6B5F]/40 dark:hover:bg-[#16191E] text-gray-900 dark:text-[#F5F1E8] transition-all duration-200 hover:-translate-y-0.5 cursor-pointer shadow-md hover:shadow-xl hover:shadow-[#FF6B5F]/10',
+    glow: 'bg-white dark:bg-[#111418] border border-[#FF6B5F]/30 text-gray-900 dark:text-[#F5F1E8] shadow-[0_0_25px_-5px_rgba(255,107,95,0.25)]',
+    flat: 'bg-gray-50 dark:bg-[#16191E] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-[#F5F1E8]',
   };
 
   return (
@@ -32,7 +32,7 @@ export function Card({
 
 export function CardHeader({ children, className = '' }) {
   return (
-    <div className={`flex items-center justify-between pb-4 border-b border-white/[0.06] mb-4 ${className}`}>
+    <div className={`flex items-center justify-between pb-4 border-b border-gray-200 dark:border-white/[0.06] mb-4 ${className}`}>
       {children}
     </div>
   );
@@ -40,7 +40,7 @@ export function CardHeader({ children, className = '' }) {
 
 export function CardTitle({ children, className = '' }) {
   return (
-    <h3 className={`text-lg font-bold text-[#F5F1E8] tracking-tight ${className}`}>
+    <h3 className={`text-lg font-bold text-gray-900 dark:text-[#F5F1E8] tracking-tight ${className}`}>
       {children}
     </h3>
   );
@@ -48,7 +48,7 @@ export function CardTitle({ children, className = '' }) {
 
 export function CardDescription({ children, className = '' }) {
   return (
-    <p className={`text-xs text-[#C7C2B6] mt-0.5 font-medium ${className}`}>
+    <p className={`text-xs text-gray-500 dark:text-[#C7C2B6] mt-0.5 font-medium ${className}`}>
       {children}
     </p>
   );
@@ -64,7 +64,7 @@ export function CardContent({ children, className = '' }) {
 
 export function CardFooter({ children, className = '' }) {
   return (
-    <div className={`pt-4 mt-4 border-t border-white/[0.06] flex items-center justify-between ${className}`}>
+    <div className={`pt-4 mt-4 border-t border-gray-200 dark:border-white/[0.06] flex items-center justify-between ${className}`}>
       {children}
     </div>
   );
