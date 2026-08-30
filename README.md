@@ -1,6 +1,6 @@
 # LearnPath AI — AI-Powered Personalized Learning Path Recommender
 
-> **Hackathon Common Frontend Foundation (MERN + AI/ML Architecture)**
+
 
 Welcome to **LearnPath AI**. This repository provides the shared, conflict-free frontend skeleton and architectural guidelines for our 4-developer hackathon engineering team.
 
