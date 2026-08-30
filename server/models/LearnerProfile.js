@@ -17,6 +17,10 @@ const learnerProfileSchema = new mongoose.Schema(
       type: String,
       default: 'Full Stack Developer',
     },
+    location: {
+      type: String,
+      default: 'India',
+    },
     skills: [
       {
         name: { type: String, required: true },

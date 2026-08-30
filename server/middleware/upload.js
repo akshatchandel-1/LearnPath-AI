@@ -2,23 +2,8 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Ensure uploads directory exists
-const uploadDir = path.join(__dirname, '../uploads/resumes');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-// Multer storage configuration
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    const userId = req.user ? req.user._id : 'anonymous';
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, `${userId}-${uniqueSuffix}${path.extname(file.originalname)}`);
-  }
-});
+// Multer memory storage configuration for serverless / Vercel compatibility
+const storage = multer.memoryStorage();
 
 // File filter (PDF, DOCX, DOC, and TXT)
 const fileFilter = (req, file, cb) => {
@@ -26,7 +11,8 @@ const fileFilter = (req, file, cb) => {
     'application/pdf',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     'application/msword',
-    'text/plain'
+    'text/plain',
+    'application/octet-stream'
   ];
   
   const ext = path.extname(file.originalname).toLowerCase();

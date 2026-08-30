@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import EditProfileModal from './EditProfileModal';
@@ -46,7 +46,7 @@ export default function ProfileOverview() {
   const [profileData, setProfileData] = useState(() => ({
     name: user?.name || 'Learner',
     email: user?.email || '',
-    location: user?.location || 'San Francisco, CA',
+    location: user?.location || 'India',
     tagline: user?.tagline || 'Aspiring Software Engineer & Cloud Architect',
     education: user?.education || 'B.Tech in Computer Science',
     experienceLevel: user?.experienceLevel || 'Intermediate',
@@ -68,7 +68,7 @@ export default function ProfileOverview() {
         email: user.email || prev.email,
         targetRole: user.targetRole || user.careerGoal || prev.targetRole,
         careerGoal: user.careerGoal || user.targetRole || prev.careerGoal,
-        location: user.location || prev.location,
+        location: user.location || prev.location || 'India',
         tagline: user.tagline || prev.tagline,
         education: user.education || prev.education,
         experienceLevel: user.experienceLevel || prev.experienceLevel,
@@ -88,30 +88,33 @@ export default function ProfileOverview() {
     setIsEditOpen(true);
   };
 
-  const handleSaveProfile = (updated) => {
-    setProfileData((prev) => ({
-      ...prev,
-      ...updated,
-    }));
-    if (updateUserProfile) {
-      updateUserProfile(updated);
+  // Handle Edit Profile Save
+  const handleSaveProfile = async (updated) => {
+    try {
+      setProfileData(prev => ({ ...prev, ...updated }));
+      setIsEditOpen(false);
+      if (updateUserProfile) {
+        await updateUserProfile(updated);
+      }
+    } catch (e) {
+      console.error('Failed to save profile', e);
     }
-    setIsEditOpen(false);
   };
 
   // Resume File Selection Handler
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
-    setUploadError('');
-    setUploadSuccess('');
-    if (file) {
-      const ext = file.name.split('.').pop().toLowerCase();
-      if (!['pdf', 'doc', 'docx'].includes(ext)) {
-        setUploadError('Please select a valid PDF, DOC, or DOCX resume document.');
-        setSelectedFile(null);
-        return;
-      }
+    if (!file) return;
+
+    const allowed = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword', 'text/plain'];
+    const ext = file.name.split('.').pop()?.toLowerCase();
+
+    if (allowed.includes(file.type) || ['pdf', 'docx', 'doc', 'txt'].includes(ext || '')) {
       setSelectedFile(file);
+      setUploadError('');
+    } else {
+      setUploadError('Please select a valid PDF, DOC, or DOCX resume document.');
+      setSelectedFile(null);
     }
   };
 
@@ -132,10 +135,16 @@ export default function ProfileOverview() {
 
       if (res.data?.success && res.data.resume) {
         setActiveResume(res.data.resume);
-        if (updateUserProfile) {
-          updateUserProfile({ resume: res.data.resume });
+        if (res.data.parsedData) {
+          setParsedData(res.data.parsedData);
         }
-        setUploadSuccess('Resume uploaded successfully! Click Parse to extract skills.');
+        if (updateUserProfile) {
+          updateUserProfile({
+            resume: res.data.resume,
+            ...(res.data.parsedData ? { resumeData: res.data.parsedData } : {})
+          });
+        }
+        setUploadSuccess('Resume uploaded & competency data extracted successfully!');
         setSelectedFile(null);
       } else {
         setUploadError(res.data?.message || 'Failed to upload resume.');
@@ -421,11 +430,16 @@ export default function ProfileOverview() {
             </div>
 
             <div className="flex items-center gap-3 pt-2">
-              <label className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-[#F5F1E8] cursor-pointer transition-all">
+              <label className={`px-4 py-2.5 rounded-xl text-xs font-bold cursor-pointer transition-all border flex items-center gap-2 shadow-sm ${
+                isDark
+                  ? 'bg-white/10 hover:bg-white/15 border-white/20 text-[#F5F1E8]'
+                  : 'bg-[#111418] hover:bg-[#20252D] border-black/20 text-white'
+              }`}>
+                <Upload className="w-3.5 h-3.5" />
                 <span>Browse File</span>
                 <input
                   type="file"
-                  accept=".pdf,.doc,.docx"
+                  accept=".pdf,.doc,.docx,.txt"
                   className="hidden"
                   onChange={handleFileChange}
                 />

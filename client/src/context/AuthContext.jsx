@@ -1,4 +1,4 @@
-﻿import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import api from '../services/api';
 
 const AuthContext = createContext(null);
@@ -118,15 +118,41 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const awardXp = (amount = 100) => {
+  const awardXp = async (amount = 100, reason = 'Completed Learning Milestone') => {
+    const pointsToAdd = Number(amount) || 100;
     setUser((prev) => {
       if (!prev) return prev;
-      const currentXp = prev.points ?? prev.totalXp ?? 0;
-      const newXp = currentXp + amount;
+      const currentXp = Number(prev.points ?? prev.totalXp ?? 0);
+      const newXp = currentXp + pointsToAdd;
       const updated = { ...prev, points: newXp, totalXp: newXp };
       localStorage.setItem('learnpath_user', JSON.stringify(updated));
       return updated;
     });
+
+    try {
+      const res = await api.post('/progress/activity', {
+        type: 'milestone_reward',
+        title: reason,
+        xpEarned: pointsToAdd,
+        durationMinutes: 15,
+      });
+
+      if (res.data?.success && res.data.stats) {
+        setUser((prev) => {
+          if (!prev) return prev;
+          const updated = {
+            ...prev,
+            points: res.data.stats.xp,
+            totalXp: res.data.stats.xp,
+            streak: res.data.stats.streak ?? prev.streak,
+          };
+          localStorage.setItem('learnpath_user', JSON.stringify(updated));
+          return updated;
+        });
+      }
+    } catch (err) {
+      console.warn('Backend activity sync note:', err.message);
+    }
   };
 
   const updateSkillMastery = (skillName, newLevel) => {

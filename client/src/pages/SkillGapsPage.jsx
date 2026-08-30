@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
 import PageHeader from '../components/common/PageHeader';
@@ -326,7 +326,9 @@ export default function SkillGapsPage() {
                 {criticalGaps && criticalGaps.length > 0 ? (
                   <>
                     Your highest-impact focus area is currently{' '}
-                    <strong className="text-[#FF857A]">{criticalGaps[0]}</strong>. Bridging this specific gap will raise your overall readiness towards{' '}
+                    <strong className="text-[#FF857A]">
+                      {typeof criticalGaps[0] === 'object' ? (criticalGaps[0].name || criticalGaps[0].skill || 'Core Competency') : criticalGaps[0]}
+                    </strong>. Bridging this specific gap will raise your overall readiness towards{' '}
                     <strong className={isDark ? "text-[#F5F1E8]" : "text-[#111418]"}>{activeTargetRole}</strong> benchmarks.
                   </>
                 ) : (

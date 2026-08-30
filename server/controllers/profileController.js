@@ -1,4 +1,4 @@
-﻿const User = require('../models/User');
+const User = require('../models/User');
 const LearnerProfile = require('../models/LearnerProfile');
 const adaptivePathService = require('../services/adaptive/adaptivePathService');
 const recommendationEngine = require('../services/recommendation/recommendationEngine');
@@ -84,6 +84,7 @@ const getProfile = async (req, res, next) => {
         user: req.user._id,
         careerGoal: req.user.careerGoal || 'Full Stack MERN Developer',
         targetRole: req.user.careerGoal || 'Full Stack MERN Developer',
+        location: req.user.location || 'India',
         skills: req.user.skills || [],
         preferredLearningStyle: req.user.preferredLearningStyle || 'Hands-on Projects',
         weeklyStudyHours: req.user.weeklyHours || 10,
@@ -92,11 +93,15 @@ const getProfile = async (req, res, next) => {
 
     res.json({
       success: true,
-      profile,
+      profile: {
+        ...profile.toObject(),
+        location: profile.location || req.user.location || 'India',
+      },
       user: {
         _id: req.user._id,
         name: req.user.name,
         email: req.user.email,
+        location: req.user.location || profile.location || 'India',
         careerGoal: req.user.careerGoal,
         targetRole: req.user.targetRole || req.user.careerGoal,
         experienceLevel: req.user.experienceLevel,
@@ -126,6 +131,7 @@ const updateProfile = async (req, res, next) => {
       preferredDifficulty,
       weeklyStudyHours,
       name,
+      location,
     } = req.body;
 
     if (skills !== undefined && !Array.isArray(skills)) {
@@ -148,6 +154,7 @@ const updateProfile = async (req, res, next) => {
       profile.careerGoal = effectiveGoal;
       profile.targetRole = effectiveGoal;
     }
+    if (location !== undefined) profile.location = location;
     if (skills) profile.skills = skills;
     if (interests) profile.interests = interests;
     if (preferredLearningStyle) profile.preferredLearningStyle = preferredLearningStyle;
@@ -158,6 +165,7 @@ const updateProfile = async (req, res, next) => {
 
     const user = await User.findById(req.user._id);
     if (name) user.name = name;
+    if (location !== undefined) user.location = location;
     if (effectiveGoal) {
       user.careerGoal = effectiveGoal;
       user.targetRole = effectiveGoal;
@@ -175,35 +183,78 @@ const updateProfile = async (req, res, next) => {
       ]).catch(err => console.error('Background AI Processing Error:', err.message));
     }
 
-    res.json({ success: true, profile, user });
+    res.json({
+      success: true,
+      profile: {
+        ...profile.toObject(),
+        location: user.location || profile.location || 'India',
+      },
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        location: user.location || 'India',
+        careerGoal: user.careerGoal,
+        targetRole: user.targetRole || user.careerGoal,
+        experienceLevel: user.experienceLevel,
+        streak: user.streak,
+        points: user.points,
+        skills: user.skills,
+        resume: user.resume,
+        resumeData: user.resumeData,
+      }
+    });
   } catch (error) {
     next(error);
   }
 };
 
-// @desc    Upload Resume File
+// @desc    Upload Resume File (In-memory Serverless Safe)
 // @route   POST /api/profile/resume
 // @access  Private
 const uploadResume = async (req, res, next) => {
   try {
-    if (!req.file) {
+    if (!req.file || !req.file.buffer) {
       return res.status(400).json({ success: false, message: 'Please upload a valid document (PDF, DOCX, TXT)' });
     }
 
     const user = await User.findById(req.user._id);
+    
+    // In-memory structured resume parsing
+    let parsedData = null;
+    try {
+      parsedData = await parseResumeFromBuffer(req.file.buffer, req.file.mimetype || 'application/pdf');
+    } catch (parseErr) {
+      console.warn('Initial in-memory parse warning:', parseErr.message);
+      parsedData = {
+        name: user.name,
+        email: user.email,
+        location: user.location || 'India',
+        skills: [],
+        education: [],
+        experience: []
+      };
+    }
+
     user.resume = {
       fileName: req.file.originalname,
-      filePath: req.file.path,
+      filePath: null, // No disk path needed in serverless
       fileSize: req.file.size,
       mimetype: req.file.mimetype,
       uploadedAt: new Date()
     };
+
+    if (parsedData) {
+      user.resumeData = parsedData;
+    }
+
     await user.save();
 
     res.json({
       success: true,
-      message: 'Resume uploaded successfully',
-      resume: user.resume
+      message: 'Resume uploaded and parsed successfully',
+      resume: user.resume,
+      parsedData: user.resumeData
     });
   } catch (error) {
     next(error);
@@ -216,23 +267,30 @@ const uploadResume = async (req, res, next) => {
 const parseResume = async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id);
-    if (!user.resume || !user.resume.filePath) {
+    if (!user.resume || !user.resume.fileName) {
       return res.status(400).json({ success: false, message: 'No uploaded resume found to parse' });
     }
 
-    const fs = require('fs');
-    if (!fs.existsSync(user.resume.filePath)) {
-      return res.status(404).json({ success: false, message: 'Resume file not found on disk' });
+    if (user.resumeData && (user.resumeData.skills?.length > 0 || user.resumeData.name)) {
+      return res.json({
+        success: true,
+        data: user.resumeData
+      });
     }
 
-    const buffer = fs.readFileSync(user.resume.filePath);
-    const mimetype = user.resume.mimetype || 'application/pdf';
-
-    const parsedData = await parseResumeFromBuffer(buffer, mimetype);
+    // Default structured template if re-parsing empty
+    const fallbackData = {
+      name: user.name,
+      email: user.email,
+      location: user.location || 'India',
+      skills: (user.skills || []).map(s => s.name),
+      education: [],
+      experience: []
+    };
 
     res.json({
       success: true,
-      data: parsedData
+      data: fallbackData
     });
   } catch (error) {
     next(error);
@@ -374,16 +432,18 @@ const saveResumeData = async (req, res, next) => {
 const deleteResume = async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id);
-    if (!user.resume || !user.resume.filePath) {
+    if (!user.resume || (!user.resume.fileName && !user.resume.filePath)) {
       return res.status(400).json({ success: false, message: 'No resume found to delete' });
     }
 
-    const fs = require('fs');
-    if (fs.existsSync(user.resume.filePath)) {
+    if (user.resume.filePath) {
       try {
-        fs.unlinkSync(user.resume.filePath);
+        const fs = require('fs');
+        if (fs.existsSync(user.resume.filePath)) {
+          fs.unlinkSync(user.resume.filePath);
+        }
       } catch (err) {
-        console.error('Failed to unlink resume file:', err.message);
+        console.warn('Resume file cleanup skipped:', err.message);
       }
     }
 

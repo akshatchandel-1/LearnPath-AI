@@ -1,4 +1,4 @@
-﻿const mongoose = require('mongoose');
+const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema(
@@ -40,6 +40,14 @@ const userSchema = new mongoose.Schema(
     careerGoal: {
       type: String,
       default: 'Full Stack MERN Developer',
+    },
+    targetRole: {
+      type: String,
+      default: 'Full Stack MERN Developer',
+    },
+    location: {
+      type: String,
+      default: 'India',
     },
     preferredLearningStyle: {
       type: String,

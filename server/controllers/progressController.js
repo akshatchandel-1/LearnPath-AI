@@ -62,4 +62,35 @@ const updateProgress = async (req, res, next) => {
   }
 };
 
-module.exports = { getUserProgress, updateProgress };
+// @desc    Record generic learning activity & award XP
+// @route   POST /api/progress/activity
+// @access  Private
+const recordUserActivity = async (req, res, next) => {
+  try {
+    const { type, title, skill, xpEarned, durationMinutes } = req.body;
+    const points = Number(xpEarned) || 50;
+
+    await statisticsService.recordActivity(req.user._id, {
+      type: type || 'learning_activity',
+      title: title || 'Completed Learning Module',
+      skill: skill || 'General',
+      xpEarned: points,
+      durationMinutes: Number(durationMinutes) || 15,
+    });
+
+    const stats = await statisticsService.calculateUserStatistics(req.user._id);
+
+    res.json({
+      success: true,
+      stats,
+      user: {
+        points: stats.xp,
+        streak: stats.streak,
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { getUserProgress, updateProgress, recordUserActivity };

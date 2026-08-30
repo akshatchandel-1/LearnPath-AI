@@ -113,7 +113,7 @@ export default function AssessmentsPage() {
     );
 
     if (result.xpEarned > 0) {
-      awardXp(result.xpEarned);
+      awardXp(result.xpEarned, `Completed Assessment: ${activeAssessment?.title || 'Skill Assessment'}`);
     }
 
     if (result.passed && result.skillTested) {

@@ -136,6 +136,7 @@ export default function AssessmentRunnerModal({
 
     if (onComplete) {
       onComplete({
+        assessmentId: assessment.id,
         score: scorePercentage,
         passed: isPassed,
         correctCount,

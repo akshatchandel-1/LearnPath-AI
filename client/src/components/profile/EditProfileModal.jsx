@@ -11,7 +11,7 @@ export default function EditProfileModal({ profileData, onSave, onClose, initial
   const [formData, setFormData] = useState({
     name: profileData.name || '',
     email: profileData.email || '',
-    location: profileData.location || 'San Francisco, CA',
+    location: profileData.location || 'India',
     tagline: profileData.tagline || 'Aspiring Software Engineer & Cloud Architect',
     education: profileData.education || 'B.Tech in Computer Science',
     experienceLevel: profileData.experienceLevel || 'Intermediate',

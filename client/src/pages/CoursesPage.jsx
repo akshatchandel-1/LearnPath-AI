@@ -132,17 +132,24 @@ export default function CoursesPage() {
 
   // Toggle Lesson Completion
   const handleToggleLesson = (courseId, lessonId) => {
+    let earnedXpNow = false;
+    let targetCourseTitle = 'Course Lesson';
+
     setCourses((prev) =>
       prev.map((c) => {
         if (c.id === courseId) {
+          targetCourseTitle = c.title || targetCourseTitle;
           let total = 0;
           let completed = 0;
-          const updatedModules = c.modules.map((m) => {
-            const updatedLessons = m.lessons.map((l) => {
+          const updatedModules = (c.modules || []).map((m) => {
+            const updatedLessons = (m.lessons || []).map((l) => {
               total++;
               if (l.id === lessonId) {
                 const nextState = !l.completed;
-                if (nextState) completed++;
+                if (nextState) {
+                  completed++;
+                  earnedXpNow = true;
+                }
                 return { ...l, completed: nextState };
               }
               if (l.completed) completed++;
@@ -164,12 +171,16 @@ export default function CoursesPage() {
       })
     );
 
+    if (earnedXpNow && awardXp) {
+      awardXp(50, `Completed Lesson in ${targetCourseTitle}`);
+    }
+
     if (selectedCourse && selectedCourse.id === courseId) {
       setSelectedCourse((prev) => {
         let total = 0;
         let completed = 0;
-        const updatedModules = prev.modules.map((m) => {
-          const updatedLessons = m.lessons.map((l) => {
+        const updatedModules = (prev.modules || []).map((m) => {
+          const updatedLessons = (m.lessons || []).map((l) => {
             total++;
             if (l.id === lessonId) {
               const nextState = !l.completed;
