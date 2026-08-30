@@ -37,7 +37,7 @@ export default function DashboardOverview() {
   const [activeModal, setActiveModal] = useState(null); // 'milestone' | 'course' | null
   const [selectedCourse, setSelectedCourse] = useState(null);
 
-  const storageKey = user?._id ? m3_courses_data_ : 'm3_courses_data';
+  const storageKey = user?._id ? ('m3_courses_data_' + user._id) : 'm3_courses_data';
 
   const [courses, setCourses] = useState(() => {
     try {
