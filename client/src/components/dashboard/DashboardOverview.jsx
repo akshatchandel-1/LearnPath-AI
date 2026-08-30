@@ -2,6 +2,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import { useLearningPath } from '../../context/LearningPathContext';
 import { INITIAL_COURSES } from '../../data/coursesAndAssessmentsData';
 import {
   Flame,
@@ -24,11 +25,12 @@ import {
 export default function DashboardOverview() {
   const { user } = useAuth();
   const { theme } = useTheme();
+  const { learningPath } = useLearningPath();
   const navigate = useNavigate();
   const isDark = theme === 'dark';
 
   const userName = user?.name ? user.name.split(' ')[0] : 'Learner';
-  const targetRole = user?.targetRole || user?.careerGoal || 'Full Stack Developer';
+  const targetRole = user?.targetRole || user?.careerGoal || learningPath?.goal || 'Full Stack Developer';
   const userStreak = user?.streakDays ?? user?.streak ?? 0;
   const userXp = user?.points ?? user?.totalXp ?? 0;
 
@@ -54,13 +56,16 @@ export default function DashboardOverview() {
   const activeCoursesCount = inProgressCourses.length;
   const milestonesDoneCount = user?.completedMilestonesCount || 0;
 
-  const skillsData = user?.skills || [
-    { name: 'HTML & CSS', progress: 85 },
-    { name: 'JavaScript ES6+', progress: 75 },
-    { name: 'React.js', progress: 60 },
-    { name: 'Node.js & Express', progress: 50 },
-    { name: 'MongoDB', progress: 45 },
-  ];
+  const skillsData = (user?.skills && user.skills.length > 0) ? user.skills : [];
+
+  // Real Learning Path Telemetry
+  const overallProgress = learningPath?.overallProgress ?? 0;
+  const activePhase = learningPath?.phases?.find(p => p.status === 'in-progress') || learningPath?.phases?.[0];
+  const activePhaseTitle = activePhase ? `Phase ${activePhase.phaseNumber}: ${activePhase.title}` : 'Phase 1: Foundations';
+  const activeMilestone = activePhase?.milestone;
+  const milestoneTitle = activeMilestone?.title || 'Hands-on Phase Milestone';
+  const milestoneDesc = activeMilestone?.description || 'Complete the foundational lessons and code checkpoints to unlock this milestone.';
+  const milestoneProgress = activePhase?.completionPercentage ?? 0;
 
   const handleOpenCourse = (course) => {
     setSelectedCourse(course);
@@ -73,7 +78,7 @@ export default function DashboardOverview() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <div>
           <h1 className={`text-2xl sm:text-3xl font-black tracking-tight flex items-center gap-2 ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
-            Welcome back, {userName} ðŸ‘‹
+            Welcome back, {userName} 👋
           </h1>
           <p className="text-xs sm:text-sm text-[#8C877D] mt-1">
             Track your personalized engineering roadmap for <strong className="text-[#FF857A]">{targetRole}</strong>.
@@ -89,15 +94,15 @@ export default function DashboardOverview() {
         </button>
       </div>
 
-      {/* Top 4 Stat Metric Cards (Dynamic - Zero Inventions) */}
+      {/* Top 4 Quick Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Card 1: Current Streak */}
+        {/* Card 1: Streak */}
         <div className={`p-5 rounded-2xl border transition-all shadow-sm hover:shadow-md ${
           isDark ? 'bg-[#111418] border-white/[0.08]' : 'bg-white border-black/[0.08]'
         }`}>
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-[#FF6B5F]/15 border border-[#FF6B5F]/30 text-[#FF857A] flex items-center justify-center shrink-0">
-              <Flame className="w-6 h-6 fill-current" />
+              <Flame className="w-6 h-6" />
             </div>
             <div>
               <p className="text-xs font-bold text-[#8C877D] uppercase tracking-wider">Current Streak</p>
@@ -186,12 +191,12 @@ export default function DashboardOverview() {
             <div className="space-y-2">
               <div className="flex justify-between items-center text-xs text-[#8C877D]">
                 <span>Overall Curriculum Progress</span>
-                <span className="font-bold text-[#FF857A] font-mono">65% Complete</span>
+                <span className="font-bold text-[#FF857A] font-mono">{overallProgress}% Complete</span>
               </div>
               <div className="w-full bg-white/5 rounded-full h-2.5 overflow-hidden">
                 <div
                   className="bg-gradient-to-r from-[#FF6B5F] to-[#E85548] h-full rounded-full transition-all duration-500"
-                  style={{ width: '65%' }}
+                  style={{ width: `${overallProgress}%` }}
                 />
               </div>
             </div>
@@ -199,7 +204,7 @@ export default function DashboardOverview() {
             <div className="mt-5 pt-4 border-t border-white/[0.06]">
               <p className="text-xs text-[#8C877D] font-medium">Current Milestone Phase</p>
               <p className={`text-sm font-bold mt-0.5 ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
-                Phase 2: Core Engineering Architecture & APIs
+                {activePhaseTitle}
               </p>
             </div>
           </div>
@@ -226,25 +231,27 @@ export default function DashboardOverview() {
               </span>
               <span className="flex items-center gap-1 text-xs font-bold text-[#FBBF24] font-mono">
                 <Calendar className="w-3.5 h-3.5" />
-                Target: Next Week
+                Target: Next Phase
               </span>
             </div>
             <h3 className={`text-lg font-black mb-2 ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
-              Production Architecture Project Milestone
+              {milestoneTitle}
             </h3>
             <p className="text-xs text-[#8C877D] leading-relaxed mb-4">
-              Construct a multi-service system with live data feeds and containerization to verify Phase 2 readiness.
+              {milestoneDesc}
             </p>
 
             <div className="space-y-2">
               <div className="flex justify-between items-center text-xs text-[#8C877D]">
                 <span>Milestone Tasks Completed</span>
-                <span className="font-bold text-[#34D399] font-mono">2 of 3 tasks (68%)</span>
+                <span className="font-bold text-[#34D399] font-mono">
+                  {milestoneProgress > 0 ? `${milestoneProgress}% Complete` : '0% (Not Started)'}
+                </span>
               </div>
               <div className="w-full bg-white/5 rounded-full h-2.5 overflow-hidden">
                 <div
                   className="bg-gradient-to-r from-[#34D399] to-[#059669] h-full rounded-full transition-all duration-500"
-                  style={{ width: '68%' }}
+                  style={{ width: `${milestoneProgress}%` }}
                 />
               </div>
             </div>
@@ -263,242 +270,263 @@ export default function DashboardOverview() {
         </div>
       </div>
 
-      {/* Courses in Progress Section */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className={`text-lg font-black ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
-              Active Courses in Progress
-            </h3>
-            <p className="text-xs text-[#8C877D]">Pick up where you left off in your modules</p>
-          </div>
-          <button
-            onClick={() => navigate('/courses')}
-            className="text-xs font-bold text-[#FF857A] hover:underline flex items-center gap-1 cursor-pointer"
-          >
-            <span>View All Courses</span>
-            <ChevronRight className="w-3.5 h-3.5" />
-          </button>
-        </div>
-
-        {inProgressCourses.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {inProgressCourses.slice(0, 3).map((course) => (
-              <div
-                key={course.id}
-                onClick={() => handleOpenCourse(course)}
-                className={`p-5 rounded-2xl border transition-all cursor-pointer group hover:border-[#FF6B5F]/40 ${
-                  isDark ? 'bg-[#111418] border-white/[0.08]' : 'bg-white border-black/[0.08]'
-                }`}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-[#FF6B5F]/15 text-[#FF857A] uppercase font-mono">
-                    {course.category}
-                  </span>
-                  <span className="text-xs font-bold text-[#FF857A] font-mono">
-                    {course.progress || 0}%
-                  </span>
-                </div>
-
-                <h4 className={`text-sm font-bold line-clamp-1 mb-1 group-hover:text-[#FF857A] transition-colors ${
-                  isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'
-                }`}>
-                  {course.title}
-                </h4>
-                <p className="text-xs text-[#8C877D] line-clamp-1 mb-3">
-                  {course.tagline || 'Curated module track'}
-                </p>
-
-                <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden mb-3">
-                  <div
-                    className="bg-gradient-to-r from-[#FF6B5F] to-[#E85548] h-full rounded-full"
-                    style={{ width: `${course.progress || 0}%` }}
-                  />
-                </div>
-
-                <div className="flex items-center justify-between text-[11px] text-[#8C877D] pt-1">
-                  <span>{course.completedLessons || 0}/{course.totalLessons || 8} lessons</span>
-                  <span className="font-mono">{course.duration}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="p-8 rounded-2xl bg-[#111418] border border-white/[0.08] text-center space-y-3">
-            <BookOpen className="w-8 h-8 text-[#8C877D] mx-auto opacity-50" />
-            <p className="text-xs text-[#8C877D]">No courses currently enrolled. Start a learning track matched to your goals!</p>
-            <button
-              onClick={() => navigate('/courses')}
-              className="px-4 py-2 rounded-xl bg-[#FF6B5F] hover:bg-[#E85548] text-white text-xs font-bold transition-all cursor-pointer"
-            >
-              Browse Course Catalog
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* Bottom Grid: Skill Competency Progress & Weekly Goal */}
+      {/* Bottom Row: In-Progress Modules & Verified Skill Competency */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Skill Competency Bars */}
-        <div className={`p-6 rounded-2xl border lg:col-span-2 space-y-4 ${
+        {/* In-Progress Modules (2 cols) */}
+        <div className={`lg:col-span-2 p-6 rounded-2xl border space-y-4 ${
           isDark ? 'bg-[#111418] border-white/[0.08]' : 'bg-white border-black/[0.08]'
         }`}>
           <div className="flex items-center justify-between">
-            <h3 className={`text-base font-bold ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
-              Verified Skill Competency
+            <h3 className={`text-base font-black tracking-tight ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
+              Enrolled Learning Modules
+            </h3>
+            <button
+              onClick={() => navigate('/courses')}
+              className="text-xs font-bold text-[#FF857A] hover:underline flex items-center gap-1 cursor-pointer"
+            >
+              <span>Explore All Catalog Tracks</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          {inProgressCourses.length === 0 ? (
+            <div className="p-8 text-center rounded-xl bg-white/[0.02] border border-white/[0.04] space-y-3">
+              <BookOpen className="w-8 h-8 mx-auto text-[#8C877D]" />
+              <p className="text-xs font-bold text-[#C7C2B6]">No courses enrolled yet.</p>
+              <p className="text-[11px] text-[#8C877D]">Visit the Courses catalog to enroll in curated modules matched to your target role.</p>
+              <button
+                onClick={() => navigate('/courses')}
+                className="px-4 py-2 rounded-xl bg-[#FF6B5F] text-white text-xs font-bold hover:bg-[#E85548] transition-all cursor-pointer inline-flex items-center gap-1.5"
+              >
+                <span>Browse Courses</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {inProgressCourses.slice(0, 3).map((course) => (
+                <div
+                  key={course.id}
+                  onClick={() => handleOpenCourse(course)}
+                  className={`p-4 rounded-xl border transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4 group ${
+                    isDark
+                      ? 'bg-[#16191E] border-white/[0.06] hover:border-white/20 hover:bg-[#1D2128]'
+                      : 'bg-[#F9FAFB] border-black/[0.06] hover:border-black/20 hover:bg-[#F3F4F6]'
+                  }`}
+                >
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#FF6B5F]/15 text-[#FF857A] font-mono">
+                        {course.category}
+                      </span>
+                      <span className="text-xs text-[#8C877D] font-mono">
+                        {course.duration || '4 hours'}
+                      </span>
+                    </div>
+                    <h4 className={`text-sm font-bold group-hover:text-[#FF857A] transition-colors ${
+                      isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'
+                    }`}>
+                      {course.title}
+                    </h4>
+                  </div>
+
+                  <div className="flex items-center gap-4 shrink-0">
+                    <div className="text-right">
+                      <span className="text-xs font-mono font-bold text-[#FF857A]">
+                        {course.progress || 0}%
+                      </span>
+                      <div className="w-20 bg-white/10 rounded-full h-1.5 mt-1 overflow-hidden">
+                        <div
+                          className="bg-[#FF6B5F] h-full rounded-full"
+                          style={{ width: `${course.progress || 0}%` }}
+                        />
+                      </div>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-[#8C877D] group-hover:text-[#F5F1E8] transition-colors" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Verified Skill Competency (1 col) */}
+        <div className={`p-6 rounded-2xl border space-y-4 ${
+          isDark ? 'bg-[#111418] border-white/[0.08]' : 'bg-white border-black/[0.08]'
+        }`}>
+          <div className="flex items-center justify-between">
+            <h3 className={`text-base font-black tracking-tight ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
+              Skill Competency
             </h3>
             <button
               onClick={() => navigate('/skill-gaps')}
-              className="text-xs font-bold text-[#FF857A] hover:underline cursor-pointer"
+              className="text-xs font-bold text-[#FF857A] hover:underline flex items-center gap-1 cursor-pointer"
             >
-              Analyze Gaps â†’
+              <span>Skill Matrix</span>
+              <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          <div className="space-y-3.5">
-            {skillsData.map((skill, idx) => (
-              <div key={idx} className="space-y-1">
-                <div className="flex justify-between text-xs">
-                  <span className={`font-semibold ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
-                    {skill.name}
-                  </span>
-                  <span className="text-[#8C877D] font-mono font-bold">{skill.progress}%</span>
-                </div>
-                <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden">
-                  <div
-                    className="bg-gradient-to-r from-[#FF6B5F] to-[#E85548] h-full rounded-full"
-                    style={{ width: `${skill.progress}%` }}
-                  />
-                </div>
+          <div className="space-y-4">
+            {skillsData.length === 0 ? (
+              <div className="p-6 text-center rounded-xl bg-white/[0.02] border border-white/[0.04] space-y-2">
+                <Target className="w-7 h-7 mx-auto text-[#8C877D]" />
+                <p className="text-xs font-bold text-[#C7C2B6]">No skills verified yet.</p>
+                <p className="text-[11px] text-[#8C877D]">Upload your resume or take checkpoint quizzes to plot your competency radar.</p>
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Weekly Goal Progress */}
-        <div className={`p-6 rounded-2xl border space-y-4 flex flex-col justify-between ${
-          isDark ? 'bg-[#111418] border-white/[0.08]' : 'bg-white border-black/[0.08]'
-        }`}>
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <Clock className="w-4 h-4 text-[#FF6B5F]" />
-              <h3 className={`text-base font-bold ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
-                Weekly Study Goal
-              </h3>
-            </div>
-            <div className={`text-3xl font-black font-mono my-2 ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
-              {user?.completedHours || 0} / 12 hrs
-            </div>
-            <p className="text-xs text-[#8C877D] leading-relaxed mb-4">
-              Maintain your daily study cadence to keep milestone pacing optimal!
-            </p>
-
-            <div className="w-full bg-white/5 rounded-full h-2.5 overflow-hidden">
-              <div
-                className="bg-gradient-to-r from-[#FF6B5F] to-[#E85548] h-full rounded-full"
-                style={{ width: `${Math.min(100, Math.round(((user?.completedHours || 0) / 12) * 100))}%` }}
-              />
-            </div>
-          </div>
-
-          <button
-            onClick={() => navigate('/progress')}
-            className={`w-full py-2.5 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
-              isDark ? 'border-white/10 bg-[#16191E] text-[#F5F1E8] hover:bg-white/5' : 'border-black/10 bg-[#F5F1E8] text-[#111418] hover:bg-black/5'
-            }`}
-          >
-            View Detailed Analytics
-          </button>
-        </div>
-      </div>
-
-      {/* Interactive Modal for Milestone / Course Details */}
-      {activeModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
-          <div className={`w-full max-w-lg p-6 sm:p-8 rounded-[28px] border shadow-2xl relative ${
-            isDark ? 'bg-[#111418] border-white/10 text-[#F5F1E8]' : 'bg-white border-black/10 text-[#111418]'
-          }`}>
-            <button
-              onClick={() => setActiveModal(null)}
-              className="absolute top-5 right-5 p-2 rounded-xl text-[#8C877D] hover:text-[#F5F1E8] cursor-pointer"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            {activeModal === 'milestone' && (
-              <div className="space-y-4">
-                <div className="w-10 h-10 rounded-xl bg-[#FF6B5F]/15 text-[#FF857A] flex items-center justify-center">
-                  <Target className="w-5 h-5" />
-                </div>
-                <h3 className="text-xl font-black">Production Architecture Project</h3>
-                <p className="text-xs text-[#8C877D] leading-relaxed">
-                  This milestone tests component hierarchy, custom hooks, and server-side state synchronization with MongoDB.
-                </p>
-                <div className="p-3.5 rounded-xl bg-[#0E1114] border border-white/[0.06] space-y-2 text-xs">
-                  <div className="flex items-center gap-2 text-[#34D399]">
-                    <CheckCircle2 className="w-4 h-4" />
-                    <span>State Management Setup (Complete)</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-[#34D399]">
-                    <CheckCircle2 className="w-4 h-4" />
-                    <span>REST API Service Consumption (Complete)</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-[#FF857A]">
-                    <Clock className="w-4 h-4" />
-                    <span>Live Telemetry & Unit Tests (In Progress)</span>
-                  </div>
-                </div>
-                <button
-                  onClick={() => {
-                    setActiveModal(null);
-                    navigate('/courses');
-                  }}
-                  className="w-full py-2.5 rounded-xl bg-[#FF6B5F] text-white text-xs font-bold hover:bg-[#E85548] cursor-pointer"
-                >
-                  Continue to Course Syllabus
-                </button>
-              </div>
-            )}
-
-            {activeModal === 'course' && selectedCourse && (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-[#FF6B5F]/15 text-[#FF857A] uppercase font-mono">
-                    {selectedCourse.category}
-                  </span>
-                  <span className="text-xs font-bold text-[#FBBF24] font-mono">â˜… {selectedCourse.rating || 4.9}</span>
-                </div>
-                <h3 className="text-xl font-black">{selectedCourse.title}</h3>
-                <p className="text-xs text-[#8C877D] leading-relaxed">
-                  {selectedCourse.tagline || selectedCourse.description}
-                </p>
-                <div className="space-y-1">
-                  <div className="flex justify-between text-xs text-[#8C877D]">
-                    <span>Progress</span>
-                    <span className="font-mono font-bold text-[#FF857A]">{selectedCourse.progress || 0}%</span>
+            ) : (
+              skillsData.slice(0, 5).map((skill, idx) => (
+                <div key={idx} className="space-y-1.5">
+                  <div className="flex justify-between items-center text-xs">
+                    <span className={`font-semibold ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
+                      {skill.name || skill.skill}
+                    </span>
+                    <span className="font-mono text-[#8C877D] font-bold">
+                      {skill.level ?? skill.progress ?? 0}%
+                    </span>
                   </div>
                   <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden">
                     <div
-                      className="bg-gradient-to-r from-[#FF6B5F] to-[#E85548] h-full rounded-full"
-                      style={{ width: `${selectedCourse.progress || 0}%` }}
+                      className="bg-gradient-to-r from-[#FF6B5F] to-[#E85548] h-full rounded-full transition-all duration-300"
+                      style={{ width: `${skill.level ?? skill.progress ?? 0}%` }}
                     />
                   </div>
                 </div>
-                <button
-                  onClick={() => {
-                    setActiveModal(null);
-                    navigate('/courses');
-                  }}
-                  className="w-full py-2.5 rounded-xl bg-[#FF6B5F] text-white text-xs font-bold hover:bg-[#E85548] cursor-pointer"
-                >
-                  Launch Full Course Details
-                </button>
-              </div>
+              ))
             )}
+          </div>
+
+          <div className="pt-2">
+            <button
+              onClick={() => navigate('/assessments')}
+              className={`w-full py-2.5 rounded-xl text-xs font-bold transition-all border cursor-pointer flex items-center justify-center gap-2 ${
+                isDark
+                  ? 'border-white/10 bg-[#16191E] text-[#F5F1E8] hover:bg-white/5'
+                  : 'border-black/10 bg-[#F5F1E8] text-[#111418] hover:bg-black/5'
+              }`}
+            >
+              <Code2 className="w-4 h-4 text-[#FF857A]" />
+              <span>Take Checkpoint Assessment</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Modal: Milestone Details */}
+      {activeModal === 'milestone' && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in">
+          <div className={`rounded-2xl max-w-lg w-full p-6 border shadow-2xl space-y-4 ${
+            isDark ? 'bg-[#111418] border-white/10 text-[#F5F1E8]' : 'bg-white border-black/10 text-[#111418]'
+          }`}>
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-[#FF857A] uppercase tracking-wider">
+                Active Phase Milestone
+              </span>
+              <button
+                onClick={() => setActiveModal(null)}
+                className="p-1 rounded-lg hover:bg-white/10 text-[#8C877D] hover:text-white transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <h3 className="text-lg font-black">{milestoneTitle}</h3>
+            <p className="text-xs text-[#8C877D] leading-relaxed">
+              {milestoneDesc}
+            </p>
+
+            <div className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.06] space-y-2">
+              <p className="text-xs font-bold text-[#C7C2B6]">Key Deliverables</p>
+              <ul className="text-xs text-[#8C877D] space-y-1.5 list-disc list-inside">
+                {activeMilestone?.deliverables && activeMilestone.deliverables.length > 0 ? (
+                  activeMilestone.deliverables.map((d, i) => <li key={i}>{d}</li>)
+                ) : (
+                  <>
+                    <li>Modular code architecture and test coverage</li>
+                    <li>Clean interface with async error boundaries</li>
+                    <li>Live deployment repository link</li>
+                  </>
+                )}
+              </ul>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-2">
+              <button
+                onClick={() => setActiveModal(null)}
+                className="px-4 py-2 rounded-xl text-xs font-bold border border-white/10 hover:bg-white/5 cursor-pointer"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => {
+                  setActiveModal(null);
+                  navigate('/learning-path');
+                }}
+                className="px-4 py-2 rounded-xl text-xs font-bold bg-[#FF6B5F] hover:bg-[#E85548] text-white cursor-pointer"
+              >
+                Go to Learning Path
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Course Details */}
+      {activeModal === 'course' && selectedCourse && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in">
+          <div className={`rounded-2xl max-w-lg w-full p-6 border shadow-2xl space-y-4 ${
+            isDark ? 'bg-[#111418] border-white/10 text-[#F5F1E8]' : 'bg-white border-black/10 text-[#111418]'
+          }`}>
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-[#FF857A] uppercase tracking-wider">
+                {selectedCourse.category}
+              </span>
+              <button
+                onClick={() => setActiveModal(null)}
+                className="p-1 rounded-lg hover:bg-white/10 text-[#8C877D] hover:text-white transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <h3 className="text-lg font-black">{selectedCourse.title}</h3>
+            <p className="text-xs text-[#8C877D] leading-relaxed">
+              {selectedCourse.description}
+            </p>
+
+            <div className="space-y-2">
+              <div className="flex justify-between items-center text-xs text-[#8C877D]">
+                <span>Progress</span>
+                <span className="font-mono font-bold text-[#FF857A]">{selectedCourse.progress || 0}%</span>
+              </div>
+              <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden">
+                <div
+                  className="bg-[#FF6B5F] h-full rounded-full"
+                  style={{ width: `${selectedCourse.progress || 0}%` }}
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-2">
+              <button
+                onClick={() => setActiveModal(null)}
+                className="px-4 py-2 rounded-xl text-xs font-bold border border-white/10 hover:bg-white/5 cursor-pointer"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => {
+                  setActiveModal(null);
+                  navigate('/courses');
+                }}
+                className="px-4 py-2 rounded-xl text-xs font-bold bg-[#FF6B5F] hover:bg-[#E85548] text-white cursor-pointer"
+              >
+                Open Course Page
+              </button>
+            </div>
           </div>
         </div>
       )}
     </div>
   );
 }
-

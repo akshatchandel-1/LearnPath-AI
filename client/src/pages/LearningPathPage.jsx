@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
 import PageHeader from '../components/common/PageHeader';
@@ -51,7 +51,7 @@ export default function LearningPathPage() {
   const navigate = useNavigate();
   const { user, updateUserProfile } = useAuth();
   const { learningPath, adaptRoadmap } = useLearningPath();
-  const [expandedPhase, setExpandedPhase] = useState(2);
+  const [expandedPhase, setExpandedPhase] = useState(1);
   const [viewMode, setViewMode] = useState('timeline');
   const [isEditingGoal, setIsEditingGoal] = useState(false);
   const [goalText, setGoalText] = useState('');
@@ -101,8 +101,8 @@ export default function LearningPathPage() {
     goal: activeRole,
     title: `${activeRole} Personalized Engineering Roadmap`,
     totalEstimatedWeeks: 12,
-    overallProgress: 65,
-    currentPhase: 2,
+    overallProgress: 0,
+    currentPhase: 1,
     phases: [],
     adaptationHistory: []
   };
@@ -123,6 +123,7 @@ export default function LearningPathPage() {
             size="sm"
             icon={Sparkles}
             onClick={handleRecalibrate}
+            disabled={isAdapting}
           >
             Re-calibrate with AI
           </Button>
@@ -139,7 +140,7 @@ export default function LearningPathPage() {
           </div>
         )}
 
-        {/* ── Left Column (Main Content) ── */}
+        {/* â”€â”€ Left Column (Main Content) â”€â”€ */}
         <div className="flex-1 min-w-0 space-y-6">
           
           {adaptSuccessMsg && (
@@ -300,7 +301,7 @@ export default function LearningPathPage() {
           </div>
         </div>
 
-        {/* ── Right Column (Sidebar Widgets) ── */}
+        {/* â”€â”€ Right Column (Sidebar Widgets) â”€â”€ */}
         <div className="w-full xl:w-80 space-y-6 flex-shrink-0">
           {/* Path Overview Card */}
           <Card variant="default">
@@ -392,3 +393,4 @@ export default function LearningPathPage() {
     </MainLayout>
   );
 }
+

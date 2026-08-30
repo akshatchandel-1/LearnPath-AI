@@ -1,4 +1,4 @@
-const dotenv = require('dotenv');
+﻿const dotenv = require('dotenv');
 const { connectDB } = require('../config/db');
 
 const User = require('../models/User');
@@ -27,11 +27,11 @@ dotenv.config();
 
 const seedDatabase = async () => {
   try {
-    console.log('🚀 Starting LearnPath AI Database Seeding Pipeline...');
+    console.log('ðŸš€ Starting LearnPath AI Database Seeding Pipeline...');
     await connectDB();
 
     // Clean existing collections
-    console.log('🧹 Clearing legacy collections...');
+    console.log('ðŸ§¹ Clearing legacy collections...');
     await Promise.all([
       User.deleteMany({}),
       LearnerProfile.deleteMany({}),
@@ -47,29 +47,29 @@ const seedDatabase = async () => {
     ]);
 
     // 1. Insert Skills
-    console.log(`📦 Seeding ${skillsData.length} Core Tech Skills...`);
+    console.log(`ðŸ“¦ Seeding ${skillsData.length} Core Tech Skills...`);
     const insertedSkills = await Skill.insertMany(skillsData);
 
     // Initialize prerequisite graph with seeded skills
     await prerequisiteEngine.initialize();
 
     // 2. Insert Resources
-    console.log(`📚 Seeding ${resourcesData.length} Verified Learning Resources...`);
+    console.log(`ðŸ“š Seeding ${resourcesData.length} Verified Learning Resources...`);
     const insertedResources = await Resource.insertMany(resourcesData);
 
     // 3. Insert Projects
-    console.log(`🛠️ Seeding ${projectsData.length} Real-World Projects...`);
+    console.log(`ðŸ› ï¸ Seeding ${projectsData.length} Real-World Projects...`);
     const insertedProjects = await Project.insertMany(projectsData);
 
     // 4. Insert Quizzes
-    console.log(`📝 Seeding ${quizzesData.length} Assessment Quizzes...`);
+    console.log(`ðŸ“ Seeding ${quizzesData.length} Assessment Quizzes...`);
     const insertedQuizzes = await Quiz.insertMany(quizzesData);
 
     // 5. Seed Hackathon Demo User
-    console.log('👤 Seeding Demo User (Akshat - Full Stack MERN Aspirant)...');
+    console.log('ðŸ‘¤ Seeding Demo User (Akshat - Full Stack MERN Aspirant)...');
     const demoUser = await User.create({
       name: 'Akshat (Demo Learner)',
-      email: 'demo@learnpath.ai',
+      email: 'sample.learner@learnpath.ai',
       password: 'password123',
       avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=AkshatDemo',
       careerGoal: 'Full Stack MERN Developer',
@@ -79,7 +79,7 @@ const seedDatabase = async () => {
       preferredDifficulty: 'Intermediate',
       streak: 7,
       points: 1300,
-      isDemoUser: true,
+      
       skills: [
         { name: 'HTML & CSS', level: 85, category: 'Frontend' },
         { name: 'JavaScript', level: 68, category: 'Frontend' },
@@ -89,9 +89,9 @@ const seedDatabase = async () => {
         { name: 'MongoDB', level: 15, category: 'Database' },
       ],
       badges: [
-        { id: 'streak_7', name: '7-Day Streak', icon: '🔥', description: 'Learned consistently for 7 straight days' },
-        { id: 'quiz_master', name: 'Code Checkpoint', icon: '⚡', description: 'Passed React Hooks Assessment with >80%' },
-        { id: 'project_builder', name: 'Full Stack Builder', icon: '🛠️', description: 'Completed first hands-on MERN milestone' },
+        { id: 'streak_7', name: '7-Day Streak', icon: 'ðŸ”¥', description: 'Learned consistently for 7 straight days' },
+        { id: 'quiz_master', name: 'Code Checkpoint', icon: 'âš¡', description: 'Passed React Hooks Assessment with >80%' },
+        { id: 'project_builder', name: 'Full Stack Builder', icon: 'ðŸ› ï¸', description: 'Completed first hands-on MERN milestone' },
       ],
     });
 
@@ -116,7 +116,7 @@ const seedDatabase = async () => {
     });
 
     // 7. Seed 7-Day Realistic Learning Activities (Streak = 7 Days, XP = 1300)
-    console.log('🔥 Seeding 7-Day Activity History & Data-Driven Streak...');
+    console.log('ðŸ”¥ Seeding 7-Day Activity History & Data-Driven Streak...');
     const now = new Date();
     const activityLogs = [
       { daysAgo: 6, title: 'Mastered ES6+ Syntax & Scope', skill: 'JavaScript', xp: 150, duration: 60, type: 'resource_completion' },
@@ -145,10 +145,10 @@ const seedDatabase = async () => {
     }
 
     // 8. Generate Roadmap & Recommendations
-    console.log('🗺️ Generating Adaptive Prerequisite Roadmap for Demo User...');
+    console.log('ðŸ—ºï¸ Generating Adaptive Prerequisite Roadmap for Demo User...');
     const learningPath = await adaptivePathService.generateLearningPath(demoUser._id);
 
-    console.log('🧠 Generating ML Hybrid Recommendations with Explainable AI...');
+    console.log('ðŸ§  Generating ML Hybrid Recommendations with Explainable AI...');
     const recResult = await recommendationEngine.generateRecommendationsForUser(demoUser._id);
 
     // 9. Seed Initial Completed Resource & Progress
@@ -190,7 +190,7 @@ const seedDatabase = async () => {
     }
 
     // 11. Generate AI Insights
-    console.log('💡 Generating AI Behavioral Insights...');
+    console.log('ðŸ’¡ Generating AI Behavioral Insights...');
     await insightGenerator.generateInsightsForUser(demoUser._id);
 
     // 12. Seed AI Mentor Conversation
@@ -200,32 +200,33 @@ const seedDatabase = async () => {
       messages: [
         {
           role: 'assistant',
-          content: `Hello **Akshat**! 👋 I am your **LearnPath AI Mentor**.\n\nI've analyzed your skill gap profile toward becoming a **Full Stack MERN Developer**:\n- **Strengths**: Strong in HTML/CSS (85%) and solid JavaScript foundations (68%).\n- **Identified Gaps**: React (42%), Node.js (25%), Express (20%), and MongoDB (15%).\n- **Active Roadmap Phase**: **Phase 2: React.js Architecture & Custom Hooks**.\n\nAsk me anything about your roadmap, why topics are ordered in this sequence, or what to build next!`,
+          content: `Hello **Akshat**! ðŸ‘‹ I am your **LearnPath AI Mentor**.\n\nI've analyzed your skill gap profile toward becoming a **Full Stack MERN Developer**:\n- **Strengths**: Strong in HTML/CSS (85%) and solid JavaScript foundations (68%).\n- **Identified Gaps**: React (42%), Node.js (25%), Express (20%), and MongoDB (15%).\n- **Active Roadmap Phase**: **Phase 2: React.js Architecture & Custom Hooks**.\n\nAsk me anything about your roadmap, why topics are ordered in this sequence, or what to build next!`,
           timestamp: new Date(Date.now() - 3600000),
         },
       ],
     });
 
     console.log(`\n========================================================`);
-    console.log(`✅ DATABASE SEEDING COMPLETED SUCCESSFULLY!`);
+    console.log(`âœ… DATABASE SEEDING COMPLETED SUCCESSFULLY!`);
     console.log(`--------------------------------------------------------`);
-    console.log(`📊 Seeded Skills:          ${insertedSkills.length}`);
-    console.log(`📚 Seeded Resources:       ${insertedResources.length}`);
-    console.log(`🛠️ Seeded Projects:        ${insertedProjects.length}`);
-    console.log(`📝 Seeded Quizzes:         ${insertedQuizzes.length}`);
-    console.log(`🎯 Generated Recomms:      ${recResult.recommendations.length}`);
-    console.log(`🗺️ Generated Roadmap:      ${learningPath.title} (${learningPath.phases.length} phases)`);
+    console.log(`ðŸ“Š Seeded Skills:          ${insertedSkills.length}`);
+    console.log(`ðŸ“š Seeded Resources:       ${insertedResources.length}`);
+    console.log(`ðŸ› ï¸ Seeded Projects:        ${insertedProjects.length}`);
+    console.log(`ðŸ“ Seeded Quizzes:         ${insertedQuizzes.length}`);
+    console.log(`ðŸŽ¯ Generated Recomms:      ${recResult.recommendations.length}`);
+    console.log(`ðŸ—ºï¸ Generated Roadmap:      ${learningPath.title} (${learningPath.phases.length} phases)`);
     console.log(`--------------------------------------------------------`);
-    console.log(`🔑 HACKATHON DEMO CREDENTIALS:`);
-    console.log(`   Email:    demo@learnpath.ai`);
+    console.log(`ðŸ”‘ HACKATHON DEMO CREDENTIALS:`);
+    console.log(`   Email:    sample.learner@learnpath.ai`);
     console.log(`   Password: password123`);
     console.log(`========================================================\n`);
 
     process.exit(0);
   } catch (error) {
-    console.error('✗ Seeding error:', error);
+    console.error('âœ— Seeding error:', error);
     process.exit(1);
   }
 };
 
 seedDatabase();
+

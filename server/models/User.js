@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+﻿const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema(
@@ -80,10 +80,6 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    isDemoUser: {
-      type: Boolean,
-      default: false,
-    },
     badges: [
       {
         id: String,
@@ -139,3 +135,4 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
 };
 
 module.exports = mongoose.model('User', userSchema);
+

@@ -1,13 +1,312 @@
-const llmService = require('./llmService');
+﻿const llmService = require('./llmService');
 const Quiz = require('../../models/Quiz');
 
+const QUESTION_BANK = {
+  javascript: [
+    {
+      question: 'What is the primary output order of `console.log(1); setTimeout(() => console.log(2), 0); Promise.resolve().then(() => console.log(3)); console.log(4);`?',
+      options: ['1, 4, 3, 2', '1, 2, 3, 4', '1, 4, 2, 3', '1, 3, 4, 2'],
+      correctAnswerIndex: 0,
+      explanation: 'Microtasks (Promises) execute before macrotasks (setTimeout) after the synchronous execution stack empties, resulting in 1, 4, 3, 2.',
+      skillSubtopic: 'Event Loop & Microtasks',
+    },
+    {
+      question: 'How does `Object.freeze()` differ from `Object.seal()` in JavaScript?',
+      options: [
+        'freeze makes all existing properties read-only, whereas seal permits modifying existing writable property values',
+        'seal prevents adding new properties while freeze allows adding new properties',
+        'freeze is for arrays only while seal is for objects only',
+        'There is no functional difference between them'
+      ],
+      correctAnswerIndex: 0,
+      explanation: 'Object.freeze() sets configurable and writable to false. Object.seal() sets configurable to false but retains existing writability.',
+      skillSubtopic: 'Object Mutability',
+    },
+    {
+      question: 'Which method should be used to abort an active `fetch()` request when a component unmounts?',
+      options: ['AbortController.abort()', 'fetch.cancel()', 'window.stopFetch()', 'Promise.reject()'],
+      correctAnswerIndex: 0,
+      explanation: 'AbortController generates a signal passed to fetch() that cancels active network requests upon calling abort().',
+      skillSubtopic: 'Asynchronous Control',
+    },
+    {
+      question: 'What is the consequence of creating a closure over a large outer scope variable inside an event listener that is never removed?',
+      options: [
+        'Potential memory leak as the garbage collector cannot reclaim the referenced memory',
+        'Immediate syntax error at compilation time',
+        'The variable is automatically garbage collected after 5 seconds',
+        'Browser tab crashes synchronously on startup'
+      ],
+      correctAnswerIndex: 0,
+      explanation: 'Retaining references in persistent event listeners creates memory leaks because the garbage collector cannot free active reachability chains.',
+      skillSubtopic: 'Memory Lifecycle & Closures',
+    },
+    {
+      question: 'Which array method executes a reducer function on each element without mutating the original array?',
+      options: ['reduce()', 'splice()', 'reverse()', 'sort()'],
+      correctAnswerIndex: 0,
+      explanation: 'Array.prototype.reduce() accumulates array values into a single return value without mutating the source array.',
+      skillSubtopic: 'Functional Array Pipelines',
+    },
+    {
+      question: 'In ES Modules (ESM), how does static `import` differ from dynamic `import()`?',
+      options: [
+        'Static imports are resolved at compile/parse time, whereas dynamic import() returns a Promise resolved at runtime',
+        'Static imports only work in Node.js while dynamic imports only work in the browser',
+        'Dynamic import() can only load JSON files',
+        'Static imports are always asynchronous'
+      ],
+      correctAnswerIndex: 0,
+      explanation: 'Static import statements enable tree-shaking by resolving at parse time, while import() loads modules on-demand at runtime.',
+      skillSubtopic: 'ES Modules & Dynamic Loading',
+    },
+    {
+      question: 'What happens when `Promise.all([p1, p2, p3])` encounters a rejection on `p2` while `p1` is still pending?',
+      options: [
+        'The returned Promise immediately rejects with the reason from p2 (fail-fast behavior)',
+        'It waits for p1 and p3 to finish before rejecting',
+        'It ignores p2 and returns the fulfilled results of p1 and p3',
+        'It converts the rejection into an empty array'
+      ],
+      correctAnswerIndex: 0,
+      explanation: 'Promise.all rejects immediately upon the first rejection. To wait for all settlements, use Promise.allSettled().',
+      skillSubtopic: 'Promise Concurrency',
+    },
+    {
+      question: 'What does the `WeakMap` data structure prevent in long-running JavaScript applications?',
+      options: [
+        'Memory leaks by allowing object keys to be garbage collected when no other references exist',
+        'Concurrent thread execution conflicts',
+        'Type coercion errors during arithmetic operations',
+        'Uncaught JSON parsing exceptions'
+      ],
+      correctAnswerIndex: 0,
+      explanation: 'WeakMap holds weak references to key objects, allowing the garbage collector to reclaim them when unreachable elsewhere.',
+      skillSubtopic: 'Data Structures & Garbage Collection',
+    },
+  ],
+
+  react: [
+    {
+      question: 'What is the primary purpose of the `useCallback` hook in React?',
+      options: [
+        'To memoize a callback function instance between renders to prevent unnecessary child re-renders',
+        'To execute asynchronous side-effects on initial component mount',
+        'To create a mutable ref that persists across render cycles',
+        'To dynamically manage browser URL query parameters'
+      ],
+      correctAnswerIndex: 0,
+      explanation: 'useCallback returns a memoized version of the callback that only changes if one of the dependencies has changed.',
+      skillSubtopic: 'Hooks & Optimization',
+    },
+    {
+      question: 'What problem occurs when a `useEffect` hook relies on a state variable that is omitted from its dependency array?',
+      options: [
+        'Stale closure bug where the effect accesses outdated state values from previous renders',
+        'Fatal syntax error during compilation',
+        'Component permanently unmounts immediately',
+        'State is reset to null automatically'
+      ],
+      correctAnswerIndex: 0,
+      explanation: 'Omitting dependencies captures stale variables in the closure from the render cycle where the effect was initialized.',
+      skillSubtopic: 'useEffect Dependency Management',
+    },
+    {
+      question: 'Why should keys in React lists be stable and unique identifiers instead of array indices?',
+      options: [
+        'Using array indices causes DOM state bugs and inefficient re-renders when items are reordered or filtered',
+        'React throws a compile-time fatal error if an index is used',
+        'Indices prevent Tailwind CSS styles from rendering',
+        'Indices consume 10x more browser RAM'
+      ],
+      correctAnswerIndex: 0,
+      explanation: 'Stable keys allow React reconciliation to identify which items have changed, been added, or removed correctly.',
+      skillSubtopic: 'Virtual DOM & Reconciliation',
+    },
+    {
+      question: 'How does React 18 Concurrent Mode improve user experience during heavy state updates?',
+      options: [
+        'By allowing React to interrupt, pause, and resume rendering to keep the browser main thread responsive for user input',
+        'By running multiple JavaScript threads inside web workers automatically',
+        'By caching all HTTP responses on disk',
+        'By disabling CSS animations during data fetching'
+      ],
+      correctAnswerIndex: 0,
+      explanation: 'Concurrent rendering lets React yield execution back to the browser event loop during urgent interactions like typing.',
+      skillSubtopic: 'Concurrent Rendering',
+    },
+    {
+      question: 'What is the role of `useMemo` compared to `useCallback`?',
+      options: [
+        'useMemo caches the calculated return value of a function, while useCallback caches the function definition itself',
+        'useMemo is for components and useCallback is for HTML elements',
+        'useMemo runs synchronously on server while useCallback runs on client',
+        'There is no distinction between them'
+      ],
+      correctAnswerIndex: 0,
+      explanation: 'useMemo(() => computeValue(a, b), [a, b]) caches the result, while useCallback(fn, deps) caches the function reference.',
+      skillSubtopic: 'Performance Memoization',
+    },
+  ],
+
+  node: [
+    {
+      question: 'How does Node.js achieve high concurrency despite having a single-threaded JavaScript execution engine?',
+      options: [
+        'Via the Libuv event loop and thread pool for asynchronous non-blocking I/O operations',
+        'By compiling all JavaScript into multithreaded C++ binaries',
+        'By launching a new OS process for each incoming HTTP request',
+        'By using synchronous blocking socket calls'
+      ],
+      correctAnswerIndex: 0,
+      explanation: 'Node.js delegates I/O tasks to the Libuv event loop and worker pool, executing callbacks asynchronously upon completion.',
+      skillSubtopic: 'Libuv Architecture',
+    },
+    {
+      question: 'What is the correct way to handle stream backpressure in Node.js?',
+      options: [
+        'Use `readable.pipe(writable)` or `stream.pipeline()` which manage buffer draining automatically',
+        'Increase Node.js buffer memory allocation to 16GB',
+        'Call process.exit() if write() returns false',
+        'Disable stream chunking and load entire files into RAM'
+      ],
+      correctAnswerIndex: 0,
+      explanation: 'stream.pipeline() properly forwards backpressure signals and cleans up file descriptors upon stream completion or error.',
+      skillSubtopic: 'Streams & Backpressure',
+    },
+    {
+      question: 'In Express.js, what must be called in custom error-handling middleware?',
+      options: [
+        'A middleware function signature with 4 parameters: `(err, req, res, next)`',
+        'A middleware function with only 2 parameters: `(req, res)`',
+        'An explicit call to process.crash()',
+        'A global try/catch block inside package.json'
+      ],
+      correctAnswerIndex: 0,
+      explanation: 'Express identifies error-handling middleware specifically by having 4 arguments: (err, req, res, next).',
+      skillSubtopic: 'Express Middleware',
+    },
+    {
+      question: 'What is the difference between `process.nextTick()` and `setImmediate()` in Node.js?',
+      options: [
+        'process.nextTick() fires immediately after current operation completes before the next event loop phase; setImmediate() runs in the check phase',
+        'setImmediate() runs before process.nextTick()',
+        'process.nextTick() only runs in worker threads',
+        'There is no execution phase difference'
+      ],
+      correctAnswerIndex: 0,
+      explanation: 'nextTick queue is processed immediately after the current tick completes, whereas setImmediate fires in the Check phase.',
+      skillSubtopic: 'Event Loop Phases',
+    },
+  ],
+
+  database: [
+    {
+      question: 'In MongoDB, which command allows you to inspect query execution plan and verify whether an index is used?',
+      options: ['cursor.explain("executionStats")', 'db.profile()', 'db.indexScan()', 'db.verifyQuery()'],
+      correctAnswerIndex: 0,
+      explanation: 'explain("executionStats") details whether a COLLSCAN (slow collection scan) or IXSCAN (fast index scan) occurred.',
+      skillSubtopic: 'MongoDB Index Profiling',
+    },
+    {
+      question: 'What is the primary benefit of compound indexes with Equality, Sort, Range (ESR) ordering in MongoDB?',
+      options: [
+        'It maximizes query efficiency by filtering exact matches, avoiding in-memory sorts, and applying range filters last',
+        'It reduces document storage size by 50%',
+        'It enables automatic database sharding across multiple clouds',
+        'It forces all collections to reside in browser cache'
+      ],
+      correctAnswerIndex: 0,
+      explanation: 'The ESR rule places Equality fields first, Sort fields second, and Range fields third for optimal index coverage.',
+      skillSubtopic: 'Index Optimization (ESR)',
+    },
+    {
+      question: 'Which aggregation pipeline stage is used to deconstruct an array field in documents into separate documents?',
+      options: ['$unwind', '$group', '$project', '$lookup'],
+      correctAnswerIndex: 0,
+      explanation: '$unwind outputs one document for each element in the specified array field.',
+      skillSubtopic: 'Aggregation Framework',
+    },
+  ],
+
+  python: [
+    {
+      question: 'In Python, what is the key performance advantage of a generator expression over a list comprehension?',
+      options: [
+        'Generators evaluate items lazily on-demand using constant memory (O(1) space complexity)',
+        'Generators execute 100x faster by compiling to machine bytecode',
+        'Generators bypass the Global Interpreter Lock (GIL)',
+        'Generators can only hold integer values'
+      ],
+      correctAnswerIndex: 0,
+      explanation: 'Generators yield values one at a time, avoiding memory overhead for massive datasets.',
+      skillSubtopic: 'Generators & Memory Efficiency',
+    },
+    {
+      question: 'In Pandas, why is vectorized column manipulation preferred over iterating with `for` loops or `.iterrows()`?',
+      options: [
+        'Vectorized operations execute in optimized C code via NumPy SIMD instructions without Python interpreter overhead',
+        'Vectorization automatically encrypts data frames on disk',
+        'iterrows() is deprecated in all Python versions',
+        'Vectorization produces smaller SVG charts'
+      ],
+      correctAnswerIndex: 0,
+      explanation: 'Vectorized Pandas operations delegate calculations to precompiled C/Fortran array operations for 100x-1000x speedup.',
+      skillSubtopic: 'Pandas Vectorization',
+    },
+    {
+      question: 'What is the purpose of Python decorators using the `@` syntax?',
+      options: [
+        'To wrap another function to extend its behavior without permanently modifying its source code',
+        'To declare a class variable as immutable',
+        'To automatically write docstrings to markdown files',
+        'To run the decorated function on a remote GPU cluster'
+      ],
+      correctAnswerIndex: 0,
+      explanation: 'Decorators are higher-order functions that take a function, augment its execution (e.g. logging, auth), and return it.',
+      skillSubtopic: 'Functional Decorators',
+    },
+  ],
+};
+
 class QuizGenerator {
+  shuffleQuestion(q) {
+    const originalCorrect = q.options[q.correctAnswerIndex];
+    const optionsWithIndex = q.options.map((opt, idx) => ({ opt, isCorrect: idx === q.correctAnswerIndex }));
+    // Shuffle
+    for (let i = optionsWithIndex.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [optionsWithIndex[i], optionsWithIndex[j]] = [optionsWithIndex[j], optionsWithIndex[i]];
+    }
+    const shuffledOptions = optionsWithIndex.map(o => o.opt);
+    const newCorrectIndex = optionsWithIndex.findIndex(o => o.isCorrect);
+
+    return {
+      question: q.question,
+      options: shuffledOptions,
+      correctAnswerIndex: newCorrectIndex,
+      explanation: q.explanation,
+      skillSubtopic: q.skillSubtopic,
+    };
+  }
+
+  getBankForSkill(skillName = '') {
+    const s = skillName.toLowerCase();
+    if (s.includes('react')) return QUESTION_BANK.react;
+    if (s.includes('node') || s.includes('express')) return QUESTION_BANK.node;
+    if (s.includes('mongo') || s.includes('data') || s.includes('sql') || s.includes('database')) return QUESTION_BANK.database;
+    if (s.includes('python') || s.includes('pandas') || s.includes('ml') || s.includes('machine learning')) return QUESTION_BANK.python;
+    return QUESTION_BANK.javascript;
+  }
+
   async generateQuizForSkill(skillName, difficulty = 'Intermediate', count = null) {
-    const questionCount = count || 5;
-    const prompt = `Generate a ${questionCount}-question technical quiz for the skill "${skillName}" at "${difficulty}" level.
+    const questionCount = count || 3;
+
+    // Try LLM if configured
+    const prompt = `Generate an exact ${questionCount}-question technical quiz for the skill "${skillName}" at "${difficulty}" level.
 Output strictly valid JSON with this format:
 {
-  "title": "${skillName} Concept Checkpoint",
+  "title": "${skillName} Checkpoint",
   "skill": "${skillName}",
   "difficulty": "${difficulty}",
   "passingScore": 70,
@@ -28,490 +327,32 @@ Output strictly valid JSON with this format:
         const cleaned = raw.replace(/\`\`\`json/g, '').replace(/\`\`\`/g, '').trim();
         const parsed = JSON.parse(cleaned);
         if (parsed.questions && parsed.questions.length >= 1) {
-          const slicedQuestions = count ? parsed.questions.slice(0, count) : parsed.questions;
-          const quizDoc = await Quiz.create({
-            title: parsed.title || `${skillName} Mastery Assessment`,
+          const slicedQuestions = parsed.questions.slice(0, questionCount).map(q => this.shuffleQuestion(q));
+          return await Quiz.create({
+            title: parsed.title || `${skillName} ${questionCount}-Question Checkpoint`,
             skill: skillName,
             category: 'Technical Assessment',
             difficulty,
             questions: slicedQuestions,
             createdBy: 'AI_Generator',
           });
-          return quizDoc;
         }
-      } catch (e) {
-        // Fallback
-      }
+      } catch (e) {}
     }
 
-    // Check DB for existing quizzes matching skill
-    const allMatches = await Quiz.find({ skill: new RegExp(`^${skillName}$`, 'i') });
-    if (allMatches.length > 0) {
-      if (count) {
-        const matchWithCount = allMatches.find(q => q.questions && q.questions.length === count);
-        if (matchWithCount) return matchWithCount;
+    // Dynamic Randomized Question Selection from Bank
+    const bank = this.getBankForSkill(skillName);
+    const shuffledBank = [...bank].sort(() => Math.random() - 0.5);
+    const selectedQuestions = shuffledBank.slice(0, Math.min(questionCount, shuffledBank.length)).map(q => this.shuffleQuestion(q));
 
-        const baseQuiz = allMatches[0];
-        const sliced = baseQuiz.questions.slice(0, count);
-        return await Quiz.create({
-          title: `${skillName} ${count}-Question Checkpoint`,
-          skill: skillName,
-          category: baseQuiz.category || 'Assessment',
-          difficulty: baseQuiz.difficulty || difficulty,
-          questions: sliced,
-          createdBy: 'AI_Generator',
-        });
-      }
-      return allMatches[0];
-    }
-
-    // Accurate fallback questions bank
-    let questions = this.getFallbackQuestions(skillName, difficulty);
-    if (count && questions.length > count) {
-      questions = questions.slice(0, count);
-    }
     return await Quiz.create({
-      title: `${skillName} Core Checkpoint`,
+      title: `${skillName} ${selectedQuestions.length}-Question Checkpoint`,
       skill: skillName,
       category: 'Assessment',
       difficulty,
-      questions,
+      questions: selectedQuestions,
       createdBy: 'System',
     });
-  }
-
-  getFallbackQuestions(skillName, difficulty) {
-    const s = (skillName || '').toLowerCase();
-
-    // 1. REST APIs & HTTP
-    if (s.includes('rest') || s.includes('api') || s.includes('http')) {
-      return [
-        {
-          question: 'Which HTTP method should be used for an idempotent operation that updates a complete existing resource?',
-          options: ['POST', 'PUT', 'PATCH', 'CONNECT'],
-          correctAnswerIndex: 1,
-          explanation: '`PUT` is defined as idempotent according to HTTP specifications; replacing a resource multiple times with identical payload leaves the server state unchanged.',
-          skillSubtopic: 'HTTP Methods',
-        },
-        {
-          question: 'What is the primary difference between HTTP status code 401 Unauthorized and 403 Forbidden?',
-          options: [
-            '401 indicates missing or invalid authentication credentials, while 403 indicates the user is authenticated but lacks required permission',
-            '401 is a server error, while 403 is a client browser error',
-            '401 is only used in HTTPS, while 403 is for plain HTTP',
-            '401 automatically redirects the user to the home page',
-          ],
-          correctAnswerIndex: 0,
-          explanation: 'HTTP 401 means "Unauthenticated" (who are you?), while HTTP 403 means "Forbidden / Unauthorized" (I know who you are, but you cannot access this).',
-          skillSubtopic: 'Status Codes',
-        },
-        {
-          question: 'What architectural constraint of REST ensures that every client request contains all the information needed to service it?',
-          options: ['Client-Server', 'Statelessness', 'Cacheability', 'Layered System'],
-          correctAnswerIndex: 1,
-          explanation: 'The Statelessness constraint requires that session state is kept entirely on the client, so each request to the server is independent.',
-          skillSubtopic: 'REST Principles',
-        },
-        {
-          question: 'When implementing API pagination for large datasets, why is cursor-based pagination preferred over offset-based (skip/limit) pagination?',
-          options: [
-            'Offset pagination cannot handle strings',
-            'Cursor pagination prevents duplicate or missing items when records are inserted or deleted during traversal and maintains consistent O(1) query time',
-            'Cursor pagination is supported only in SQL databases',
-            'Offset pagination consumes 10x more network bandwidth',
-          ],
-          correctAnswerIndex: 1,
-          explanation: 'Offset pagination suffers from performance degradation on large offsets (O(N) skip) and pagination drift if items are added while browsing.',
-          skillSubtopic: 'Pagination & Performance',
-        },
-        {
-          question: 'What is the purpose of the HTTP `Content-Type: application/json` header in API requests?',
-          options: [
-            'To encrypt the payload with RSA',
-            'To indicate the media type of the request body so the server parser knows how to deserialize it',
-            'To bypass CORS security validation',
-            'To force the server to respond synchronously',
-          ],
-          correctAnswerIndex: 1,
-          explanation: '`Content-Type` tells the receiving server or client what format the incoming payload data is encoded in.',
-          skillSubtopic: 'HTTP Headers',
-        },
-      ];
-    }
-
-    // 2. Authentication & Security
-    if (s.includes('auth') || s.includes('security') || s.includes('jwt')) {
-      return [
-        {
-          question: 'What are the three parts of a JSON Web Token (JWT) separated by dots?',
-          options: [
-            'Header, Payload, Signature',
-            'Username, Password, Expiration',
-            'Issuer, Hash, Salt',
-            'Domain, Cookie, SessionID',
-          ],
-          correctAnswerIndex: 0,
-          explanation: 'A JWT consists of Header (algorithm & token type), Payload (claims & user ID), and Signature (cryptographic hash validating integrity).',
-          skillSubtopic: 'JWT Structure',
-        },
-        {
-          question: 'Why should sensitive JWT tokens be stored in HTTP-Only cookies instead of browser LocalStorage?',
-          options: [
-            'HTTP-Only cookies cannot be accessed or stolen via malicious client-side JavaScript (mitigating XSS attacks)',
-            'LocalStorage is deleted whenever the browser reloads',
-            'Cookies automatically encrypt the database',
-            'LocalStorage cannot hold more than 10 bytes',
-          ],
-          correctAnswerIndex: 0,
-          explanation: 'Storing auth tokens in HTTP-Only cookies protects them from Cross-Site Scripting (XSS) attacks because JavaScript `document.cookie` cannot read them.',
-          skillSubtopic: 'XSS & Cookie Security',
-        },
-        {
-          question: 'What is the primary role of "salt" when hashing passwords with bcrypt?',
-          options: [
-            'To speed up CPU hashing performance',
-            'To ensure identical passwords generate completely different hashes, defending against precomputed Rainbow Table attacks',
-            'To compress password strings into 8-bit characters',
-            'To decrypt passwords on the backend',
-          ],
-          correctAnswerIndex: 1,
-          explanation: 'Salt is random data added to a password before hashing, ensuring two users with identical passwords have unique hash values.',
-          skillSubtopic: 'Password Hashing',
-        },
-        {
-          question: 'What is Cross-Origin Resource Sharing (CORS)?',
-          options: [
-            'A database replication protocol',
-            'A browser security mechanism that restricts cross-origin HTTP requests unless the server explicitly permits them via headers',
-            'A CSS layout module for responsive grids',
-            'A compression algorithm for JSON',
-          ],
-          correctAnswerIndex: 1,
-          explanation: 'CORS is a browser security feature enforced by browsers that uses HTTP headers to tell browsers whether a web app can access resources from a different origin.',
-          skillSubtopic: 'CORS Security',
-        },
-        {
-          question: 'What does Role-Based Access Control (RBAC) middleware verify before executing a protected controller action?',
-          options: [
-            'That the user has the required assigned permission or role (e.g. admin vs student) to perform the action',
-            'That the user is using Google Chrome',
-            'That the database has zero empty records',
-            'That the client IP address is from a specific country',
-          ],
-          correctAnswerIndex: 0,
-          explanation: 'RBAC checks the authenticated user\'s role against authorized roles required to access specific endpoints.',
-          skillSubtopic: 'Authorization & RBAC',
-        },
-      ];
-    }
-
-    // 3. React.js
-    if (s.includes('react')) {
-      return [
-        {
-          question: 'What is the primary purpose of the `useEffect` hook in React?',
-          options: [
-            'To directly modify the browser DOM',
-            'To perform side effects such as data fetching, subscriptions, or timer setups',
-            'To declare mutable component state',
-            'To replace all CSS stylesheets',
-          ],
-          correctAnswerIndex: 1,
-          explanation: '`useEffect` lets you synchronize a component with external systems and run side effects after rendering.',
-          skillSubtopic: 'Hooks & Lifecycle',
-        },
-        {
-          question: 'Why should state in React be treated as immutable?',
-          options: [
-            'Because JavaScript objects cannot be modified',
-            'To ensure React can detect state changes via shallow comparison and trigger proper re-renders',
-            'To prevent any memory garbage collection',
-            'To automatically export data to local storage',
-          ],
-          correctAnswerIndex: 1,
-          explanation: 'React compares state references to decide if UI needs updating. Direct mutations bypass this comparison.',
-          skillSubtopic: 'State Management',
-        },
-        {
-          question: 'Which of the following is true regarding React keys in lists?',
-          options: [
-            'Keys must be globally unique across the entire application',
-            'Keys help React identify which items have changed, been added, or removed',
-            'Using array index as a key is always recommended for dynamic sorting',
-            'Keys are accessible as `props.key` inside child components',
-          ],
-          correctAnswerIndex: 1,
-          explanation: 'Keys give elements a stable identity across renders, allowing React to optimize reconciliation.',
-          skillSubtopic: 'List Reconciliation',
-        },
-        {
-          question: 'What problem does the Context API primarily solve in React applications?',
-          options: [
-            'Prop drilling across deeply nested component hierarchies',
-            'Replacing backend REST API calls',
-            'Accelerating bundle compilation times in Vite',
-            'Creating database schema validations',
-          ],
-          correctAnswerIndex: 0,
-          explanation: 'Context provides a way to pass data through the component tree without manually passing props down at every level.',
-          skillSubtopic: 'Context API',
-        },
-        {
-          question: 'What does React.memo do when wrapping a functional component?',
-          options: [
-            'It stores state in browser sessionStorage',
-            'It memoizes the rendered output and skips re-rendering if props have not changed',
-            'It forces the component to re-render on every global event',
-            'It converts the component to a Web Worker',
-          ],
-          correctAnswerIndex: 1,
-          explanation: 'React.memo is a higher order component that prevents unnecessary re-renders when props are shallowly equal.',
-          skillSubtopic: 'Performance Optimization',
-        },
-      ];
-    }
-
-    // 4. Node.js & Express
-    if (s.includes('node') || s.includes('express')) {
-      return [
-        {
-          question: 'What is the Node.js Event Loop primarily responsible for?',
-          options: [
-            'Compiling JavaScript code to C++ binary',
-            'Managing non-blocking, asynchronous I/O operations on a single execution thread',
-            'Executing multi-threaded mathematical matrix multiplications',
-            'Managing database transactions directly',
-          ],
-          correctAnswerIndex: 1,
-          explanation: 'The event loop offloads operations to the system kernel whenever possible, allowing Node.js to handle high concurrency with single-threaded event-driven execution.',
-          skillSubtopic: 'Architecture & Event Loop',
-        },
-        {
-          question: 'In Express.js, what does calling `next()` inside a custom middleware function do?',
-          options: [
-            'Restarts the HTTP server',
-            'Passes execution control to the next middleware or route handler in the pipeline stack',
-            'Immediately closes the client TCP connection',
-            'Rolls back database transactions',
-          ],
-          correctAnswerIndex: 1,
-          explanation: '`next()` invokes the subsequent middleware function in the request-response cycle.',
-          skillSubtopic: 'Middleware Pipeline',
-        },
-        {
-          question: 'Why should password hashes (e.g. using bcrypt) be computed asynchronously in Node.js HTTP request handlers?',
-          options: [
-            'Because synchronous hashing would block the single-threaded Event Loop and stall all concurrent users',
-            'Because bcrypt only runs on client browsers',
-            'Because async functions use less storage on disk',
-            'To encrypt the payload for DNS lookup',
-          ],
-          correctAnswerIndex: 0,
-          explanation: 'Heavy CPU-bound operations executed synchronously block the Node.js event loop, preventing any other incoming requests from being processed.',
-          skillSubtopic: 'Security & Concurrency',
-        },
-        {
-          question: 'Which HTTP status code is most appropriate when a client request fails due to missing or invalid JWT authentication credentials?',
-          options: ['200 OK', '401 Unauthorized', '404 Not Found', '500 Internal Server Error'],
-          correctAnswerIndex: 1,
-          explanation: 'HTTP 401 Unauthorized indicates that the request requires valid user authentication credentials.',
-          skillSubtopic: 'REST & Authentication',
-        },
-        {
-          question: 'What is the purpose of `process.env` in a Node.js application?',
-          options: [
-            'To access runtime environment variables and configuration secrets',
-            'To modify operating system kernel drivers',
-            'To store temporary user sessions in RAM',
-            'To automate git commits',
-          ],
-          correctAnswerIndex: 0,
-          explanation: '`process.env` exposes system environment variables such as database connection strings, ports, and API keys.',
-          skillSubtopic: 'Environment Configuration',
-        },
-      ];
-    }
-
-    // 5. MongoDB & Databases
-    if (s.includes('mongo') || s.includes('database') || s.includes('sql')) {
-      return [
-        {
-          question: 'What is an Index in MongoDB and why is it used?',
-          options: [
-            'A backup copy of the entire collection stored on AWS S3',
-            'A specialized data structure (typically B-Tree) that holds a small portion of the data set in an easy-to-traverse form to drastically speed up query execution',
-            'A list of all users who have access to the database',
-            'A tool to encrypt passwords in BSON format',
-          ],
-          correctAnswerIndex: 1,
-          explanation: 'Indexes prevent full collection scans (COLLSCAN), allowing MongoDB to locate documents in logarithmic time (IXSCAN).',
-          skillSubtopic: 'Indexing',
-        },
-        {
-          question: 'Which aggregation pipeline stage is used in MongoDB to join documents from another collection (similar to SQL LEFT JOIN)?',
-          options: ['$match', '$group', '$lookup', '$unwind'],
-          correctAnswerIndex: 2,
-          explanation: '`$lookup` performs a left outer join to an unsharded collection in the same database to filter in documents from the joined collection.',
-          skillSubtopic: 'Aggregation Framework',
-        },
-        {
-          question: 'When is Embedding documents preferred over Referencing in MongoDB data modeling?',
-          options: [
-            'When data has a 1-to-few relationship and related data is frequently read together with the parent document',
-            'When the child documents grow unboundedly to millions of records',
-            'When data needs to be accessed independently by unrelated services',
-            'Embedding is strictly deprecated in MongoDB',
-          ],
-          correctAnswerIndex: 0,
-          explanation: 'Embedding is ideal for 1-to-few relationships with strong containment, avoiding costly joins and ensuring atomic document updates.',
-          skillSubtopic: 'Data Modeling',
-        },
-        {
-          question: 'What does the `$unwind` stage do in a MongoDB aggregation pipeline?',
-          options: [
-            'Reverses the order of documents in the collection',
-            'Deconstructs an array field from the input documents to output a document for each element in the array',
-            'Deletes all empty documents from the database',
-            'Encrypts string fields in BSON',
-          ],
-          correctAnswerIndex: 1,
-          explanation: '`$unwind` splits an array into individual documents for each array item, allowing downstream grouping and filtering on array elements.',
-          skillSubtopic: 'Aggregation Operators',
-        },
-        {
-          question: 'What is the maximum BSON document size limit in MongoDB?',
-          options: ['2 MB', '16 MB', '64 MB', '1 GB'],
-          correctAnswerIndex: 1,
-          explanation: 'The maximum BSON document size is 16 megabytes, ensuring single documents cannot consume excessive RAM during query execution.',
-          skillSubtopic: 'BSON Storage Limits',
-        },
-      ];
-    }
-
-    // 6. Docker & Deployment
-    if (s.includes('docker') || s.includes('devops') || s.includes('deploy') || s.includes('ci/cd')) {
-      return [
-        {
-          question: 'What is the fundamental difference between a Docker Container and a Virtual Machine (VM)?',
-          options: [
-            'Containers share the host OS kernel and isolate user spaces, making them lightweight and fast, while VMs run full guest operating systems on a hypervisor',
-            'Containers require specialized hardware CPUs',
-            'VMs cannot run Linux distributions',
-            'Containers can only run Python applications',
-          ],
-          correctAnswerIndex: 0,
-          explanation: 'Containers virtualize at the OS kernel level, while VMs virtualize at the hardware level with a full guest OS.',
-          skillSubtopic: 'Containerization Basics',
-        },
-        {
-          question: 'In a Dockerfile, what is the difference between `RUN` and `CMD` instructions?',
-          options: [
-            '`RUN` executes commands during image build time to commit layers, while `CMD` specifies default execution commands when container launches',
-            '`CMD` runs before the build starts',
-            '`RUN` is used only for deleting files',
-            '`CMD` can only be used once per image layer',
-          ],
-          correctAnswerIndex: 0,
-          explanation: '`RUN` runs at build time and creates image layers; `CMD` provides defaults for an executing container.',
-          skillSubtopic: 'Dockerfile Directives',
-        },
-        {
-          question: 'What does the `docker-compose.yml` file primarily facilitate?',
-          options: [
-            'Compiling TypeScript code into binary',
-            'Defining and running multi-container Docker applications with shared networks and volumes',
-            'Automating domain name registration',
-            'Encrypting SSL certificates',
-          ],
-          correctAnswerIndex: 1,
-          explanation: 'Docker Compose allows you to orchestrate multiple services (e.g. Web App + API + MongoDB + Redis) with a single command (`docker compose up`).',
-          skillSubtopic: 'Multi-Container Orchestration',
-        },
-        {
-          question: 'Why are Multi-Stage Builds used in production Dockerfiles for Node/React apps?',
-          options: [
-            'To keep production images small by discarding heavy build dependencies (node_modules, SDKs) in the final runtime stage',
-            'To force Docker to download three operating systems',
-            'To run unit tests in browser window',
-            'To convert JavaScript into C++',
-          ],
-          correctAnswerIndex: 0,
-          explanation: 'Multi-stage builds separate the build environment from the minimal runtime image, reducing image size from 1GB+ down to ~50MB.',
-          skillSubtopic: 'Image Optimization',
-        },
-        {
-          question: 'In Continuous Integration / Continuous Deployment (CI/CD), what is the purpose of automated pipeline linting and unit testing?',
-          options: [
-            'To catch regressions and bugs before code merges to the main branch or deploys to production',
-            'To format CSS colors automatically',
-            'To generate user passwords',
-            'To increase deployment time intentionally',
-          ],
-          correctAnswerIndex: 0,
-          explanation: 'CI pipelines test every commit automatically to verify quality and prevent broken code from reaching staging/production environments.',
-          skillSubtopic: 'CI/CD Best Practices',
-        },
-      ];
-    }
-
-    // 7. General JavaScript Checkpoint
-    return [
-      {
-        question: 'Which of the following describes closure in JavaScript?',
-        options: [
-          'A method to close browser tabs programmatically',
-          'A function bundled together with references to its surrounding lexical state (scope)',
-          'A syntax error that halts script execution',
-          'A feature only available in TypeScript',
-        ],
-        correctAnswerIndex: 1,
-        explanation: 'A closure gives a function access to its outer scope even after the outer function has finished executing.',
-        skillSubtopic: 'Lexical Scope',
-      },
-      {
-        question: 'What is the difference between `==` and `===` in JavaScript?',
-        options: [
-          '`==` performs type coercion before comparison, whereas `===` checks both value and type strictly',
-          '`===` converts both operands to strings before comparison',
-          'There is no difference in modern ES6',
-          '`==` is only used for numbers',
-        ],
-        correctAnswerIndex: 0,
-        explanation: 'Strict equality (`===`) checks for identical type and value without performing implicit type coercion.',
-        skillSubtopic: 'Type Coercion',
-      },
-      {
-        question: 'What does a Promise represent in JavaScript asynchronous programming?',
-        options: [
-          'A variable that cannot be reassigned',
-          'An eventual completion or failure of an asynchronous operation and its resulting value',
-          'A direct memory pointer to the database',
-          'A background daemon thread running outside the browser',
-        ],
-        correctAnswerIndex: 1,
-        explanation: 'A Promise is a proxy for a value not necessarily known when the promise is created.',
-        skillSubtopic: 'Asynchronous JavaScript',
-      },
-      {
-        question: 'Which array method creates a new array populated with the results of calling a provided function on every element?',
-        options: ['forEach()', 'map()', 'filter()', 'reduce()'],
-        correctAnswerIndex: 1,
-        explanation: '`Array.prototype.map()` transforms every element and returns a new array with the transformed items.',
-        skillSubtopic: 'Array Methods',
-      },
-      {
-        question: 'What is the purpose of the `async/await` syntax in modern JavaScript?',
-        options: [
-          'To convert single-threaded JS into multi-threaded assembly code',
-          'To write asynchronous promise-based code with clean, synchronous-looking readability',
-          'To prevent any errors from ever being thrown',
-          'To compress network JSON payloads',
-        ],
-        correctAnswerIndex: 1,
-        explanation: '`async/await` is syntactic sugar over Promises, making asynchronous code cleaner and easier to read and maintain.',
-        skillSubtopic: 'Async Control Flow',
-      },
-    ];
   }
 }
 

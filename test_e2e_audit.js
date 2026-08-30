@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Comprehensive E2E Verification & Audit Test Suite for LearnPath AI
  * Tests all 21 key application features and API endpoints.
  */
@@ -7,7 +7,7 @@ const API_BASE = 'http://localhost:5000/api';
 
 async function runAudit() {
   console.log('\n============================================================');
-  console.log('🚀 RUNNING COMPREHENSIVE E2E AUDIT: LEARNPATH AI');
+  console.log('ðŸš€ RUNNING COMPREHENSIVE E2E AUDIT: LEARNPATH AI');
   console.log('============================================================\n');
 
   let passed = 0;
@@ -15,12 +15,12 @@ async function runAudit() {
 
   async function test(name, fn) {
     try {
-      process.stdout.write(`⏳ Testing: ${name}... `);
+      process.stdout.write(`â³ Testing: ${name}... `);
       await fn();
-      console.log('✅ PASSED');
+      console.log('âœ… PASSED');
       passed++;
     } catch (err) {
-      console.log(`❌ FAILED: ${err.message}`);
+      console.log(`âŒ FAILED: ${err.message}`);
       failed++;
     }
   }
@@ -33,13 +33,21 @@ async function runAudit() {
     if (data.status !== 'healthy') throw new Error('Status not healthy');
   });
 
-  // 2. Demo Login
+    // 2. User Registration
   let authToken = '';
   let demoUserId = '';
-  await test('POST /api/auth/demo-login', async () => {
-    const res = await fetch(`${API_BASE}/auth/demo-login`, {
+  await test('POST /api/auth/register', async () => {
+    const randomSuffix = Date.now();
+    const res = await fetch(`${API_BASE}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: 'E2E Test User',
+        email: `e2e-${randomSuffix}@learnpath.ai`,
+        password: 'password123',
+        careerGoal: 'Full Stack MERN Developer',
+        skills: [{ name: 'JavaScript', level: 50 }],
+      }),
     });
     if (!res.ok) throw new Error(`Status ${res.status}`);
     const data = await res.json();
@@ -240,7 +248,7 @@ async function runAudit() {
   });
 
   console.log('\n============================================================');
-  console.log(`📊 FINAL AUDIT RESULT: ${passed} PASSED / ${failed} FAILED (${Math.round((passed / (passed + failed)) * 100)}%)`);
+  console.log(`ðŸ“Š FINAL AUDIT RESULT: ${passed} PASSED / ${failed} FAILED (${Math.round((passed / (passed + failed)) * 100)}%)`);
   console.log('============================================================\n');
 
   if (failed === 0) {
@@ -251,3 +259,4 @@ async function runAudit() {
 }
 
 runAudit();
+

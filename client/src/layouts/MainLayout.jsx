@@ -1,15 +1,18 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import Navbar from '../components/common/Navbar';
 import Sidebar from '../components/common/Sidebar';
 import { useTheme } from '../context/ThemeContext';
+import { MentorDrawer } from '../components/mentor/MentorDrawer';
+import { Bot, Sparkles } from 'lucide-react';
 
 /**
  * Shared MainLayout Shell
- * Unified Obsidian + Ivory + Coral Palette across all 8 Modules.
- * Supports Dark & Light mode.
+ * Unified Obsidian + Ivory + Coral Palette across all Modules.
+ * Supports Dark & Light mode + Persistent Global Floating AI Assistant.
  */
 export default function MainLayout({ children }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMentorDrawerOpen, setIsMentorDrawerOpen] = useState(false);
   const { theme } = useTheme();
 
   const isDark = theme === 'dark';
@@ -54,6 +57,28 @@ export default function MainLayout({ children }) {
         </main>
       </div>
 
+      {/* Global Floating AI Assistant Button (Bottom-Right) */}
+      <div className="fixed bottom-6 right-6 z-40">
+        <button
+          onClick={() => setIsMentorDrawerOpen(true)}
+          aria-label="Open AI Mentor"
+          className="group relative flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-tr from-[#FF6B5F] to-[#E85548] text-white shadow-xl shadow-[#FF6B5F]/35 hover:shadow-[#FF6B5F]/50 hover:scale-105 active:scale-95 transition-all cursor-pointer border-2 border-white/20"
+        >
+          <Bot className="w-7 h-7 text-white transition-transform group-hover:rotate-12" />
+          <span className="absolute -top-1 -right-1 flex h-4 w-4">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#34D399] opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-4 w-4 bg-[#34D399] border-2 border-[#111418]"></span>
+          </span>
+          <span className="sr-only">Open AI Mentor</span>
+        </button>
+      </div>
+
+      {/* Global AI Mentor Drawer */}
+      <MentorDrawer
+        isOpen={isMentorDrawerOpen}
+        onClose={() => setIsMentorDrawerOpen(false)}
+      />
+
       {/* Global Minimal Footer */}
       <footer
         className={`w-full py-4 px-6 text-center text-xs transition-colors relative z-10 border-t ${
@@ -68,7 +93,7 @@ export default function MainLayout({ children }) {
           </span>
           <span className="font-mono text-[11px] text-[#FF6B5F] font-semibold flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-[#FF6B5F] animate-pulse" />
-            Enterprise Edition
+            Hackathon Final Release
           </span>
         </div>
       </footer>

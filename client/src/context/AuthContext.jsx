@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+﻿import React, { createContext, useContext, useState, useEffect } from 'react';
 import api from '../services/api';
 
 const AuthContext = createContext(null);
@@ -66,25 +66,6 @@ export function AuthProvider({ children }) {
     } catch (err) {
       setLoading(false);
       return { success: false, error: err.response?.data?.message || err.message || 'Login failed' };
-    }
-  };
-
-  const demoLogin = async () => {
-    setLoading(true);
-    try {
-      const res = await api.post('/auth/demo-login');
-      if (res.data?.success) {
-        setUser(res.data.user);
-        localStorage.setItem('learnpath_token', res.data.token);
-        localStorage.setItem('learnpath_user', JSON.stringify(res.data.user));
-        setLoading(false);
-        return { success: true, user: res.data.user };
-      }
-      setLoading(false);
-      return { success: false, error: res.data?.message || 'Demo login failed' };
-    } catch (err) {
-      setLoading(false);
-      return { success: false, error: err.response?.data?.message || err.message || 'Demo login failed' };
     }
   };
 
@@ -170,7 +151,7 @@ export function AuthProvider({ children }) {
       user, 
       loading, 
       login, 
-      demoLogin,
+      
       signup, 
       logout, 
       updateUserProfile,
@@ -192,3 +173,4 @@ export function useAuth() {
 }
 
 export default AuthContext;
+

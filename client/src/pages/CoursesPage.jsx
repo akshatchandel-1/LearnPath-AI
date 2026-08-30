@@ -360,11 +360,11 @@ export default function CoursesPage() {
               <Award className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-[#8C877D]">Total XP Available</p>
+              <p className="text-xs font-semibold text-[#8C877D]">Earned Course XP</p>
               <p className="text-xl sm:text-2xl font-black text-[#F5F1E8] font-mono mt-0.5">
-                +{totalXpAvailable}
+                +{user?.points ?? user?.totalXp ?? 0} XP
               </p>
-              <p className="text-[11px] text-[#FBBF24] font-semibold">Reward Pool</p>
+              <p className="text-[11px] text-[#FBBF24] font-semibold">Verified XP</p>
             </div>
           </div>
         </div>
@@ -633,4 +633,5 @@ export default function CoursesPage() {
     </MainLayout>
   );
 }
+
 

@@ -39,7 +39,7 @@ export default function AIChatInterface() {
         { label: 'Ask: "I am weak in JavaScript. What should I study?"', action: 'SEND_PROMPT', payload: { prompt: 'I am weak in JavaScript. What should I study?' } },
         { label: 'Ask: "Create a 3-question quiz for JavaScript."', action: 'SEND_PROMPT', payload: { prompt: 'Create a 3-question quiz for JavaScript.' } },
         { label: 'Ask: "I want to improve React."', action: 'SEND_PROMPT', payload: { prompt: 'I want to improve React.' } },
-        { label: 'Ask: "What skills am I missing for a Node.js Developer role?"', action: 'SEND_PROMPT', payload: { prompt: 'What skills am I missing for a Node.js Developer role?' } },
+        { label: 'Ask: "What skills am I missing for a Data Scientist role?"', action: 'SEND_PROMPT', payload: { prompt: 'What skills am I missing for a Data Scientist role?' } },
         { label: 'Ask: "Explain my current learning progress."', action: 'SEND_PROMPT', payload: { prompt: 'Explain my current learning progress.' } }
       ]
     }
@@ -159,7 +159,7 @@ export default function AIChatInterface() {
     'I am weak in JavaScript. What should I study?',
     'Create a 3-question quiz for JavaScript.',
     'I want to improve React.',
-    'What skills am I missing for a Node.js Developer role?',
+    'What skills am I missing for a Data Scientist role?',
     'Explain my current learning progress.'
   ];
 
@@ -313,4 +313,5 @@ export default function AIChatInterface() {
     </div>
   );
 }
+
 

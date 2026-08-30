@@ -1,10 +1,23 @@
-@tailwind base;
+﻿@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
     color-scheme: dark;
+    --bg: #0B0D0F;
+    --surface: #111418;
+    --surface-elevated: #16191E;
+    --text-primary: #F5F1E8;
+    --text-secondary: #C7C2B6;
+    --text-muted: #8C877D;
+    --border: rgba(245, 241, 232, 0.08);
+    --accent: #FF6B5F;
+    --accent-hover: #E85548;
+    --success: #34D399;
+    --warning: #FBBF24;
+    --danger: #F87171;
+
     --color-bg-base: #0B0D0F;
     --color-text-base: #F5F1E8;
     --color-text-muted: #C7C2B6;
@@ -15,6 +28,19 @@
 
   :root:not(.dark) {
     color-scheme: light;
+    --bg: #FAF7F2;
+    --surface: #FFFFFF;
+    --surface-elevated: #F9FAFB;
+    --text-primary: #111418;
+    --text-secondary: #374151;
+    --text-muted: #6B7280;
+    --border: rgba(0, 0, 0, 0.08);
+    --accent: #FF6B5F;
+    --accent-hover: #E85548;
+    --success: #059669;
+    --warning: #D97706;
+    --danger: #DC2626;
+
     --color-bg-base: #FAF7F2;
     --color-text-base: #111418;
     --color-text-muted: #4B5563;
@@ -35,10 +61,10 @@
   :not(.dark) h1, :not(.dark) h2, :not(.dark) h3 {
     color: #111418;
   }
-  .dark h4 {
+  .dark h4, .dark h5 {
     color: #C7C2B6;
   }
-  :not(.dark) h4 {
+  :not(.dark) h4, :not(.dark) h5 {
     color: #374151;
   }
   .dark p {
