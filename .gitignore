@@ -9,3 +9,4 @@ coverage/
 server/.cache/
 server/uploads/
 uploads/
+.vercel/

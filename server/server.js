@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
+const mongoose = require('mongoose');
 const { connectDB } = require('./config/db');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 const prerequisiteEngine = require('./services/recommendation/prerequisiteEngine');
@@ -11,7 +12,7 @@ dotenv.config();
 
 const app = express();
 
-// Core Middleware
+// Core Middleware - Dynamic CORS for Vercel and local development
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
@@ -33,36 +34,11 @@ app.use(cors({
   credentials: true,
 }));
 
-// Serverless DB connection middleware
-app.use(async (req, res, next) => {
-  try {
-    await connectDB();
-  } catch (err) {
-    // Non-blocking catch
-  }
-  next();
-});
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// API Routes
-app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/profile', require('./routes/profileRoutes'));
-app.use('/api/skills', require('./routes/skillRoutes'));
-app.use('/api/resources', require('./routes/resourceRoutes'));
-app.use('/api/courses', require('./routes/courseRoutes'));
-app.use('/api/recommendations', require('./routes/recommendationRoutes'));
-app.use('/api/learning-path', require('./routes/learningPathRoutes'));
-app.use('/api/learning_path', require('./routes/learningPathRoutes'));
-app.use('/api/progress', require('./routes/progressRoutes'));
-app.use('/api/quiz', require('./routes/quizRoutes'));
-app.use('/api/ai', require('./routes/aiRoutes'));
-app.use('/api/analytics', require('./routes/analyticsRoutes'));
-app.use('/api/projects', require('./routes/projectRoutes'));
-app.use('/api/notifications', require('./routes/notificationRoutes'));
-
-// API Root Endpoint
+// Root and Health Endpoints (No DB dependency required)
 app.get('/api', (req, res) => {
   res.json({
     success: true,
@@ -86,17 +62,49 @@ app.get('/api', (req, res) => {
   });
 });
 
-// System Health & ML Status Check
 app.get('/api/health', (req, res) => {
+  const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
   res.json({
     status: 'healthy',
     product: 'LearnPath AI - AI-Powered Personalized Learning Path Recommender',
     version: '1.0.0',
+    database: dbStatus,
     llmProvider: process.env.LLM_PROVIDER || 'gemini',
     geminiKeyActive: Boolean(process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY.length > 5),
     timestamp: new Date(),
   });
 });
+
+// Serverless DB connection middleware for all functional API routes
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error('Database connection failed in request middleware:', err.message);
+    return res.status(503).json({
+      success: false,
+      message: `Database connection failed: ${err.message}. Please verify your MONGO_URI in Vercel project environment settings.`,
+      code: 'DB_CONNECTION_ERROR'
+    });
+  }
+});
+
+// API Routes
+app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/profile', require('./routes/profileRoutes'));
+app.use('/api/skills', require('./routes/skillRoutes'));
+app.use('/api/resources', require('./routes/resourceRoutes'));
+app.use('/api/courses', require('./routes/courseRoutes'));
+app.use('/api/recommendations', require('./routes/recommendationRoutes'));
+app.use('/api/learning-path', require('./routes/learningPathRoutes'));
+app.use('/api/learning_path', require('./routes/learningPathRoutes'));
+app.use('/api/progress', require('./routes/progressRoutes'));
+app.use('/api/quiz', require('./routes/quizRoutes'));
+app.use('/api/ai', require('./routes/aiRoutes'));
+app.use('/api/analytics', require('./routes/analyticsRoutes'));
+app.use('/api/projects', require('./routes/projectRoutes'));
+app.use('/api/notifications', require('./routes/notificationRoutes'));
 
 // Error Handling Middleware
 app.use(notFound);
@@ -113,7 +121,7 @@ const resourcesData = require('./seed/resourcesData');
 const projectsData = require('./seed/projectsData');
 const quizzesData = require('./seed/quizzesData');
 
-// Start Server and Database
+// Start Server and Database for Local Standalone Execution
 const startServer = async () => {
   try {
     await connectDB();
@@ -121,12 +129,12 @@ const startServer = async () => {
     // Auto-seed if database is freshly started
     const resCount = await Resource.countDocuments();
     if (resCount === 0) {
-      console.log('🌱 Fresh database detected. Auto-populating initial taxonomy & resources...');
+      console.log('🚀 Fresh database detected. Auto-populating initial taxonomy & resources...');
       await Skill.insertMany(skillsData);
       await Resource.insertMany(resourcesData);
       await Project.insertMany(projectsData);
       await Quiz.insertMany(quizzesData);
-      console.log('✓ Initial seed completed automatically.');
+      console.log('✅ Initial seed completed automatically.');
     }
 
     await prerequisiteEngine.initialize();
@@ -134,7 +142,7 @@ const startServer = async () => {
     app.listen(PORT, () => {
       console.log(`====================================================`);
       console.log(`🚀 LearnPath AI Server running on port ${PORT}`);
-      console.log(`⚡ API URL: http://localhost:${PORT}/api`);
+      console.log(`🔗 API URL: http://localhost:${PORT}/api`);
       console.log(`🧠 ML Recommendation & Prerequisite Engines: Active`);
       console.log(`====================================================`);
     });

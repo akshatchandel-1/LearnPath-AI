@@ -1,4 +1,4 @@
-﻿const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const LearnerProfile = require('../models/LearnerProfile');
 const adaptivePathService = require('../services/adaptive/adaptivePathService');
@@ -17,6 +17,11 @@ const generateToken = (id) => {
 const registerUser = async (req, res, next) => {
   try {
     const { name, email, password, careerGoal, experienceLevel, preferredLearningStyle, weeklyHours, skills } = req.body;
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ success: false, message: 'Please provide name, email, and password' });
+    }
+
     const normalizedEmail = (email || '').trim().toLowerCase();
 
     const userExists = await User.findOne({ email: normalizedEmail });
@@ -25,7 +30,7 @@ const registerUser = async (req, res, next) => {
     }
 
     const user = await User.create({
-      name,
+      name: name.trim(),
       email: normalizedEmail,
       password,
       careerGoal: careerGoal || 'Full Stack MERN Developer',
@@ -46,9 +51,18 @@ const registerUser = async (req, res, next) => {
       weeklyStudyHours: user.weeklyHours,
     });
 
-    // Auto-generate initial learning path for chosen goal
-    await adaptivePathService.generateLearningPath(user._id, user.careerGoal);
-    await recommendationEngine.generateRecommendationsForUser(user._id);
+    // Generate initial learning path and recommendations safely
+    try {
+      await adaptivePathService.generateLearningPath(user._id, user.careerGoal);
+    } catch (lpErr) {
+      console.error('Initial learning path creation note:', lpErr.message);
+    }
+
+    try {
+      await recommendationEngine.generateRecommendationsForUser(user._id);
+    } catch (recErr) {
+      console.error('Initial recommendation creation note:', recErr.message);
+    }
 
     const stats = await statisticsService.calculateUserStatistics(user._id);
     const token = generateToken(user._id);
@@ -63,9 +77,9 @@ const registerUser = async (req, res, next) => {
         avatar: user.avatar,
         careerGoal: user.careerGoal,
         experienceLevel: user.experienceLevel,
-        streak: stats.streak,
-        points: stats.xp,
-        skills: user.skills,
+        streak: stats?.streak || 0,
+        points: stats?.xp || 0,
+        skills: user.skills || [],
         resume: user.resume,
         resumeData: user.resumeData,
       },
@@ -81,6 +95,10 @@ const registerUser = async (req, res, next) => {
 const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ success: false, message: 'Please provide email and password' });
+    }
+
     const normalizedEmail = (email || '').trim().toLowerCase();
 
     const user = await User.findOne({ email: normalizedEmail });
@@ -98,9 +116,9 @@ const loginUser = async (req, res, next) => {
           avatar: user.avatar,
           careerGoal: user.careerGoal,
           experienceLevel: user.experienceLevel,
-          streak: stats.streak,
-          points: stats.xp,
-          skills: user.skills,
+          streak: stats?.streak || 0,
+          points: stats?.xp || 0,
+          skills: user.skills || [],
           resume: user.resume,
           resumeData: user.resumeData,
         },
@@ -130,9 +148,9 @@ const getMe = async (req, res, next) => {
         avatar: user.avatar,
         careerGoal: user.careerGoal,
         experienceLevel: user.experienceLevel,
-        streak: stats.streak,
-        points: stats.xp,
-        skills: user.skills,
+        streak: stats?.streak || 0,
+        points: stats?.xp || 0,
+        skills: user.skills || [],
         resume: user.resume,
         resumeData: user.resumeData,
       },
