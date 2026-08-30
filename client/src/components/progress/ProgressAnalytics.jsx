@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '../common/Card';
 import Badge from '../common/Badge';
 import Button from '../common/Button';
@@ -71,6 +71,120 @@ export default function ProgressAnalytics() {
 
   const maxHours = Math.max(2.5, ...weeklyActivity.map((d) => d.hours));
 
+  // Dynamic Domain Breakdown Calculations (Starts at 0% for new users, updates as user earns progress)
+  const calculateDomainProgress = (domainType) => {
+    let progressValues = [];
+
+    // 1. Matching courses progress
+    const matchingCourses = courses.filter((c) => {
+      const title = (c.title || '').toLowerCase();
+      const cat = (c.category || '').toLowerCase();
+      const skills = (c.skillsCovered || []).map((s) => (s || '').toLowerCase());
+
+      if (domainType === 'frontend') {
+        return (
+          cat.includes('frontend') ||
+          title.includes('react') ||
+          title.includes('frontend') ||
+          skills.some((s) => s.includes('react') || s.includes('html') || s.includes('javascript') || s.includes('css'))
+        );
+      }
+      if (domainType === 'backend') {
+        return (
+          (cat.includes('backend') ||
+            title.includes('node') ||
+            title.includes('express') ||
+            title.includes('api') ||
+            skills.some((s) => s.includes('node') || s.includes('express') || s.includes('api') || s.includes('rest'))) &&
+          !title.includes('database')
+        );
+      }
+      if (domainType === 'database') {
+        return (
+          cat.includes('database') ||
+          title.includes('database') ||
+          title.includes('mongodb') ||
+          title.includes('sql') ||
+          title.includes('indexing') ||
+          skills.some((s) => s.includes('mongo') || s.includes('sql') || s.includes('postgres') || s.includes('database') || s.includes('redis'))
+        );
+      }
+      if (domainType === 'devops') {
+        return (
+          cat.includes('devops') ||
+          cat.includes('cloud') ||
+          title.includes('devops') ||
+          title.includes('cloud') ||
+          title.includes('docker') ||
+          title.includes('kubernetes') ||
+          skills.some((s) => s.includes('docker') || s.includes('kubernetes') || s.includes('aws') || s.includes('cloud') || s.includes('ci/cd') || s.includes('linux'))
+        );
+      }
+      return false;
+    });
+
+    const enrolledDomainCourses = matchingCourses.filter((c) => c.enrolled || c.progress > 0);
+    if (enrolledDomainCourses.length > 0) {
+      const totalCourseProg = enrolledDomainCourses.reduce((sum, c) => sum + (c.progress || 0), 0);
+      progressValues.push(totalCourseProg / enrolledDomainCourses.length);
+    }
+
+    // 2. Matching assessments progress
+    const matchingAssessments = assessments.filter((a) => {
+      const title = (a.title || '').toLowerCase();
+      const cat = (a.category || '').toLowerCase();
+      const skill = (a.skill || '').toLowerCase();
+
+      if (domainType === 'frontend') {
+        return cat.includes('frontend') || skill.includes('react') || skill.includes('frontend') || skill.includes('javascript') || title.includes('frontend');
+      }
+      if (domainType === 'backend') {
+        return cat.includes('backend') || skill.includes('node') || skill.includes('express') || skill.includes('backend') || skill.includes('api');
+      }
+      if (domainType === 'database') {
+        return cat.includes('database') || skill.includes('database') || skill.includes('sql') || skill.includes('mongo');
+      }
+      if (domainType === 'devops') {
+        return cat.includes('devops') || cat.includes('cloud') || skill.includes('docker') || skill.includes('cloud') || skill.includes('devops');
+      }
+      return false;
+    });
+
+    const attemptedAssessments = matchingAssessments.filter((a) => a.lastScore !== null && a.lastScore !== undefined);
+    if (attemptedAssessments.length > 0) {
+      const totalScore = attemptedAssessments.reduce((sum, a) => sum + (a.lastScore || 0), 0);
+      progressValues.push(totalScore / attemptedAssessments.length);
+    }
+
+    // 3. Matching user skills progress
+    if (user?.skills && Array.isArray(user.skills) && user.skills.length > 0) {
+      const matchingSkills = user.skills.filter((s) => {
+        const name = (s.name || s.skill || '').toLowerCase();
+        const cat = (s.category || '').toLowerCase();
+        if (domainType === 'frontend') return cat.includes('frontend') || name.includes('react') || name.includes('javascript') || name.includes('html') || name.includes('css') || name.includes('frontend');
+        if (domainType === 'backend') return cat.includes('backend') || name.includes('node') || name.includes('express') || name.includes('backend') || name.includes('api');
+        if (domainType === 'database') return cat.includes('database') || name.includes('mongo') || name.includes('sql') || name.includes('postgres') || name.includes('database');
+        if (domainType === 'devops') return cat.includes('devops') || cat.includes('cloud') || name.includes('docker') || name.includes('kubernetes') || name.includes('aws') || name.includes('cloud') || name.includes('devops');
+        return false;
+      });
+
+      const activeSkills = matchingSkills.filter((s) => (s.level || s.progress || s.currentLevel || 0) > 0);
+      if (activeSkills.length > 0) {
+        const avgSkill = activeSkills.reduce((sum, s) => sum + (s.level || s.progress || s.currentLevel || 0), 0) / activeSkills.length;
+        progressValues.push(avgSkill);
+      }
+    }
+
+    if (progressValues.length === 0) return 0;
+    const avg = progressValues.reduce((sum, v) => sum + v, 0) / progressValues.length;
+    return Math.min(100, Math.max(0, Math.round(avg)));
+  };
+
+  const frontendProgress = calculateDomainProgress('frontend');
+  const backendProgress = calculateDomainProgress('backend');
+  const databaseProgress = calculateDomainProgress('database');
+  const devopsProgress = calculateDomainProgress('devops');
+
   const handleExport = () => {
     generateProgressReportPDF(
       { totalTimeSpentHours: userHours },
@@ -108,7 +222,7 @@ export default function ProgressAnalytics() {
           </div>
           <div className={`text-2xl font-black tracking-tight font-mono ${isDark ? "text-[#F5F1E8]" : "text-[#111418]"}`}>{userStreak} Days</div>
           <span className="text-[11px] text-[#8C877D] mt-1 block">
-            {userStreak > 0 ? 'Consistency bonus active ðŸ”¥' : 'Start your streak today'}
+            {userStreak > 0 ? 'Consistency bonus active 🔥' : 'Start your streak today'}
           </span>
         </Card>
 
@@ -188,40 +302,40 @@ export default function ProgressAnalytics() {
             <div>
               <div className="flex justify-between text-xs mb-1">
                 <span className={`font-semibold ${isDark ? "text-[#C7C2B6]" : "text-[#374151]"}`}>Frontend & React</span>
-                <span className="font-mono text-[#FF857A] font-bold">75%</span>
+                <span className="font-mono text-[#FF857A] font-bold">{frontendProgress}%</span>
               </div>
               <div className={`w-full rounded-full h-1.5 overflow-hidden ${isDark ? "bg-white/5" : "bg-black/5"}`}>
-                <div className="bg-gradient-to-r from-[#FF6B5F] to-[#E85548] h-full rounded-full" style={{ width: '75%' }} />
+                <div className="bg-gradient-to-r from-[#FF6B5F] to-[#E85548] h-full rounded-full transition-all duration-500" style={{ width: `${frontendProgress}%` }} />
               </div>
             </div>
 
             <div>
               <div className="flex justify-between text-xs mb-1">
                 <span className={`font-semibold ${isDark ? "text-[#C7C2B6]" : "text-[#374151]"}`}>Backend & APIs</span>
-                <span className="font-mono text-[#38BDF8] font-bold">60%</span>
+                <span className="font-mono text-[#38BDF8] font-bold">{backendProgress}%</span>
               </div>
               <div className={`w-full rounded-full h-1.5 overflow-hidden ${isDark ? "bg-white/5" : "bg-black/5"}`}>
-                <div className="bg-gradient-to-r from-[#38BDF8] to-[#0284C7] h-full rounded-full" style={{ width: '60%' }} />
+                <div className="bg-gradient-to-r from-[#38BDF8] to-[#0284C7] h-full rounded-full transition-all duration-500" style={{ width: `${backendProgress}%` }} />
               </div>
             </div>
 
             <div>
               <div className="flex justify-between text-xs mb-1">
                 <span className={`font-semibold ${isDark ? "text-[#C7C2B6]" : "text-[#374151]"}`}>Databases & Indexing</span>
-                <span className="font-mono text-[#34D399] font-bold">55%</span>
+                <span className="font-mono text-[#34D399] font-bold">{databaseProgress}%</span>
               </div>
               <div className={`w-full rounded-full h-1.5 overflow-hidden ${isDark ? "bg-white/5" : "bg-black/5"}`}>
-                <div className="bg-gradient-to-r from-[#34D399] to-[#059669] h-full rounded-full" style={{ width: '55%' }} />
+                <div className="bg-gradient-to-r from-[#34D399] to-[#059669] h-full rounded-full transition-all duration-500" style={{ width: `${databaseProgress}%` }} />
               </div>
             </div>
 
             <div>
               <div className="flex justify-between text-xs mb-1">
                 <span className={`font-semibold ${isDark ? "text-[#C7C2B6]" : "text-[#374151]"}`}>DevOps & Cloud</span>
-                <span className="font-mono text-[#FBBF24] font-bold">45%</span>
+                <span className="font-mono text-[#FBBF24] font-bold">{devopsProgress}%</span>
               </div>
               <div className={`w-full rounded-full h-1.5 overflow-hidden ${isDark ? "bg-white/5" : "bg-black/5"}`}>
-                <div className="bg-gradient-to-r from-[#FBBF24] to-[#D97706] h-full rounded-full" style={{ width: '45%' }} />
+                <div className="bg-gradient-to-r from-[#FBBF24] to-[#D97706] h-full rounded-full transition-all duration-500" style={{ width: `${devopsProgress}%` }} />
               </div>
             </div>
           </div>
@@ -281,4 +395,3 @@ export default function ProgressAnalytics() {
     </div>
   );
 }
-

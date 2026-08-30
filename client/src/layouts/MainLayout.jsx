@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import Navbar from '../components/common/Navbar';
 import Sidebar from '../components/common/Sidebar';
 import { useTheme } from '../context/ThemeContext';
@@ -87,13 +87,9 @@ export default function MainLayout({ children }) {
             : 'border-black/[0.06] bg-[#F5F1E8]/80 text-[#7C786E]'
         }`}
       >
-        <div className="max-w-[1500px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+        <div className="max-w-[1500px] mx-auto flex flex-col sm:flex-row items-center justify-center gap-2">
           <span className="font-medium">
-            ©©© 2026 LearnPath AI — AI-Powered Personalized Learning Path Recommender
-          </span>
-          <span className="font-mono text-[11px] text-[#FF6B5F] font-semibold flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#FF6B5F] animate-pulse" />
-            Hackathon Final Release
+            © 2026 LearnPath AI — AI-Powered Personalized Learning Path Recommender
           </span>
         </div>
       </footer>
