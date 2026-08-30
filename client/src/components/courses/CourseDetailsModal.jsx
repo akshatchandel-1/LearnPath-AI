@@ -350,83 +350,153 @@ export default function CourseDetailsModal({
 
       {/* Interactive Lesson Content Player Modal */}
       {activeLesson && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/85 backdrop-blur-lg animate-in fade-in">
-          <div className={`rounded-[28px] max-w-xl w-full shadow-2xl overflow-hidden border flex flex-col max-h-[85vh] ${
-            isDark ? 'bg-[#111418] border-white/10 text-[#F5F1E8]' : 'bg-white border-black/10 text-[#111418]'
-          }`}>
-            <div className="p-5 border-b flex items-center justify-between gap-3 bg-[#0E1114]/80">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-[#FF6B5F]/15 border border-[#FF6B5F]/30 text-[#FF857A] flex items-center justify-center">
-                  <PlayCircle className="w-4 h-4" />
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in overflow-y-auto">
+          <div 
+            className={`rounded-[28px] max-w-xl w-full shadow-2xl overflow-hidden border flex flex-col max-h-[90vh] my-auto transition-colors ${
+              isDark ? 'bg-[#111418] border-white/[0.12] text-[#F5F1E8]' : 'bg-white border-black/[0.12] text-[#111418]'
+            }`}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="lesson-viewer-title"
+          >
+            {/* Header */}
+            <div className={`p-5 sm:p-6 border-b flex items-start justify-between gap-4 shrink-0 transition-colors ${
+              isDark ? 'border-white/[0.08] bg-[#0E1114]' : 'border-black/[0.08] bg-[#F9FAFB]'
+            }`}>
+              <div className="flex items-start gap-3 flex-1 min-w-0">
+                <div className="w-10 h-10 rounded-2xl bg-[#FF6B5F]/15 border border-[#FF6B5F]/30 text-[#FF6B5F] flex items-center justify-center shrink-0 mt-0.5">
+                  <PlayCircle className="w-5 h-5" />
                 </div>
-                <div>
-                  <h4 className="text-sm font-bold text-white">{activeLesson.title}</h4>
-                  <p className="text-[11px] text-[#8C877D] font-mono">{activeLesson.duration} â€¢ {course.title}</p>
+                <div className="min-w-0 flex-1">
+                  <h4 
+                    id="lesson-viewer-title"
+                    className={`text-base sm:text-lg font-black tracking-tight leading-snug ${
+                      isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'
+                    }`}
+                  >
+                    {activeLesson.title}
+                  </h4>
+                  <p className={`text-xs font-mono mt-1 ${
+                    isDark ? 'text-[#C7C2B6]' : 'text-[#6B7280]'
+                  }`}>
+                    <span className="font-semibold text-[#FF857A]">{activeLesson.duration}</span>
+                    <span className="mx-1.5 opacity-60">•</span>
+                    <span className="truncate">{course.title}</span>
+                  </p>
                 </div>
               </div>
 
               <button
                 type="button"
                 onClick={() => setActiveLesson(null)}
-                className="p-1.5 rounded-xl text-neutral-400 hover:text-white hover:bg-white/10"
+                aria-label="Close lesson viewer"
+                className={`p-2 rounded-xl transition-colors cursor-pointer shrink-0 ${
+                  isDark 
+                    ? 'text-[#C7C2B6] hover:text-[#F5F1E8] hover:bg-white/10' 
+                    : 'text-[#6B7280] hover:text-[#111418] hover:bg-black/5'
+                }`}
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="p-6 overflow-y-auto flex-1 space-y-4">
-              <div className="p-4 rounded-2xl bg-black/40 border border-white/5 text-center space-y-2">
-                <PlayCircle className="w-10 h-10 text-[#FF6B5F] mx-auto animate-pulse" />
-                <p className="text-xs font-bold text-white">Interactive Video & Guided Curriculum Lab</p>
-                <p className="text-[11px] text-[#8C877D]">
-                  Access high-definition video walkthroughs and complete guided exercises for this module.
-                </p>
-                <div className="pt-2 flex flex-wrap items-center justify-center gap-2">
+            {/* Content Body */}
+            <div className="p-5 sm:p-6 overflow-y-auto flex-1 space-y-5">
+              {/* Video / Lab Area Card */}
+              <div className={`p-5 rounded-2xl border text-center space-y-3 transition-colors ${
+                isDark ? 'bg-[#16191E] border-white/[0.08]' : 'bg-[#FAF7F2] border-black/[0.08]'
+              }`}>
+                <div className="w-12 h-12 rounded-2xl bg-[#FF6B5F]/15 border border-[#FF6B5F]/30 text-[#FF6B5F] flex items-center justify-center mx-auto shadow-sm">
+                  <PlayCircle className="w-6 h-6" />
+                </div>
+                
+                <div className="space-y-1 max-w-md mx-auto">
+                  <h5 className={`text-sm sm:text-base font-bold ${
+                    isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'
+                  }`}>
+                    Interactive Video & Guided Curriculum Lab
+                  </h5>
+                  <p className={`text-xs leading-relaxed ${
+                    isDark ? 'text-[#C7C2B6]' : 'text-[#4B5563]'
+                  }`}>
+                    Access high-definition video walkthroughs and complete guided exercises for this module.
+                  </p>
+                </div>
+
+                <div className="pt-2 flex flex-wrap items-center justify-center gap-2.5">
                   <a
                     href={resources.youtubeVideo.url}
                     target="_blank"
                     rel="noreferrer"
-                    className="px-3.5 py-1.5 rounded-xl bg-[#F87171]/20 hover:bg-[#F87171]/30 border border-[#F87171]/40 text-[#F87171] text-xs font-bold flex items-center gap-1.5"
+                    className="px-4 py-2 rounded-xl bg-[#EF4444] hover:bg-[#DC2626] text-white text-xs font-bold shadow-md shadow-[#EF4444]/25 hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer"
                   >
-                    <Youtube className="w-3.5 h-3.5" />
+                    <Youtube className="w-4 h-4" />
                     <span>Watch Video Lesson</span>
                   </a>
+
                   <a
                     href={resources.officialDocs.url}
                     target="_blank"
                     rel="noreferrer"
-                    className="px-3.5 py-1.5 rounded-xl bg-[#38BDF8]/20 hover:bg-[#38BDF8]/30 border border-[#38BDF8]/40 text-[#38BDF8] text-xs font-bold flex items-center gap-1.5"
+                    className="px-4 py-2 rounded-xl bg-[#0284C7] hover:bg-[#0369A1] text-white text-xs font-bold shadow-md shadow-[#0284C7]/25 hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer"
                   >
-                    <FileText className="w-3.5 h-3.5" />
+                    <FileText className="w-4 h-4" />
                     <span>Read Documentation</span>
                   </a>
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <h5 className="text-xs font-bold text-[#8C877D] uppercase font-mono">Module Objectives:</h5>
-                <ul className="text-xs space-y-1.5 text-neutral-300">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-[#34D399] shrink-0" />
-                    <span>Understand foundational concepts and architectural patterns.</span>
+              {/* Module Objectives */}
+              <div className={`p-4 sm:p-5 rounded-2xl border space-y-3 transition-colors ${
+                isDark ? 'bg-[#16191E] border-white/[0.08]' : 'bg-[#FAF7F2] border-black/[0.08]'
+              }`}>
+                <h5 className={`text-xs font-bold uppercase tracking-wider font-mono ${
+                  isDark ? 'text-[#FF857A]' : 'text-[#DC2626]'
+                }`}>
+                  Module Objectives:
+                </h5>
+                
+                <ul className="space-y-2.5">
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-[#10B981] shrink-0 mt-0.5" />
+                    <span className={`text-xs font-medium leading-relaxed ${
+                      isDark ? 'text-[#F5F1E8]' : 'text-[#1F2937]'
+                    }`}>
+                      Understand foundational concepts and architectural patterns.
+                    </span>
                   </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-[#34D399] shrink-0" />
-                    <span>Implement hands-on code examples and practical exercises.</span>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-[#10B981] shrink-0 mt-0.5" />
+                    <span className={`text-xs font-medium leading-relaxed ${
+                      isDark ? 'text-[#F5F1E8]' : 'text-[#1F2937]'
+                    }`}>
+                      Implement hands-on code examples and practical exercises.
+                    </span>
                   </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-[#34D399] shrink-0" />
-                    <span>Test your mastery by taking the associated role benchmark quiz.</span>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-[#10B981] shrink-0 mt-0.5" />
+                    <span className={`text-xs font-medium leading-relaxed ${
+                      isDark ? 'text-[#F5F1E8]' : 'text-[#1F2937]'
+                    }`}>
+                      Test your mastery by taking the associated role benchmark quiz.
+                    </span>
                   </li>
                 </ul>
               </div>
             </div>
 
-            <div className="p-4 border-t flex items-center justify-between gap-3 bg-[#0E1114]/80">
+            {/* Footer */}
+            <div className={`p-5 sm:p-6 border-t flex flex-wrap items-center justify-between gap-3 shrink-0 transition-colors ${
+              isDark ? 'border-white/[0.08] bg-[#0E1114]' : 'border-black/[0.08] bg-[#F9FAFB]'
+            }`}>
               <button
                 type="button"
                 onClick={() => setActiveLesson(null)}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-neutral-400 hover:text-white"
+                className={`px-4 py-2.5 rounded-xl text-xs font-bold border transition-colors cursor-pointer ${
+                  isDark 
+                    ? 'border-white/15 text-[#F5F1E8] hover:bg-white/10 hover:border-white/25' 
+                    : 'border-black/15 text-[#111418] hover:bg-black/5 hover:border-black/25'
+                }`}
               >
                 Close Viewer
               </button>
@@ -434,14 +504,14 @@ export default function CourseDetailsModal({
               <button
                 type="button"
                 onClick={() => handleLessonToggleComplete(activeLesson.id)}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer shadow-md ${
                   activeLesson.completed
-                    ? 'bg-[#34D399]/20 text-[#34D399] border border-[#34D399]/40'
-                    : 'bg-[#34D399] hover:bg-[#2EB882] text-black shadow-md'
+                    ? 'bg-[#10B981]/20 border border-[#10B981]/50 text-[#10B981] hover:bg-[#10B981]/30'
+                    : 'bg-[#10B981] hover:bg-[#059669] text-white hover:shadow-lg shadow-[#10B981]/25'
                 }`}
               >
-                <Check className="w-3.5 h-3.5" />
-                <span>{activeLesson.completed ? 'Lesson Completed âœ“' : 'Mark as Completed (+50 XP)'}</span>
+                <Check className="w-4 h-4" />
+                <span>{activeLesson.completed ? 'Lesson Completed ✓' : 'Mark as Completed (+50 XP)'}</span>
               </button>
             </div>
           </div>
