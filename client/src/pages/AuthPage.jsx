@@ -37,6 +37,12 @@ export default function AuthPage({ defaultIsLogin = true }) {
     setConfirmPassword('');
   }, [defaultIsLogin]);
 
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isAuthenticated, user, navigate]);
+
   const validateForm = () => {
     setErrorMsg('');
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
