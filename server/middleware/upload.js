@@ -14,27 +14,29 @@ const storage = multer.diskStorage({
     cb(null, uploadDir);
   },
   filename: function (req, file, cb) {
+    const userId = req.user ? req.user._id : 'anonymous';
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, `${req.user._id}-${uniqueSuffix}${path.extname(file.originalname)}`);
+    cb(null, `${userId}-${uniqueSuffix}${path.extname(file.originalname)}`);
   }
 });
 
-// File filter (PDF and DOCX only)
+// File filter (PDF, DOCX, DOC, and TXT)
 const fileFilter = (req, file, cb) => {
   const allowedMimeTypes = [
     'application/pdf',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'application/msword'
+    'application/msword',
+    'text/plain'
   ];
   
-  if (allowedMimeTypes.includes(file.mimetype)) {
+  const ext = path.extname(file.originalname).toLowerCase();
+  if (allowedMimeTypes.includes(file.mimetype) || ['.pdf', '.docx', '.doc', '.txt'].includes(ext)) {
     cb(null, true);
   } else {
-    cb(new Error('Invalid file type. Only PDF and DOCX are allowed.'), false);
+    cb(new Error('Invalid file type. Only PDF, DOCX, and TXT are supported.'), false);
   }
 };
 
-// Initialize multer upload
 const upload = multer({
   storage: storage,
   fileFilter: fileFilter,

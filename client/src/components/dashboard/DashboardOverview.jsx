@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -30,7 +30,7 @@ export default function DashboardOverview() {
   const userName = user?.name ? user.name.split(' ')[0] : 'Learner';
   const targetRole = user?.targetRole || user?.careerGoal || 'Full Stack Developer';
   const userStreak = user?.streakDays ?? user?.streak ?? 0;
-  const userXp = user?.totalXp || 0;
+  const userXp = user?.points ?? user?.totalXp ?? 0;
 
   const [activeModal, setActiveModal] = useState(null); // 'milestone' | 'course' | null
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -73,7 +73,7 @@ export default function DashboardOverview() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <div>
           <h1 className={`text-2xl sm:text-3xl font-black tracking-tight flex items-center gap-2 ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
-            Welcome back, {userName} 👋
+            Welcome back, {userName} ðŸ‘‹
           </h1>
           <p className="text-xs sm:text-sm text-[#8C877D] mt-1">
             Track your personalized engineering roadmap for <strong className="text-[#FF857A]">{targetRole}</strong>.
@@ -351,7 +351,7 @@ export default function DashboardOverview() {
               onClick={() => navigate('/skill-gaps')}
               className="text-xs font-bold text-[#FF857A] hover:underline cursor-pointer"
             >
-              Analyze Gaps →
+              Analyze Gaps â†’
             </button>
           </div>
 
@@ -466,7 +466,7 @@ export default function DashboardOverview() {
                   <span className="px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-[#FF6B5F]/15 text-[#FF857A] uppercase font-mono">
                     {selectedCourse.category}
                   </span>
-                  <span className="text-xs font-bold text-[#FBBF24] font-mono">★ {selectedCourse.rating || 4.9}</span>
+                  <span className="text-xs font-bold text-[#FBBF24] font-mono">â˜… {selectedCourse.rating || 4.9}</span>
                 </div>
                 <h3 className="text-xl font-black">{selectedCourse.title}</h3>
                 <p className="text-xs text-[#8C877D] leading-relaxed">
@@ -501,3 +501,4 @@ export default function DashboardOverview() {
     </div>
   );
 }
+

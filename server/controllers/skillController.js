@@ -1,6 +1,5 @@
 const Skill = require('../models/Skill');
 const SkillGap = require('../models/SkillGap');
-// Legacy dependency imported but NO LONGER INVOKED in the HTTP cycle.
 const skillGapEngine = require('../services/recommendation/skillGapEngine');
 
 // @desc    Get all skills
@@ -21,7 +20,7 @@ const getAllSkills = async (req, res, next) => {
 const getSkillGapAnalysis = async (req, res, next) => {
   try {
     const skillGap = await SkillGap.findOne({ user: req.user._id }).sort({ createdAt: -1 });
-    res.json({ success: true, skillGap });
+    res.json({ success: true, skillGap, gapReport: skillGap });
   } catch (error) {
     next(error);
   }
@@ -49,7 +48,7 @@ const saveSkillGapAnalysis = async (req, res, next) => {
       missingSkills: missingSkills || [],
     });
 
-    res.status(201).json({ success: true, skillGap });
+    res.status(201).json({ success: true, skillGap, gapReport: skillGap });
   } catch (error) {
     next(error);
   }

@@ -111,7 +111,9 @@ const parseResumeFromBuffer = async (buffer, mimetype) => {
   let rawText = '';
 
   try {
-    if (mimetype === 'application/pdf') {
+    if (mimetype === 'text/plain') {
+      rawText = buffer.toString('utf8');
+    } else if (mimetype === 'application/pdf') {
       const pdfData = await pdf(buffer);
       rawText = pdfData.text;
     } else if (

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+﻿import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
 import PageHeader from '../components/common/PageHeader';
@@ -73,7 +73,7 @@ const generateRadarData = (gaps = []) => {
   top6.forEach((gap, idx) => {
     const angle = angles[idx];
     const req = getPoint(gap.targetLevel || 85, angle);
-    const cur = getPoint(gap.currentLevel || 50, angle);
+    const cur = getPoint(gap.currentLevel ?? 0, angle);
     reqPoints.push(`${req.x},${req.y}`);
     curPoints.push({ x: cur.x, y: cur.y });
     
@@ -120,7 +120,7 @@ export default function SkillGapsPage() {
         const parsed = JSON.parse(savedCourses);
         const match = parsed.find(c => c.title.toLowerCase().includes(rec.title.toLowerCase()) || rec.title.toLowerCase().includes(c.title.toLowerCase()));
         if (match) {
-          const updated = parsed.map(c => c.id === match.id ? { ...c, enrolled: true, progress: c.progress || 10 } : c);
+          const updated = parsed.map(c => c.id === match.id ? { ...c, enrolled: true, progress: c.progress || 0 } : c);
           localStorage.setItem('m3_courses_data', JSON.stringify(updated));
         }
       }
@@ -201,7 +201,7 @@ export default function SkillGapsPage() {
 
       <div className="max-w-[1500px] mx-auto w-full space-y-6 pb-8">
         
-        {/* ── Top Metric Stats Row ── */}
+        {/* â”€â”€ Top Metric Stats Row â”€â”€ */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           {dynamicStats.map((stat, idx) => (
             <Card key={idx} variant="interactive">
@@ -217,10 +217,10 @@ export default function SkillGapsPage() {
           ))}
         </div>
 
-        {/* ── Main Content Split ── */}
+        {/* â”€â”€ Main Content Split â”€â”€ */}
         <div className="flex flex-col xl:flex-row gap-6">
           
-          {/* ── Left Column: Skills Breakdown & Course Bridges ── */}
+          {/* â”€â”€ Left Column: Skills Breakdown & Course Bridges â”€â”€ */}
           <div className="flex-1 min-w-0 space-y-6">
             
             {/* Skills Breakdown Table Card */}
@@ -237,7 +237,7 @@ export default function SkillGapsPage() {
                 {gaps.map((item, idx) => {
                   const pColors = getPriorityColor(item.priority);
                   const Icon = getSkillIcon(item.category);
-                  const curr = item.currentLevel || 50;
+                  const curr = item.currentLevel ?? 0;
                   const req = item.targetLevel || 85;
 
                   return (
@@ -328,7 +328,7 @@ export default function SkillGapsPage() {
                         size="sm"
                         onClick={() => handleAddCourse(idx, rec)}
                       >
-                        {addedCourses[idx] ? 'Added to Path ✓' : 'Add to Path'}
+                        {addedCourses[idx] ? 'Added to Path âœ“' : 'Add to Path'}
                       </Button>
                     </div>
                   </div>
@@ -338,7 +338,7 @@ export default function SkillGapsPage() {
 
           </div>
 
-          {/* ── Right Column: Skill Radar & AI Strategic Advice ── */}
+          {/* â”€â”€ Right Column: Skill Radar & AI Strategic Advice â”€â”€ */}
           <div className="w-full xl:w-[400px] space-y-6 flex-shrink-0">
             
             {/* Skill Radar View Card */}
@@ -474,3 +474,4 @@ export default function SkillGapsPage() {
     </MainLayout>
   );
 }
+

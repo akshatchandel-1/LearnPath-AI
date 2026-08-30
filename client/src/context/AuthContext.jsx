@@ -3,62 +3,52 @@ import api from '../services/api';
 
 const AuthContext = createContext(null);
 
-export const defaultUser = {
-  id: 'usr_default_101',
-  name: 'Learner',
-  email: 'learner@learnpath.ai',
-  avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-  targetRole: 'Full Stack Developer',
-  tagline: 'Aspiring Software Engineer & Cloud Architect',
-  location: 'San Francisco, CA',
-  education: 'B.Tech in Computer Science',
-  experienceLevel: 'Intermediate',
-  weeklyGoalHours: 12,
-  completedHours: 0,
-  overallProgress: 0,
-  streakDays: 0,
-  totalXp: 0,
-  bio: 'Passionate developer building scalable web architectures, mastering full-stack systems and cloud engineering.',
-  areasOfInterest: 'Web Development, Artificial Intelligence, System Architecture',
-  preferredLearningStyle: 'Hands-on Projects',
-  weeklyLearningTime: '12-15 hours/week',
-  currentFocus: 'React 18, Node.js Microservices, MongoDB',
-  careerGoal: 'Full Stack Developer',
-  interests: ['Full Stack Development', 'TypeScript', 'System Design', 'Cloud Architecture'],
-  skills: [
-    { name: 'HTML & CSS', progress: 85 },
-    { name: 'JavaScript ES6+', progress: 75 },
-    { name: 'React.js', progress: 60 },
-    { name: 'Node.js & Express', progress: 50 },
-    { name: 'MongoDB', progress: 45 },
-  ],
-  completedMilestonesCount: 0,
-  activeCoursesCount: 0,
-};
-
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
+    const token = localStorage.getItem('learnpath_token');
     const saved = localStorage.getItem('learnpath_user');
-    if (saved) {
+    if (token && saved) {
       try {
         return JSON.parse(saved);
       } catch (e) {
-        console.error('Error parsing stored user:', e);
+        return null;
       }
     }
-    return defaultUser;
+    return null;
   });
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
+  // Validate stored JWT token with backend on mount
   useEffect(() => {
-    if (user) {
-      localStorage.setItem('learnpath_user', JSON.stringify(user));
-    } else {
-      localStorage.removeItem('learnpath_user');
-      localStorage.removeItem('learnpath_token');
-    }
-  }, [user]);
+    const initAuth = async () => {
+      const token = localStorage.getItem('learnpath_token');
+      if (token) {
+        try {
+          const res = await api.get('/auth/me');
+          if (res.data?.success && res.data.user) {
+            setUser(res.data.user);
+            localStorage.setItem('learnpath_user', JSON.stringify(res.data.user));
+          } else {
+            setUser(null);
+            localStorage.removeItem('learnpath_user');
+            localStorage.removeItem('learnpath_token');
+          }
+        } catch (err) {
+          console.warn('Session verification failed, clearing session:', err.message);
+          setUser(null);
+          localStorage.removeItem('learnpath_user');
+          localStorage.removeItem('learnpath_token');
+        }
+      } else {
+        setUser(null);
+        localStorage.removeItem('learnpath_user');
+      }
+      setLoading(false);
+    };
+
+    initAuth();
+  }, []);
 
   const login = async (email, password) => {
     setLoading(true);
@@ -67,20 +57,34 @@ export function AuthProvider({ children }) {
       if (res.data?.success) {
         setUser(res.data.user);
         localStorage.setItem('learnpath_token', res.data.token);
+        localStorage.setItem('learnpath_user', JSON.stringify(res.data.user));
         setLoading(false);
         return { success: true, user: res.data.user };
       }
-    } catch (err) {
-      console.warn('Backend offline or login error, using local session fallback:', err.message);
-      const fallbackUser = {
-        ...defaultUser,
-        email: email || defaultUser.email,
-        name: email ? email.split('@')[0].replace('.', ' ').replace(/^[a-z]/, c => c.toUpperCase()) : 'Learner'
-      };
-      setUser(fallbackUser);
-      localStorage.setItem('learnpath_token', 'session-jwt-token-learnpath-2026');
       setLoading(false);
-      return { success: true, user: fallbackUser };
+      return { success: false, error: res.data?.message || 'Invalid email or password' };
+    } catch (err) {
+      setLoading(false);
+      return { success: false, error: err.response?.data?.message || err.message || 'Login failed' };
+    }
+  };
+
+  const demoLogin = async () => {
+    setLoading(true);
+    try {
+      const res = await api.post('/auth/demo-login');
+      if (res.data?.success) {
+        setUser(res.data.user);
+        localStorage.setItem('learnpath_token', res.data.token);
+        localStorage.setItem('learnpath_user', JSON.stringify(res.data.user));
+        setLoading(false);
+        return { success: true, user: res.data.user };
+      }
+      setLoading(false);
+      return { success: false, error: res.data?.message || 'Demo login failed' };
+    } catch (err) {
+      setLoading(false);
+      return { success: false, error: err.response?.data?.message || err.message || 'Demo login failed' };
     }
   };
 
@@ -96,26 +100,22 @@ export function AuthProvider({ children }) {
       if (res.data?.success) {
         setUser(res.data.user);
         localStorage.setItem('learnpath_token', res.data.token);
+        localStorage.setItem('learnpath_user', JSON.stringify(res.data.user));
         setLoading(false);
         return { success: true, user: res.data.user };
       }
-    } catch (err) {
-      console.warn('Backend offline or register error, using local session fallback:', err.message);
-      const newUser = {
-        ...defaultUser,
-        name: name || (email ? email.split('@')[0] : 'Learner'),
-        email: email || defaultUser.email,
-        targetRole: targetRole || 'Full Stack Developer',
-        careerGoal: targetRole || 'Full Stack Developer'
-      };
-      setUser(newUser);
-      localStorage.setItem('learnpath_token', 'session-jwt-token-learnpath-2026');
       setLoading(false);
-      return { success: true, user: newUser };
+      return { success: false, error: res.data?.message || 'Registration failed' };
+    } catch (err) {
+      setLoading(false);
+      return { success: false, error: err.response?.data?.message || err.message || 'Registration failed' };
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await api.post('/auth/logout');
+    } catch (e) {}
     setUser(null);
     localStorage.removeItem('learnpath_user');
     localStorage.removeItem('learnpath_token');
@@ -123,19 +123,26 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('m3_assessments_data');
   };
 
-  const updateUserProfile = (updatedFields) => {
+  const updateUserProfile = async (updatedFields) => {
     setUser((prev) => {
+      if (!prev) return prev;
       const updated = { ...prev, ...updatedFields };
       localStorage.setItem('learnpath_user', JSON.stringify(updated));
       return updated;
     });
+    try {
+      await api.put('/profile', updatedFields);
+    } catch (err) {
+      console.error('Failed to sync profile update with server:', err);
+    }
   };
 
   const awardXp = (amount = 100) => {
     setUser((prev) => {
       if (!prev) return prev;
-      const newXp = (prev.totalXp || 0) + amount;
-      const updated = { ...prev, totalXp: newXp };
+      const currentXp = prev.points ?? prev.totalXp ?? 0;
+      const newXp = currentXp + amount;
+      const updated = { ...prev, points: newXp, totalXp: newXp };
       localStorage.setItem('learnpath_user', JSON.stringify(updated));
       return updated;
     });
@@ -148,9 +155,9 @@ export function AuthProvider({ children }) {
       const index = skills.findIndex(s => s.name.toLowerCase() === skillName.toLowerCase());
       let updatedSkills;
       if (index >= 0) {
-        updatedSkills = skills.map((s, i) => i === index ? { ...s, progress: Math.min(100, Math.max(s.progress, newLevel)) } : s);
+        updatedSkills = skills.map((s, i) => i === index ? { ...s, level: Math.min(100, Math.max(s.level || s.progress || 0, newLevel)), progress: Math.min(100, Math.max(s.progress || s.level || 0, newLevel)) } : s);
       } else {
-        updatedSkills = [...skills, { name: skillName, progress: newLevel }];
+        updatedSkills = [...skills, { name: skillName, level: newLevel, progress: newLevel }];
       }
       const updated = { ...prev, skills: updatedSkills };
       localStorage.setItem('learnpath_user', JSON.stringify(updated));
@@ -163,6 +170,7 @@ export function AuthProvider({ children }) {
       user, 
       loading, 
       login, 
+      demoLogin,
       signup, 
       logout, 
       updateUserProfile,

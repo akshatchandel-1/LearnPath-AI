@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import {
   X,
   Award,
@@ -15,7 +15,7 @@ import confetti from 'canvas-confetti';
 import { useLearningPath } from '../../context/LearningPathContext';
 import { useAuth } from '../../context/AuthContext';
 
-export const QuizModal = ({ skillName, isOpen, onClose }) => {
+export const QuizModal = ({ skillName, count = 3, isOpen, onClose }) => {
   const { refreshAll } = useLearningPath();
   const { user, updateUserProfile } = useAuth();
 
@@ -44,6 +44,7 @@ export const QuizModal = ({ skillName, isOpen, onClose }) => {
       const res = await api.post('/quiz/generate', {
         skill: skillName || 'JavaScript',
         difficulty: 'Intermediate',
+        count: count || 3,
       });
       if (res.data.success) {
         setQuiz(res.data.quiz);
@@ -252,7 +253,7 @@ export const QuizModal = ({ skillName, isOpen, onClose }) => {
                     Skill Calibration Delta
                   </p>
                   <p className="text-sm font-semibold text-white">
-                    {skillName}: {result.previousSkillLevel}% → {result.newSkillLevel}%
+                    {skillName}: {result.previousSkillLevel}% â†’ {result.newSkillLevel}%
                   </p>
                 </div>
                 <span
@@ -318,3 +319,4 @@ export const QuizModal = ({ skillName, isOpen, onClose }) => {
 };
 
 export default QuizModal;
+

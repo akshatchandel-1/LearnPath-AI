@@ -1,4 +1,4 @@
-const Quiz = require('../models/Quiz');
+﻿const Quiz = require('../models/Quiz');
 const QuizAttempt = require('../models/QuizAttempt');
 const User = require('../models/User');
 const LearnerProfile = require('../models/LearnerProfile');
@@ -47,12 +47,12 @@ const getQuizById = async (req, res, next) => {
 // @access  Private
 const generateQuiz = async (req, res, next) => {
   try {
-    const { skill, difficulty } = req.body;
+    const { skill, difficulty, count } = req.body;
     if (!skill) {
       return res.status(400).json({ success: false, message: 'Please specify a skill' });
     }
 
-    const quiz = await quizGenerator.generateQuizForSkill(skill, difficulty || 'Intermediate');
+    const quiz = await quizGenerator.generateQuizForSkill(skill, difficulty || 'Intermediate', count ? parseInt(count, 10) : undefined);
     res.status(201).json({ success: true, quiz });
   } catch (error) {
     next(error);
@@ -104,7 +104,7 @@ const submitQuiz = async (req, res, next) => {
     );
 
     if (skillIndex > -1) {
-      previousLevel = user.skills[skillIndex].level || 40;
+      previousLevel = user.skills[skillIndex].level ?? 0;
       const delta = percentage >= 70 ? Math.round((percentage - 50) * 0.3) : -Math.round((70 - percentage) * 0.2);
       newLevel = Math.max(10, Math.min(98, previousLevel + delta));
       user.skills[skillIndex].level = newLevel;
@@ -158,7 +158,7 @@ const submitQuiz = async (req, res, next) => {
       user: req.user._id,
       quiz: quiz._id,
       skill: quiz.skill,
-      score: correctCount * 20,
+      score: Math.round((correctCount / totalQuestions) * 100),
       percentage,
       totalQuestions,
       correctCount,
@@ -215,3 +215,4 @@ const getQuizHistory = async (req, res, next) => {
 };
 
 module.exports = { getQuizzes, getQuizById, generateQuiz, submitQuiz, getQuizHistory };
+

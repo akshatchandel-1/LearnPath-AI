@@ -1,4 +1,4 @@
-const LearningPath = require('../../models/LearningPath');
+﻿const LearningPath = require('../../models/LearningPath');
 const User = require('../../models/User');
 const Resource = require('../../models/Resource');
 const prerequisiteEngine = require('../recommendation/prerequisiteEngine');
@@ -21,8 +21,8 @@ const DEFAULT_MERN_PHASES = [
       skill: 'JavaScript',
       minPassingScore: 70,
     },
-    status: 'completed',
-    completionPercentage: 100,
+    status: 'in-progress',
+    completionPercentage: 0,
   },
   {
     phaseNumber: 2,
@@ -41,8 +41,8 @@ const DEFAULT_MERN_PHASES = [
       skill: 'React.js',
       minPassingScore: 70,
     },
-    status: 'in-progress',
-    completionPercentage: 45,
+    status: 'locked',
+    completionPercentage: 0,
   },
   {
     phaseNumber: 3,
@@ -61,7 +61,7 @@ const DEFAULT_MERN_PHASES = [
       skill: 'Node.js',
       minPassingScore: 70,
     },
-    status: 'available',
+    status: 'locked',
     completionPercentage: 0,
   },
   {
@@ -203,9 +203,9 @@ class AdaptivePathService {
       goal,
       targetRole: goal,
       totalEstimatedWeeks: 14,
-      currentPhase: 2,
+      currentPhase: 1,
       phases,
-      overallProgress: 18,
+      overallProgress: 0,
       active: true,
     });
 

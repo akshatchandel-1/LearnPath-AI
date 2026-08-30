@@ -1,3 +1,26 @@
+
+:root:not(.dark) .m3-theme-scope {
+  --m3-surface-white: #FFFFFF;
+  --m3-surface-subtle: #F9FAFB;
+  --m3-surface-card: #FFFFFF;
+  --m3-surface-hover: #F3F4F6;
+  
+  --m3-border-light: rgba(0, 0, 0, 0.08);
+  --m3-border-subtle: rgba(0, 0, 0, 0.05);
+  --m3-border-accent: rgba(255, 107, 95, 0.4);
+  --m3-border-focus: #FF6B5F;
+  
+  --m3-text-dark: #111418;
+  --m3-text-headings: #111418;
+  --m3-text-body: #374151;
+  --m3-text-muted: #6B7280;
+  --m3-text-subtle: #6B7280;
+  
+  --m3-shadow-card: 0 4px 20px rgba(0, 0, 0, 0.06);
+  --m3-shadow-hover: 0 8px 24px rgba(255, 107, 95, 0.15);
+  --m3-shadow-modal: 0 20px 40px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+
 /* ==========================================================================
    LearnPath AI — Unified Obsidian + Ivory + Coral Theme
    Harmonized across Courses and Assessments modules.
@@ -78,28 +101,28 @@
 
 /* Typography Overrides */
 .m3-theme-scope h1 {
-  color: #F5F1E8 !important;
+  color: var(--m3-text-headings);
   font-weight: 800;
   letter-spacing: -0.02em;
 }
 
 .m3-theme-scope h2 {
-  color: #F5F1E8 !important;
+  color: var(--m3-text-headings);
   font-weight: 700;
 }
 
 .m3-theme-scope h3 {
-  color: #F5F1E8 !important;
+  color: var(--m3-text-headings);
   font-weight: 700;
 }
 
 .m3-theme-scope h4 {
-  color: #F5F1E8 !important;
+  color: var(--m3-text-headings);
   font-weight: 600;
 }
 
 .m3-theme-scope p {
-  color: #C7C2B6 !important;
+  color: var(--m3-text-body);
 }
 
 /* Scoped PageHeader border */

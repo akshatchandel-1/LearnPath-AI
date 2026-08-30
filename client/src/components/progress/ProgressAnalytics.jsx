@@ -54,7 +54,7 @@ export default function ProgressAnalytics() {
 
   const userStreak = user?.streakDays ?? user?.streak ?? 0;
   const userHours = user?.completedHours || 0;
-  const userXp = user?.totalXp || 0;
+  const userXp = user?.points ?? user?.totalXp ?? 0;
 
   const weeklyActivity = [
     { day: 'Mon', hours: userHours > 0 ? 1.5 : 0 },

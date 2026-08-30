@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken');
+﻿const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const LearnerProfile = require('../models/LearnerProfile');
 const adaptivePathService = require('../services/adaptive/adaptivePathService');
@@ -16,7 +16,7 @@ const generateToken = (id) => {
 // @access  Public
 const registerUser = async (req, res, next) => {
   try {
-    const { name, email, password, careerGoal, experienceLevel, preferredLearningStyle, weeklyHours } = req.body;
+    const { name, email, password, careerGoal, experienceLevel, preferredLearningStyle, weeklyHours, skills } = req.body;
 
     const userExists = await User.findOne({ email });
     if (userExists) {
@@ -31,10 +31,9 @@ const registerUser = async (req, res, next) => {
       experienceLevel: experienceLevel || 'Beginner',
       preferredLearningStyle: preferredLearningStyle || 'Hands-on Projects',
       weeklyHours: weeklyHours || 10,
-      skills: [
-        { name: 'HTML & CSS', level: 40, category: 'Frontend' },
-        { name: 'JavaScript', level: 30, category: 'Frontend' },
-      ],
+      skills: Array.isArray(skills) ? skills : [],
+      points: 0,
+      streak: 0,
     });
 
     await LearnerProfile.create({

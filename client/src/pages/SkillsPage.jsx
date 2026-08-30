@@ -20,7 +20,15 @@ export const SkillsPage = () => {
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
 
-  const skills = skillGapReport?.skills || [];
+  const rawGaps = skillGapReport?.gaps || skillGapReport?.skills || [];
+  const skills = rawGaps.map(s => ({
+    name: s.skill || s.name || 'Skill',
+    currentLevel: s.currentLevel ?? s.level ?? s.progress ?? 0,
+    targetLevel: s.targetLevel || 85,
+    gap: s.gapScore ?? s.gapPercent ?? s.gap ?? 0,
+    category: s.category || 'Core Skill',
+    priority: s.priority || 'Medium'
+  }));
 
   const filteredSkills = skills.filter((s) => {
     const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase());

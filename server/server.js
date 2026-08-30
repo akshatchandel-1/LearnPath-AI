@@ -28,6 +28,7 @@ app.use('/api/resources', require('./routes/resourceRoutes'));
 app.use('/api/courses', require('./routes/courseRoutes'));
 app.use('/api/recommendations', require('./routes/recommendationRoutes'));
 app.use('/api/learning-path', require('./routes/learningPathRoutes'));
+app.use('/api/learning_path', require('./routes/learningPathRoutes'));
 app.use('/api/progress', require('./routes/progressRoutes'));
 app.use('/api/quiz', require('./routes/quizRoutes'));
 app.use('/api/ai', require('./routes/aiRoutes'));

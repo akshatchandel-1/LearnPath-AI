@@ -1,4 +1,4 @@
-﻿node_modules/
+node_modules/
 .env
 .env.*
 !.env.example
@@ -7,3 +7,5 @@ build/
 *.log
 coverage/
 server/.cache/
+server/uploads/
+uploads/

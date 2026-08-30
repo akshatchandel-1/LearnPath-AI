@@ -1,4 +1,4 @@
-const Skill = require('../../models/Skill');
+﻿const Skill = require('../../models/Skill');
 
 /**
  * Skill Gap Analysis Engine:
@@ -6,6 +6,41 @@ const Skill = require('../../models/Skill');
  */
 
 const ROLE_TAXONOMY_MAP = {
+  'data scientist': [
+    { name: 'Python Programming', targetLevel: 85, importance: 1.0 },
+    { name: 'Machine Learning Algorithms', targetLevel: 85, importance: 1.0 },
+    { name: 'Pandas & Data Wrangling', targetLevel: 85, importance: 0.95 },
+    { name: 'Applied Statistics & Probability', targetLevel: 80, importance: 0.9 },
+    { name: 'SQL & Relational Databases', targetLevel: 75, importance: 0.85 },
+    { name: 'Data Visualization & BI', targetLevel: 75, importance: 0.8 },
+    { name: 'Deep Learning & Neural Networks', targetLevel: 70, importance: 0.75 },
+    { name: 'Git & Version Control', targetLevel: 70, importance: 0.7 },
+  ],
+  'data analyst': [
+    { name: 'SQL & Relational Databases', targetLevel: 85, importance: 1.0 },
+    { name: 'Pandas & Data Wrangling', targetLevel: 80, importance: 0.95 },
+    { name: 'Data Visualization & BI', targetLevel: 85, importance: 1.0 },
+    { name: 'Applied Statistics & Probability', targetLevel: 75, importance: 0.9 },
+    { name: 'Excel & Advanced Analytics', targetLevel: 80, importance: 0.85 },
+    { name: 'Python Programming', targetLevel: 70, importance: 0.75 },
+  ],
+  'cloud engineer': [
+    { name: 'Linux & Bash Scripting', targetLevel: 85, importance: 0.95 },
+    { name: 'Docker & Containerization', targetLevel: 85, importance: 1.0 },
+    { name: 'Kubernetes & Orchestration', targetLevel: 80, importance: 0.95 },
+    { name: 'AWS Cloud Fundamentals', targetLevel: 85, importance: 1.0 },
+    { name: 'Terraform & IaC', targetLevel: 80, importance: 0.9 },
+    { name: 'CI/CD & GitHub Actions', targetLevel: 80, importance: 0.85 },
+    { name: 'Prometheus & Monitoring', targetLevel: 75, importance: 0.8 },
+  ],
+  'devops engineer': [
+    { name: 'Linux & Bash Scripting', targetLevel: 85, importance: 0.95 },
+    { name: 'Docker & Containerization', targetLevel: 85, importance: 1.0 },
+    { name: 'Kubernetes & Orchestration', targetLevel: 85, importance: 1.0 },
+    { name: 'CI/CD & GitHub Actions', targetLevel: 85, importance: 1.0 },
+    { name: 'Terraform & IaC', targetLevel: 80, importance: 0.9 },
+    { name: 'Cloud Infrastructure (AWS/GCP)', targetLevel: 80, importance: 0.9 },
+  ],
   'mern stack developer': [
     { name: 'HTML & CSS', targetLevel: 90, importance: 0.9 },
     { name: 'JavaScript', targetLevel: 85, importance: 1.0 },
@@ -57,7 +92,7 @@ const ROLE_TAXONOMY_MAP = {
 
 class SkillGapEngine {
   getRequiredSkillsForRole(careerGoal = '') {
-    const normalizedGoal = careerGoal.toLowerCase();
+    const normalizedGoal = (careerGoal || '').toLowerCase();
     for (const [roleKey, skills] of Object.entries(ROLE_TAXONOMY_MAP)) {
       if (normalizedGoal.includes(roleKey) || roleKey.includes(normalizedGoal)) {
         return skills;
@@ -70,8 +105,10 @@ class SkillGapEngine {
     const requiredSkills = this.getRequiredSkillsForRole(careerGoal);
     const userSkillMap = new Map();
 
-    userSkills.forEach((s) => {
-      userSkillMap.set(s.name.toLowerCase(), s.level || 0);
+    (userSkills || []).forEach((s) => {
+      if (s && (s.name || s.skill)) {
+        userSkillMap.set((s.name || s.skill).toLowerCase(), s.level ?? s.currentLevel ?? s.progress ?? 0);
+      }
     });
 
     const gapDetails = [];
@@ -79,7 +116,15 @@ class SkillGapEngine {
     let totalWeight = 0;
 
     requiredSkills.forEach((req) => {
-      const currentLevel = userSkillMap.get(req.name.toLowerCase()) || 0;
+      // Find direct or partial match
+      let currentLevel = 0;
+      const reqLower = req.name.toLowerCase();
+      for (const [sName, sLevel] of userSkillMap.entries()) {
+        if (sName === reqLower || reqLower.includes(sName) || sName.includes(reqLower)) {
+          currentLevel = Math.max(currentLevel, sLevel);
+        }
+      }
+
       const targetLevel = req.targetLevel;
       const gapPercent = Math.max(0, targetLevel - currentLevel);
       const gapScore = Math.min(100, Math.round((gapPercent / targetLevel) * 100));
@@ -91,7 +136,7 @@ class SkillGapEngine {
         gapPercent,
         gapScore,
         importance: req.importance,
-        priority: gapScore > 50 ? 'High' : gapScore > 20 ? 'Medium' : 'Low',
+        priority: gapScore > 40 ? 'High' : gapScore > 15 ? 'Medium' : 'Low',
       });
 
       totalWeightedGap += gapScore * req.importance;
@@ -101,12 +146,13 @@ class SkillGapEngine {
     // Sort by gap score descending (biggest gaps first)
     gapDetails.sort((a, b) => b.gapScore - a.gapScore);
 
-    const overallGapIndex = totalWeight > 0 ? Math.round(totalWeightedGap / totalWeight) : 50;
+    const overallGapIndex = totalWeight > 0 ? Math.round(totalWeightedGap / totalWeight) : 100;
+    const readinessScore = Math.max(0, 100 - overallGapIndex);
 
     return {
       targetRole: careerGoal,
       overallGapIndex,
-      readinessScore: 100 - overallGapIndex,
+      readinessScore,
       gaps: gapDetails,
       criticalGaps: gapDetails.filter(g => g.gapScore > 40).map(g => g.skill),
     };

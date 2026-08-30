@@ -1,9 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
+﻿import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardHeader, CardTitle, CardContent } from '../common/Card';
 import Badge from '../common/Badge';
 import Button from '../common/Button';
 import { useAuth } from '../../context/AuthContext';
 import { useLearningPath } from '../../context/LearningPathContext';
+import { QuizModal } from '../quiz/QuizModal';
+import api from '../../services/api';
 import {
   Bot,
   Send,
@@ -14,25 +17,63 @@ import {
   CheckCircle2,
   ArrowRight,
   Copy,
-  Check
+  Check,
+  Zap,
+  BookOpen,
+  Target,
+  BarChart3
 } from 'lucide-react';
 
 export default function AIChatInterface() {
   const { user } = useAuth();
   const { learningPath, skillGapReport } = useLearningPath();
+  const navigate = useNavigate();
   const activeRole = user?.targetRole || user?.careerGoal || 'Full Stack Developer';
 
   const [messages, setMessages] = useState([
     {
       id: 'm-init',
       sender: 'ai',
-      text: `Hello ${user?.name?.split(' ')[0] || 'Learner'}! 👋 I am your 24/7 AI Learning Path Mentor. I've analyzed your target goal (${activeRole}) and current progress. How can I help you master your curriculum or clarify concepts today?`
+      text: `Hello ${user?.name?.split(' ')[0] || 'Learner'}! ?? I am your 24/7 AI Learning Path Mentor. I've analyzed your target goal (${activeRole}) and live curriculum telemetry. How can I help you master your curriculum or clarify concepts today?`,
+      suggestedActions: [
+        { label: 'Ask: "I am weak in JavaScript. What should I study?"', action: 'SEND_PROMPT', payload: { prompt: 'I am weak in JavaScript. What should I study?' } },
+        { label: 'Ask: "Create a 3-question quiz for JavaScript."', action: 'SEND_PROMPT', payload: { prompt: 'Create a 3-question quiz for JavaScript.' } },
+        { label: 'Ask: "I want to improve React."', action: 'SEND_PROMPT', payload: { prompt: 'I want to improve React.' } },
+        { label: 'Ask: "What skills am I missing for a Node.js Developer role?"', action: 'SEND_PROMPT', payload: { prompt: 'What skills am I missing for a Node.js Developer role?' } },
+        { label: 'Ask: "Explain my current learning progress."', action: 'SEND_PROMPT', payload: { prompt: 'Explain my current learning progress.' } }
+      ]
     }
   ]);
   const [inputVal, setInputVal] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [copiedId, setCopiedId] = useState(null);
+  const [activeQuizConfig, setActiveQuizSkill] = useState(null); // { skill: string, count: number }
   const messagesEndRef = useRef(null);
+
+  // Load server conversation history on mount
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const res = await api.get('/ai/conversation');
+        if (res.data?.success && res.data.conversation?.messages?.length > 0) {
+          const formatted = res.data.conversation.messages.map((m, idx) => ({
+            id: `m-srv-${idx}-${Date.now()}`,
+            sender: m.role === 'assistant' ? 'ai' : 'user',
+            text: m.content,
+            suggestedActions: m.role === 'assistant' ? [
+              { label: 'Start 3-Question Quiz for JavaScript', action: 'GENERATE_QUIZ', payload: { skill: 'JavaScript', count: 3 } },
+              { label: 'View Active Roadmap', action: 'NAVIGATE_ROADMAP', payload: {} }
+            ] : []
+          }));
+          setMessages(formatted);
+        }
+      } catch (err) {
+        console.warn('Could not load AI conversation history:', err.message);
+      }
+    };
+
+    fetchHistory();
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -42,72 +83,7 @@ export default function AIChatInterface() {
     scrollToBottom();
   }, [messages, isTyping]);
 
-  const generateAIResponse = (userPrompt) => {
-    const lower = userPrompt.toLowerCase();
-    
-    if (lower.includes('typescript') || lower.includes('gap') || lower.includes('skill')) {
-      return `To accelerate closing your TypeScript and Architecture skill gaps for **${activeRole}**:
-1. **Strict Generics & Utility Types**: Master \`Pick<T, K>\`, \`Omit<T, K>\`, \`Record<K, T>\`, and \`ReturnType<T>\`.
-2. **Discriminated Unions**: Structure state and API responses with tagged unions to eliminate runtime type casting.
-3. **Zod Validation**: Parse incoming HTTP payloads directly into validated TypeScript types.
-Check the **Courses tab** to enroll in our *TypeScript 5.x Mastery* track!`;
-    }
-
-    if (lower.includes('jwt') || lower.includes('cookie') || lower.includes('auth')) {
-      return `Here is the security difference between **HttpOnly Cookies** & **LocalStorage** for JWT tokens:
-
-• **HttpOnly SameSite=Strict Cookies** *(Recommended)*:
-  Protected against Cross-Site Scripting (XSS) attacks because client-side JavaScript cannot access \`document.cookie\`.
-• **LocalStorage**:
-  Susceptible to token extraction if an attacker executes arbitrary JavaScript on your domain.
-
-\`\`\`javascript
-// Express.js Secure Cookie Pattern:
-res.cookie('token', jwtToken, {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'strict',
-  maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-});
-\`\`\``;
-    }
-
-    if (lower.includes('mongo') || lower.includes('project') || lower.includes('database')) {
-      return `For a 30-minute practice project on **MongoDB Performance**:
-Build an **Aggregation Pipeline Analytics API** that groups user study logs by day and computes rolling 7-day average completion rates using \`$match\`, \`$group\`, and \`$project\`.
-
-\`\`\`javascript
-db.studySessions.aggregate([
-  { $match: { completed: true } },
-  { $group: { _id: "$dayOfWeek", totalHours: { $sum: "$hours" } } },
-  { $sort: { totalHours: -1 } }
-]);
-\`\`\``;
-    }
-
-    if (lower.includes('pace') || lower.includes('roadmap') || lower.includes('timeline') || lower.includes('schedule')) {
-      return `Looking at your active roadmap for **${activeRole}**:
-• Current Milestone Phase: **Phase ${learningPath?.currentPhase || 2} of ${learningPath?.phases?.length || 4}**.
-• Estimated Completion: **${learningPath?.totalEstimatedWeeks || 12} weeks** at 10-12 hours/week.
-• Pacing Telemetry: You are on track with expected milestone milestones. Maintain your 1.5h daily study cadence!`;
-    }
-
-    if (lower.includes('event loop') || lower.includes('node') || lower.includes('libuv')) {
-      return `The Node.js **libuv Event Loop** executes in 6 distinct phases in order:
-1. **Timers**: Executes callbacks scheduled by \`setTimeout()\` and \`setInterval()\`.
-2. **Pending Callbacks**: Executes I/O callbacks deferred to the next loop iteration.
-3. **Idle, Prepare**: Internal libuv use only.
-4. **Poll**: Retrieves new I/O events and executes I/O related callbacks.
-5. **Check**: Executes \`setImmediate()\` callbacks.
-6. **Close Callbacks**: Executes close event callbacks (e.g. \`socket.on('close')\`).
-
-*Note: \`process.nextTick()\` runs immediately after the current operation, before the event loop continues.*`;
-    }
-
-    return `Great question! In the context of your **${activeRole}** journey, mastering this concept directly advances your Phase ${learningPath?.currentPhase || 2} milestones. Would you like me to create a 3-question quick quiz or recommend specific documentation for this topic?`;
-  };
-
-  const handleSend = (text) => {
+  const handleSend = async (text) => {
     const msgToSend = (text || inputVal).trim();
     if (!msgToSend) return;
 
@@ -121,15 +97,56 @@ db.studySessions.aggregate([
     setInputVal('');
     setIsTyping(true);
 
-    setTimeout(() => {
-      const aiReply = {
+    try {
+      const res = await api.post('/ai/chat', { message: msgToSend });
+      if (res.data?.success && res.data.message) {
+        const aiReply = {
+          id: `m-ai-${Date.now()}`,
+          sender: 'ai',
+          text: res.data.message.content,
+          suggestedActions: res.data.suggestedActions || [],
+          relatedTopics: res.data.relatedTopics || []
+        };
+        setMessages((prev) => [...prev, aiReply]);
+      } else {
+        throw new Error('No message in response');
+      }
+    } catch (err) {
+      console.warn('AI chat error, using context-aware response:', err.message);
+      // Fallback message
+      const fallbackReply = {
         id: `m-ai-${Date.now()}`,
         sender: 'ai',
-        text: generateAIResponse(msgToSend)
+        text: `### ${activeRole} Learning Guidance ??\n\nI am tracking your learning progress. Focus on your active milestone in **Phase ${learningPath?.currentPhase || 1}** and take diagnostic assessments to evaluate your mastery.\n\nWould you like to test your knowledge with a 3-question quiz?`,
+        suggestedActions: [
+          { label: 'Start 3-Question Quiz for JavaScript', action: 'GENERATE_QUIZ', payload: { skill: 'JavaScript', count: 3 } },
+          { label: 'Explore Course Catalog', action: 'NAVIGATE_COURSES', payload: {} }
+        ]
       };
-      setMessages((prev) => [...prev, aiReply]);
+      setMessages((prev) => [...prev, fallbackReply]);
+    } finally {
       setIsTyping(false);
-    }, 600);
+    }
+  };
+
+  const handleActionClick = (actionItem) => {
+    const { action, payload = {} } = actionItem;
+
+    if (action === 'GENERATE_QUIZ') {
+      setActiveQuizSkill({ skill: payload.skill || 'JavaScript', count: payload.count || 3 });
+    } else if (action === 'NAVIGATE_COURSES') {
+      navigate('/courses');
+    } else if (action === 'NAVIGATE_SKILL_GAPS') {
+      navigate('/skill-gaps');
+    } else if (action === 'NAVIGATE_PROGRESS') {
+      navigate('/progress');
+    } else if (action === 'NAVIGATE_ROADMAP') {
+      navigate('/learning-path');
+    } else if (action === 'SEND_PROMPT') {
+      handleSend(payload.prompt || actionItem.label);
+    } else if (action === 'OPEN_URL' && payload.url) {
+      window.open(payload.url, '_blank');
+    }
   };
 
   const handleCopy = (id, text) => {
@@ -139,11 +156,11 @@ db.studySessions.aggregate([
   };
 
   const promptChips = [
-    'Explain React 18 concurrent rendering',
-    'Help me close my database indexing skill gap',
-    'Recommend a 30-minute practice project on MongoDB',
-    'Explain the Node.js event loop check phase',
-    'Create a study plan for my career goal'
+    'I am weak in JavaScript. What should I study?',
+    'Create a 3-question quiz for JavaScript.',
+    'I want to improve React.',
+    'What skills am I missing for a Node.js Developer role?',
+    'Explain my current learning progress.'
   ];
 
   return (
@@ -185,13 +202,30 @@ db.studySessions.aggregate([
             </div>
 
             <div
-              className={`relative max-w-[85%] sm:max-w-[75%] p-4 rounded-2xl text-xs sm:text-sm leading-relaxed ${
+              className={`relative max-w-[85%] sm:max-w-[78%] p-4 sm:p-5 rounded-2xl text-xs sm:text-sm leading-relaxed space-y-3 ${
                 msg.sender === 'user'
                   ? 'bg-gradient-to-r from-[#FF6B5F] to-[#E85548] text-white font-medium shadow-md'
                   : 'bg-[#16191E] border border-white/[0.06] text-[#F5F1E8]'
               }`}
             >
-              <div className="whitespace-pre-wrap font-sans">{msg.text}</div>
+              <div className="whitespace-pre-wrap font-sans leading-relaxed">{msg.text}</div>
+
+              {/* Dynamic Suggested Actions */}
+              {msg.sender === 'ai' && msg.suggestedActions && msg.suggestedActions.length > 0 && (
+                <div className="pt-2 border-t border-white/[0.08] flex flex-wrap gap-2">
+                  {msg.suggestedActions.map((act, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => handleActionClick(act)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#FF6B5F]/15 hover:bg-[#FF6B5F]/25 text-[#FF857A] border border-[#FF6B5F]/30 text-xs font-bold transition-all shadow-sm cursor-pointer active:scale-[0.98]"
+                    >
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>{act.label}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
 
               {msg.sender === 'ai' && (
                 <button
@@ -266,6 +300,17 @@ db.studySessions.aggregate([
         </form>
       </div>
 
+      {/* Interactive 3-Question Quiz Modal */}
+      {activeQuizConfig && (
+        <QuizModal
+          skillName={activeQuizConfig.skill}
+          count={activeQuizConfig.count || 3}
+          isOpen={Boolean(activeQuizConfig)}
+          onClose={() => setActiveQuizSkill(null)}
+        />
+      )}
+
     </div>
   );
 }
+

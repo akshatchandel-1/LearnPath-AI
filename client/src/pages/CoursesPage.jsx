@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
 import CourseDetailsModal from '../components/courses/CourseDetailsModal';
@@ -80,8 +80,8 @@ export default function CoursesPage() {
           return {
             ...c,
             enrolled: newEnrolled,
-            progress: newEnrolled ? (c.progress || 10) : 0,
-            completedLessons: newEnrolled ? (c.completedLessons || 1) : 0,
+            progress: newEnrolled ? (c.progress || 0) : 0,
+            completedLessons: newEnrolled ? (c.completedLessons || 0) : 0,
           };
         }
         return c;
@@ -92,8 +92,8 @@ export default function CoursesPage() {
       setSelectedCourse((prev) => ({
         ...prev,
         enrolled: !prev.enrolled,
-        progress: !prev.enrolled ? (prev.progress || 10) : 0,
-        completedLessons: !prev.enrolled ? (prev.completedLessons || 1) : 0,
+        progress: !prev.enrolled ? (prev.progress || 0) : 0,
+        completedLessons: !prev.enrolled ? (prev.completedLessons || 0) : 0,
       }));
     }
   };
@@ -292,7 +292,7 @@ export default function CoursesPage() {
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className="text-xs sm:text-sm font-semibold text-[#FF857A]">
-                Curated Skill Tracks 👋
+                Curated Skill Tracks ðŸ‘‹
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#F5F1E8] tracking-tight">
@@ -542,7 +542,7 @@ export default function CoursesPage() {
                       : 'bg-[#FF6B5F] hover:bg-[#E85548] text-white shadow-md shadow-[#FF6B5F]/20'
                   }`}
                 >
-                  {course.enrolled ? 'Enrolled ✓' : 'Enroll'}
+                  {course.enrolled ? 'Enrolled âœ“' : 'Enroll'}
                 </button>
               </div>
             </div>
@@ -633,3 +633,4 @@ export default function CoursesPage() {
     </MainLayout>
   );
 }
+

@@ -2,8 +2,9 @@ const llmService = require('./llmService');
 const Quiz = require('../../models/Quiz');
 
 class QuizGenerator {
-  async generateQuizForSkill(skillName, difficulty = 'Intermediate') {
-    const prompt = `Generate a 5-question technical quiz for the skill "${skillName}" at "${difficulty}" level.
+  async generateQuizForSkill(skillName, difficulty = 'Intermediate', count = null) {
+    const questionCount = count || 5;
+    const prompt = `Generate a ${questionCount}-question technical quiz for the skill "${skillName}" at "${difficulty}" level.
 Output strictly valid JSON with this format:
 {
   "title": "${skillName} Concept Checkpoint",
@@ -24,15 +25,16 @@ Output strictly valid JSON with this format:
     const raw = await llmService.generateContent(prompt);
     if (raw) {
       try {
-        const cleaned = raw.replace(/```json/g, '').replace(/```/g, '').trim();
+        const cleaned = raw.replace(/\`\`\`json/g, '').replace(/\`\`\`/g, '').trim();
         const parsed = JSON.parse(cleaned);
-        if (parsed.questions && parsed.questions.length >= 3) {
+        if (parsed.questions && parsed.questions.length >= 1) {
+          const slicedQuestions = count ? parsed.questions.slice(0, count) : parsed.questions;
           const quizDoc = await Quiz.create({
             title: parsed.title || `${skillName} Mastery Assessment`,
             skill: skillName,
             category: 'Technical Assessment',
             difficulty,
-            questions: parsed.questions,
+            questions: slicedQuestions,
             createdBy: 'AI_Generator',
           });
           return quizDoc;
@@ -42,12 +44,32 @@ Output strictly valid JSON with this format:
       }
     }
 
-    // Fallback: Check if pre-seeded quiz exists in DB
-    const existing = await Quiz.findOne({ skill: new RegExp(`^${skillName}$`, 'i') });
-    if (existing) return existing;
+    // Check DB for existing quizzes matching skill
+    const allMatches = await Quiz.find({ skill: new RegExp(`^${skillName}$`, 'i') });
+    if (allMatches.length > 0) {
+      if (count) {
+        const matchWithCount = allMatches.find(q => q.questions && q.questions.length === count);
+        if (matchWithCount) return matchWithCount;
+
+        const baseQuiz = allMatches[0];
+        const sliced = baseQuiz.questions.slice(0, count);
+        return await Quiz.create({
+          title: `${skillName} ${count}-Question Checkpoint`,
+          skill: skillName,
+          category: baseQuiz.category || 'Assessment',
+          difficulty: baseQuiz.difficulty || difficulty,
+          questions: sliced,
+          createdBy: 'AI_Generator',
+        });
+      }
+      return allMatches[0];
+    }
 
     // Accurate fallback questions bank
-    const questions = this.getFallbackQuestions(skillName, difficulty);
+    let questions = this.getFallbackQuestions(skillName, difficulty);
+    if (count && questions.length > count) {
+      questions = questions.slice(0, count);
+    }
     return await Quiz.create({
       title: `${skillName} Core Checkpoint`,
       skill: skillName,

@@ -165,6 +165,8 @@ const parseResume = async (req, res, next) => {
     let mimetype = 'application/pdf';
     if (ext === 'docx' || ext === 'doc') {
       mimetype = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+    } else if (ext === 'txt') {
+      mimetype = 'text/plain';
     }
 
     const parsedData = await parseResumeFromBuffer(buffer, mimetype);

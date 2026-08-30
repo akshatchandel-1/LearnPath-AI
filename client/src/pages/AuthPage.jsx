@@ -25,7 +25,7 @@ export default function AuthPage({ defaultIsLogin = true }) {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  const { login, signup, user, isAuthenticated } = useAuth();
+  const { login, demoLogin, signup, user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || '/dashboard';
@@ -56,6 +56,24 @@ export default function AuthPage({ defaultIsLogin = true }) {
     }
 
     return true;
+  };
+
+  
+  const handleDemoLogin = async () => {
+    setIsLoading(true);
+    setErrorMsg('');
+    try {
+      const res = await demoLogin();
+      if (res?.success) {
+        navigate(from, { replace: true });
+      } else {
+        setErrorMsg(res?.error || 'Demo login failed.');
+      }
+    } catch (err) {
+      setErrorMsg(err.message || 'Demo login failed.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -155,6 +173,25 @@ export default function AuthPage({ defaultIsLogin = true }) {
               {errorMsg}
             </div>
           )}
+
+          
+          {/* 1-Click Instant Demo Login */}
+          <div className="mb-5">
+            <button
+              type="button"
+              disabled={isLoading}
+              onClick={handleDemoLogin}
+              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#FF6B5F]/15 via-[#FF6B5F]/20 to-[#E85548]/15 hover:from-[#FF6B5F]/25 hover:to-[#E85548]/25 border border-[#FF6B5F]/40 text-[#FF857A] text-xs font-bold transition-all shadow-sm cursor-pointer active:scale-[0.99]"
+            >
+              <Sparkles className="w-4 h-4 text-[#FF6B5F]" />
+              <span>? 1-Click Instant Demo Login (Judge Evaluation)</span>
+            </button>
+            <div className="relative flex py-3 items-center">
+              <div className="flex-grow border-t border-white/[0.08]"></div>
+              <span className="flex-shrink mx-3 text-[10px] uppercase font-bold text-[#8C877D] tracking-wider">or continue with email</span>
+              <div className="flex-grow border-t border-white/[0.08]"></div>
+            </div>
+          </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">

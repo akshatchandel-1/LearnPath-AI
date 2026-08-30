@@ -5,27 +5,48 @@
 @layer base {
   :root {
     color-scheme: dark;
-    --color-obsidian-base: #0B0D0F;
-    --color-obsidian-surface: #111418;
-    --color-obsidian-card: #16191E;
-    --color-obsidian-border: rgba(245, 241, 232, 0.08);
-    --color-ivory-primary: #F5F1E8;
-    --color-ivory-muted: #C7C2B6;
-    --color-coral-primary: #FF6B5F;
-    --color-coral-hover: #FF857A;
+    --color-bg-base: #0B0D0F;
+    --color-text-base: #F5F1E8;
+    --color-text-muted: #C7C2B6;
+    --color-text-subtle: #8C877D;
+    --color-card-base: #111418;
+    --color-border-base: rgba(245, 241, 232, 0.08);
+  }
+
+  :root:not(.dark) {
+    color-scheme: light;
+    --color-bg-base: #FAF7F2;
+    --color-text-base: #111418;
+    --color-text-muted: #4B5563;
+    --color-text-subtle: #6B7280;
+    --color-card-base: #FFFFFF;
+    --color-border-base: rgba(0, 0, 0, 0.08);
   }
   
   body {
     @apply font-sans antialiased overflow-x-hidden;
-    background-color: #0B0D0F;
-    color: #F5F1E8;
+    background-color: var(--color-bg-base);
+    color: var(--color-text-base);
   }
 
-  h1 { @apply text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-ivory; }
-  h2 { @apply text-xl md:text-2xl font-semibold tracking-tight text-ivory; }
-  h3 { @apply text-lg md:text-xl font-semibold text-ivory; }
-  h4 { @apply text-base font-medium text-ivory-muted; }
-  p { @apply text-sm md:text-base text-ivory-muted leading-relaxed; }
+  .dark h1, .dark h2, .dark h3 {
+    color: #F5F1E8;
+  }
+  :not(.dark) h1, :not(.dark) h2, :not(.dark) h3 {
+    color: #111418;
+  }
+  .dark h4 {
+    color: #C7C2B6;
+  }
+  :not(.dark) h4 {
+    color: #374151;
+  }
+  .dark p {
+    color: #C7C2B6;
+  }
+  :not(.dark) p {
+    color: #4B5563;
+  }
 }
 
 /* Custom Gradient Utilities */
@@ -55,6 +76,6 @@
 
 /* Dark Custom Scrollbars */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #0B0D0F; }
+::-webkit-scrollbar-track { background: var(--color-bg-base); }
 ::-webkit-scrollbar-thumb { background: rgba(245, 241, 232, 0.15); border-radius: 9999px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(255, 107, 95, 0.4); }
