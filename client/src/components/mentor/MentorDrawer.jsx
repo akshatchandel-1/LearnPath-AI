@@ -24,6 +24,7 @@ export const MentorDrawer = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const { theme } = useTheme();
   const isDark = theme === 'dark';
+  const { isAuthenticated, loading: authLoading, user } = useAuth();
 
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
