@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
 import AssessmentRunnerModal from '../components/assessments/AssessmentRunnerModal';
@@ -26,10 +26,12 @@ import {
 
 export default function AssessmentsPage() {
   const navigate = useNavigate();
-  const { awardXp, updateSkillMastery } = useAuth();
+  const { user, awardXp, updateSkillMastery } = useAuth();
+  const storageKeyAssessments = user?._id ? `m3_assessments_data_${user._id}` : 'm3_assessments_data';
+  const storageKeyHistory = user?._id ? `m3_assessment_history_${user._id}` : 'm3_assessment_history';
 
   const [assessments, setAssessments] = useState(() => {
-    const saved = localStorage.getItem('m3_assessments_data');
+    const saved = localStorage.getItem(storageKeyAssessments) || localStorage.getItem('m3_assessments_data');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) { return INITIAL_ASSESSMENTS; }
     }
@@ -37,7 +39,7 @@ export default function AssessmentsPage() {
   });
 
   const [history, setHistory] = useState(() => {
-    const saved = localStorage.getItem('m3_assessment_history');
+    const saved = localStorage.getItem(storageKeyHistory) || localStorage.getItem('m3_assessment_history');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) { return []; }
     }
@@ -51,12 +53,12 @@ export default function AssessmentsPage() {
 
   // Persist assessment updates
   useEffect(() => {
-    localStorage.setItem('m3_assessments_data', JSON.stringify(assessments));
-  }, [assessments]);
+    localStorage.setItem(storageKeyAssessments, JSON.stringify(assessments));
+  }, [assessments, storageKeyAssessments]);
 
   useEffect(() => {
-    localStorage.setItem('m3_assessment_history', JSON.stringify(history));
-  }, [history]);
+    localStorage.setItem(storageKeyHistory, JSON.stringify(history));
+  }, [history, storageKeyHistory]);
 
   const handleLaunchAssessment = (assessment) => {
     setActiveAssessment(assessment);
@@ -80,52 +82,66 @@ export default function AssessmentsPage() {
       })
     );
 
-    // Save to history
-    const historyItem = {
-      id: `hist-${Date.now()}`,
-      assessmentId: result.assessmentId,
-      assessmentTitle: activeAssessment?.title || 'Skill Assessment',
+    if (result.earnedXp > 0) {
+      awardXp(result.earnedXp);
+    }
+
+    if (result.passed && result.skillTested) {
+      updateSkillMastery(result.skillTested, result.score);
+    }
+
+    // Add to history
+    const historyEntry = {
+      id: `hist_${Date.now()}`,
+      title: result.title,
       score: result.score,
       passed: result.passed,
-      time: completedAt,
-      date: new Date().toLocaleDateString(),
-      xpEarned: result.xpAwarded || 150
+      earnedXp: result.earnedXp,
+      date: 'Today',
+      time: completedAt
     };
-
-    setHistory((prev) => [historyItem, ...prev]);
-
-    // Update global user state (XP & verified skill mastery)
-    if (result.passed && awardXp) {
-      awardXp(result.xpAwarded || 200);
-    }
-    if (activeAssessment?.skill && updateSkillMastery) {
-      updateSkillMastery(activeAssessment.skill, result.score);
-    }
+    setHistory((prev) => [historyEntry, ...prev]);
   };
 
-  // Filter logic
-  const categories = ['All', 'Frontend', 'Backend', 'Database', 'Languages', 'Cloud & DevOps', 'Architecture'];
-  const statuses = ['All', 'Ready to Take', 'Passed', 'Locked'];
+  const activeRole = user?.targetRole || user?.careerGoal || 'Full Stack Developer';
 
-  const filteredAssessments = assessments.filter((a) => {
+  // Sort & prioritize assessments for active target role
+  const sortedAssessments = useMemo(() => {
+    const roleLower = activeRole.toLowerCase();
+    return [...assessments].sort((a, b) => {
+      const aMatch = (a.targetRole && a.targetRole.toLowerCase().includes(roleLower)) ||
+        (a.category && roleLower.includes(a.category.toLowerCase())) ||
+        (a.skillTested && roleLower.includes(a.skillTested.toLowerCase()));
+      const bMatch = (b.targetRole && b.targetRole.toLowerCase().includes(roleLower)) ||
+        (b.category && roleLower.includes(b.category.toLowerCase())) ||
+        (b.skillTested && roleLower.includes(b.skillTested.toLowerCase()));
+      if (aMatch && !bMatch) return -1;
+      if (!aMatch && bMatch) return 1;
+      return 0;
+    });
+  }, [assessments, activeRole]);
+
+  // Filter assessments
+  const filteredAssessments = sortedAssessments.filter((a) => {
     const matchesSearch =
       a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      a.skill?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      a.tagline?.toLowerCase().includes(searchQuery.toLowerCase());
+      a.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      a.skillTested.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const matchesCategory = selectedCategory === 'All' || a.category === selectedCategory;
-    const matchesStatus = selectedStatus === 'All' || a.status === selectedStatus;
+    const matchesCategory =
+      selectedCategory === 'All' || a.category.toLowerCase() === selectedCategory.toLowerCase();
+
+    const matchesStatus =
+      selectedStatus === 'All' || a.status.toLowerCase() === selectedStatus.toLowerCase();
 
     return matchesSearch && matchesCategory && matchesStatus;
   });
 
-  // Calculate dynamic metrics (no hardcoding)
-  const passedAssessments = assessments.filter((a) => a.status === 'Passed');
-  const passRate = assessments.length > 0 ? Math.round((passedAssessments.length / assessments.length) * 100) : 0;
-  const averageScore = passedAssessments.length > 0
-    ? Math.round(passedAssessments.reduce((acc, a) => acc + (a.lastScore || 0), 0) / passedAssessments.length)
+  const completedCount = assessments.filter((a) => a.status === 'Passed').length;
+  const totalPassedAttempts = history.filter((h) => h.passed).length;
+  const avgScore = history.length > 0
+    ? Math.round(history.reduce((acc, h) => acc + h.score, 0) / history.length)
     : 0;
-  const totalEarnedXp = history.reduce((acc, h) => acc + (h.xpEarned || 0), 0);
 
   return (
     <MainLayout>
@@ -136,207 +152,199 @@ export default function AssessmentsPage() {
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className="text-xs sm:text-sm font-semibold text-[#FF857A]">
-                Skill Checkpoints & Quizzes 👋
+                Skill Calibration & Tests 🎯
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#F5F1E8] tracking-tight">
-              Assessments & Competency Verification
+              Assessments & Certification Benchmarks
             </h1>
             <p className="mt-1 text-xs sm:text-sm text-[#8C877D] max-w-3xl leading-relaxed">
-              Verify your technical skills with timed adaptive quizzes, calibrate competency levels, and unlock advanced stages in your personalized roadmap.
+              Verify competencies against industry standards for {activeRole}. Quizzes dynamically adapt and award verified XP.
             </p>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-3">
             <button
               onClick={() => navigate('/skill-gaps')}
               className="px-4 py-2.5 rounded-xl text-xs font-bold bg-[#16191E] text-[#F5F1E8] border border-white/[0.08] hover:bg-white/5 transition-all cursor-pointer flex items-center gap-1.5"
             >
-              <Target className="w-3.5 h-3.5 text-[#FF6B5F]" />
-              <span>View Skill Gaps</span>
+              <Target className="w-3.5 h-3.5 text-[#38BDF8]" />
+              <span>Skill Gap View</span>
             </button>
           </div>
         </div>
 
-        {/* Dynamic Metric Summary Cards */}
+        {/* Metric Cards Row */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
           <div className="p-4 sm:p-5 rounded-2xl bg-[#111418] border border-white/[0.08] flex items-center gap-4 shadow-sm">
-            <div className="w-12 h-12 rounded-2xl bg-[#FF6B5F]/15 border border-[#FF6B5F]/30 flex items-center justify-center text-[#FF857A] shrink-0 shadow-sm">
+            <div className="w-12 h-12 rounded-2xl bg-[#FF6B5F]/15 border border-[#FF6B5F]/30 flex items-center justify-center text-[#FF857A] shrink-0">
               <ClipboardCheck className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-[#8C877D]">Total Checkpoints</p>
+              <p className="text-xs font-semibold text-[#8C877D]">Available Tests</p>
               <p className="text-xl sm:text-2xl font-black text-[#F5F1E8] font-mono mt-0.5">
                 {assessments.length}
               </p>
-              <p className="text-[11px] text-[#FF857A] font-semibold">Verified Tests</p>
+              <p className="text-[11px] text-[#FF857A] font-semibold">Active Benchmarks</p>
             </div>
           </div>
 
           <div className="p-4 sm:p-5 rounded-2xl bg-[#111418] border border-white/[0.08] flex items-center gap-4 shadow-sm">
-            <div className="w-12 h-12 rounded-2xl bg-[#34D399]/15 border border-[#34D399]/30 flex items-center justify-center text-[#34D399] shrink-0 shadow-sm">
+            <div className="w-12 h-12 rounded-2xl bg-[#34D399]/15 border border-[#34D399]/30 flex items-center justify-center text-[#34D399] shrink-0">
               <CheckCircle2 className="w-6 h-6" />
             </div>
             <div>
               <p className="text-xs font-semibold text-[#8C877D]">Passed Tests</p>
               <p className="text-xl sm:text-2xl font-black text-[#F5F1E8] font-mono mt-0.5">
-                {passedAssessments.length}
+                {completedCount}
               </p>
-              <p className="text-[11px] text-[#34D399] font-semibold">{passRate}% Pass Rate</p>
+              <p className="text-[11px] text-[#34D399] font-semibold">Verified Badges</p>
             </div>
           </div>
 
           <div className="p-4 sm:p-5 rounded-2xl bg-[#111418] border border-white/[0.08] flex items-center gap-4 shadow-sm">
-            <div className="w-12 h-12 rounded-2xl bg-[#38BDF8]/15 border border-[#38BDF8]/30 flex items-center justify-center text-[#38BDF8] shrink-0 shadow-sm">
+            <div className="w-12 h-12 rounded-2xl bg-[#38BDF8]/15 border border-[#38BDF8]/30 flex items-center justify-center text-[#38BDF8] shrink-0">
               <TrendingUp className="w-6 h-6" />
             </div>
             <div>
               <p className="text-xs font-semibold text-[#8C877D]">Average Score</p>
               <p className="text-xl sm:text-2xl font-black text-[#F5F1E8] font-mono mt-0.5">
-                {averageScore}%
+                {avgScore > 0 ? `${avgScore}%` : 'Unassessed'}
               </p>
-              <p className="text-[11px] text-[#38BDF8] font-semibold">Mastery Benchmark</p>
+              <p className="text-[11px] text-[#38BDF8] font-semibold">Across Attempts</p>
             </div>
           </div>
 
           <div className="p-4 sm:p-5 rounded-2xl bg-[#111418] border border-white/[0.08] flex items-center gap-4 shadow-sm">
-            <div className="w-12 h-12 rounded-2xl bg-[#FBBF24]/15 border border-[#FBBF24]/30 flex items-center justify-center text-[#FBBF24] shrink-0 shadow-sm">
+            <div className="w-12 h-12 rounded-2xl bg-[#FBBF24]/15 border border-[#FBBF24]/30 flex items-center justify-center text-[#FBBF24] shrink-0">
               <Award className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-[#8C877D]">Total Earned XP</p>
+              <p className="text-xs font-semibold text-[#8C877D]">Total Attempts</p>
               <p className="text-xl sm:text-2xl font-black text-[#F5F1E8] font-mono mt-0.5">
-                +{totalEarnedXp} XP
+                {history.length}
               </p>
-              <p className="text-[11px] text-[#FBBF24] font-semibold">Quiz Rewards</p>
+              <p className="text-[11px] text-[#FBBF24] font-semibold">Completed Sessions</p>
             </div>
           </div>
         </div>
 
-        {/* Filter Controls */}
-        <div className="space-y-4">
-          <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
-            
-            {/* Search Input */}
-            <div className="relative flex-1 max-w-md">
+        {/* Filter Controls Bar */}
+        <div className="p-4 rounded-2xl bg-[#111418] border border-white/[0.08] space-y-4">
+          <div className="flex flex-col md:flex-row gap-3 items-center justify-between">
+            <div className="relative w-full md:w-96">
               <Search className="w-4 h-4 text-[#8C877D] absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search assessments, skills, topics..."
-                className="w-full bg-[#111418] border border-white/[0.08] text-xs text-[#F5F1E8] rounded-xl pl-9 pr-4 py-2 focus:outline-none focus:border-[#FF6B5F] placeholder:text-[#8C877D]"
+                placeholder="Search tests by skill or topic..."
+                className="w-full bg-[#16191E] border border-white/[0.08] text-xs sm:text-sm text-[#F5F1E8] rounded-xl pl-10 pr-4 py-2 focus:outline-none focus:border-[#FF6B5F] placeholder:text-[#8C877D]"
               />
             </div>
 
-            {/* Status Filter Tabs */}
-            <div className="flex bg-[#111418] p-1 rounded-xl border border-white/[0.08] overflow-x-auto">
-              {statuses.map((st) => (
-                <button
-                  key={st}
-                  onClick={() => setSelectedStatus(st)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
-                    selectedStatus === st
-                      ? 'bg-[#FF6B5F] text-white shadow-md shadow-[#FF6B5F]/20'
-                      : 'text-[#8C877D] hover:text-[#F5F1E8]'
-                  }`}
-                >
-                  {st}
-                </button>
-              ))}
+            <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto">
+              <select
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value)}
+                className="bg-[#16191E] border border-white/[0.08] text-xs font-semibold text-[#F5F1E8] rounded-xl px-3 py-2 focus:outline-none focus:border-[#FF6B5F] shrink-0 cursor-pointer"
+              >
+                <option value="All">All Statuses</option>
+                <option value="Ready to Take">Ready to Take</option>
+                <option value="Passed">Passed</option>
+              </select>
             </div>
           </div>
 
-          {/* Category Pills */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap border ${
-                  selectedCategory === cat
-                    ? 'bg-[#FF6B5F]/15 text-[#FF857A] border-[#FF6B5F]/40'
-                    : 'bg-[#111418] text-[#8C877D] border-white/[0.06] hover:text-[#F5F1E8]'
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
+          <div className="flex items-center gap-1.5 overflow-x-auto pt-1 pb-1">
+            <span className="text-[11px] font-bold text-[#8C877D] mr-2 uppercase tracking-wider shrink-0">
+              Domains:
+            </span>
+            {['All', 'Frontend', 'Backend', 'Database', 'Cloud & DevOps', 'AI & Data Science', 'Security'].map(
+              (cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold shrink-0 transition-all cursor-pointer ${
+                    selectedCategory === cat
+                      ? 'bg-[#FF6B5F]/15 text-[#FF857A] border border-[#FF6B5F]/30 font-bold'
+                      : 'bg-[#16191E] text-[#8C877D] border border-white/[0.04] hover:text-[#F5F1E8] hover:border-white/10'
+                  }`}
+                >
+                  {cat}
+                </button>
+              )
+            )}
           </div>
         </div>
 
-        {/* Assessments Grid */}
+        {/* Assessment Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredAssessments.map((item) => (
+          {filteredAssessments.map((a) => (
             <div
-              key={item.id}
-              className="p-6 rounded-[24px] bg-[#111418] border border-white/[0.08] hover:border-[#FF6B5F]/40 transition-all flex flex-col justify-between shadow-sm relative overflow-hidden"
+              key={a.id}
+              className="p-5 rounded-2xl bg-[#111418] border border-white/[0.08] hover:border-[#FF6B5F]/40 transition-all flex flex-col justify-between space-y-4 shadow-sm"
             >
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-[#FF6B5F]/15 text-[#FF857A] uppercase font-mono border border-[#FF6B5F]/30">
-                    {item.category}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#FF6B5F]/15 text-[#FF857A] border border-[#FF6B5F]/30 uppercase font-mono">
+                    {a.category}
                   </span>
-                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold font-mono ${
-                    item.status === 'Passed'
-                      ? 'bg-[#34D399]/15 text-[#34D399] border border-[#34D399]/30'
-                      : 'bg-white/5 text-[#8C877D]'
-                  }`}>
-                    {item.status}
+                  <span
+                    className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono ${
+                      a.status === 'Passed'
+                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                        : 'bg-white/5 text-[#8C877D] border border-white/10'
+                    }`}
+                  >
+                    {a.status}
                   </span>
                 </div>
 
-                <h3 className="text-base font-bold text-[#F5F1E8] leading-snug mb-1.5">
-                  {item.title}
-                </h3>
-                <p className="text-xs text-[#8C877D] line-clamp-2 leading-relaxed mb-4">
-                  {item.tagline}
-                </p>
+                <div>
+                  <h3 className="text-base font-bold text-[#F5F1E8] leading-snug">
+                    {a.title}
+                  </h3>
+                  <p className="text-xs text-[#8C877D] mt-1 line-clamp-2 leading-relaxed">
+                    {a.description}
+                  </p>
+                </div>
 
-                {item.lastScore !== null && (
-                  <div className="p-3 rounded-xl bg-[#0E1114] border border-white/[0.04] mb-4 flex items-center justify-between text-xs">
-                    <span className="text-[#8C877D]">Latest Score:</span>
-                    <span className={`font-mono font-bold ${item.lastScore >= item.passingScore ? 'text-[#34D399]' : 'text-[#FF857A]'}`}>
-                      {item.lastScore}% {item.lastScore >= item.passingScore ? '(Passed)' : '(Failed)'}
-                    </span>
+                <div className="flex items-center gap-2 text-xs text-[#8C877D] font-medium pt-1">
+                  <span className="flex items-center gap-1">
+                    <Clock className="w-3.5 h-3.5" />
+                    {a.durationMinutes} mins
+                  </span>
+                  <span>•</span>
+                  <span>{a.questionsCount || a.questions?.length || 5} Questions</span>
+                  <span>•</span>
+                  <span className="text-[#FBBF24]">+{a.xpReward} XP</span>
+                </div>
+
+                {a.lastScore !== null && a.lastScore !== undefined && (
+                  <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-between text-xs">
+                    <span className="text-[#8C877D]">Last Score:</span>
+                    <span className="font-bold text-[#F5F1E8] font-mono">{a.lastScore}%</span>
                   </div>
                 )}
               </div>
 
-              <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between mt-2">
-                <div className="flex items-center gap-3 text-xs text-[#8C877D]">
-                  <span className="flex items-center gap-1 font-mono">
-                    <Clock className="w-3.5 h-3.5 text-[#FF6B5F]" />
-                    {item.duration}
-                  </span>
-                  <span className="flex items-center gap-1 font-mono text-[#FBBF24]">
-                    <Award className="w-3.5 h-3.5" />
-                    +{item.xpReward || 200} XP
-                  </span>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => handleLaunchAssessment(item)}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                    item.status === 'Passed'
-                      ? 'bg-white/10 text-[#F5F1E8] hover:bg-white/15'
-                      : 'bg-gradient-to-r from-[#FF6B5F] to-[#E85548] text-white shadow-md shadow-[#FF6B5F]/20 hover:from-[#FF857A]'
-                  }`}
-                >
-                  <PlayCircle className="w-3.5 h-3.5" />
-                  <span>{item.status === 'Passed' ? 'Retake Quiz' : 'Start Test'}</span>
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => handleLaunchAssessment(a)}
+                className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#FF6B5F] to-[#E85548] hover:from-[#FF857A] hover:to-[#FF6B5F] text-white text-xs font-bold transition-all shadow-md shadow-[#FF6B5F]/20 cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <PlayCircle className="w-4 h-4" />
+                <span>{a.status === 'Passed' ? 'Retake Checkpoint' : 'Launch Assessment'}</span>
+              </button>
             </div>
           ))}
         </div>
 
-        {/* Active Quiz Runner Modal */}
+        {/* Assessment Runner Modal */}
         {activeAssessment && (
           <AssessmentRunnerModal
             assessment={activeAssessment}
-            isOpen={true}
             onClose={() => setActiveAssessment(null)}
             onComplete={handleAssessmentComplete}
           />

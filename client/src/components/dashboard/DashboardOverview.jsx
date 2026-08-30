@@ -37,9 +37,11 @@ export default function DashboardOverview() {
   const [activeModal, setActiveModal] = useState(null); // 'milestone' | 'course' | null
   const [selectedCourse, setSelectedCourse] = useState(null);
 
+  const storageKey = user?._id ? m3_courses_data_ : 'm3_courses_data';
+
   const [courses, setCourses] = useState(() => {
     try {
-      const saved = localStorage.getItem('m3_courses_data');
+      const saved = localStorage.getItem(storageKey) || localStorage.getItem('m3_courses_data');
       if (saved) return JSON.parse(saved);
     } catch (e) {}
     return INITIAL_COURSES;
@@ -47,10 +49,10 @@ export default function DashboardOverview() {
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem('m3_courses_data');
+      const saved = localStorage.getItem(storageKey) || localStorage.getItem('m3_courses_data');
       if (saved) setCourses(JSON.parse(saved));
     } catch (e) {}
-  }, []);
+  }, [storageKey]);
 
   const inProgressCourses = courses.filter((c) => c.enrolled);
   const activeCoursesCount = inProgressCourses.length;
@@ -530,3 +532,4 @@ export default function DashboardOverview() {
     </div>
   );
 }
+

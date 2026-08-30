@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+﻿import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
 import { useAuth } from './AuthContext';
 import {
@@ -18,7 +18,7 @@ export {
 const LearningPathContext = createContext(null);
 
 export const LearningPathProvider = ({ children }) => {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, loading: authLoading } = useAuth();
   const currentRole = user?.targetRole || user?.careerGoal || 'Full Stack Developer';
 
   const [learningPath, setLearningPath] = useState(() => generatePathForRole(currentRole));
@@ -137,6 +137,7 @@ export const LearningPathProvider = ({ children }) => {
   };
 
   const refreshAll = useCallback(async () => {
+    if (!isAuthenticated || authLoading) return;
     setLoading(true);
     try {
       await Promise.all([
@@ -148,17 +149,17 @@ export const LearningPathProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }, [fetchLearningPath, fetchRecommendations, fetchSkillGap, fetchInsights]);
+  }, [isAuthenticated, authLoading, fetchLearningPath, fetchRecommendations, fetchSkillGap, fetchInsights]);
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && !authLoading && user) {
       refreshAll();
-    } else {
+    } else if (!authLoading && !isAuthenticated) {
       setLearningPath(generatePathForRole(currentRole));
       setRecommendations(defaultRecommendations);
       setSkillGapReport(generateSkillGapsForRole(currentRole));
     }
-  }, [isAuthenticated, refreshAll, currentRole]);
+  }, [isAuthenticated, authLoading, user, refreshAll, currentRole]);
 
   return (
     <LearningPathContext.Provider

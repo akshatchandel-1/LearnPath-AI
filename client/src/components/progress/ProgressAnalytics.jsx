@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '../common/Card';
 import Badge from '../common/Badge';
 import Button from '../common/Button';
@@ -105,7 +105,7 @@ export default function ProgressAnalytics() {
           </div>
           <div className="text-2xl font-black text-[#F5F1E8] tracking-tight font-mono">{userStreak} Days</div>
           <span className="text-[11px] text-[#8C877D] mt-1 block">
-            {userStreak > 0 ? 'Consistency bonus active 🔥' : 'Start your streak today'}
+            {userStreak > 0 ? 'Consistency bonus active ðŸ”¥' : 'Start your streak today'}
           </span>
         </Card>
 
@@ -278,3 +278,4 @@ export default function ProgressAnalytics() {
     </div>
   );
 }
+

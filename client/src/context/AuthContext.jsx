@@ -4,19 +4,7 @@ import api from '../services/api';
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => {
-    const token = localStorage.getItem('learnpath_token');
-    const saved = localStorage.getItem('learnpath_user');
-    if (token && saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        return null;
-      }
-    }
-    return null;
-  });
-
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   // Validate stored JWT token with backend on mount
@@ -35,7 +23,6 @@ export function AuthProvider({ children }) {
             localStorage.removeItem('learnpath_token');
           }
         } catch (err) {
-          console.warn('Session verification failed, clearing session:', err.message);
           setUser(null);
           localStorage.removeItem('learnpath_user');
           localStorage.removeItem('learnpath_token');
@@ -55,11 +42,12 @@ export function AuthProvider({ children }) {
     try {
       const res = await api.post('/auth/login', { email, password });
       if (res.data?.success) {
-        setUser(res.data.user);
+        const loggedUser = res.data.user;
+        setUser(loggedUser);
         localStorage.setItem('learnpath_token', res.data.token);
-        localStorage.setItem('learnpath_user', JSON.stringify(res.data.user));
+        localStorage.setItem('learnpath_user', JSON.stringify(loggedUser));
         setLoading(false);
-        return { success: true, user: res.data.user };
+        return { success: true, user: loggedUser };
       }
       setLoading(false);
       return { success: false, error: res.data?.message || 'Invalid email or password' };
@@ -72,6 +60,11 @@ export function AuthProvider({ children }) {
   const signup = async (name, email, password, targetRole) => {
     setLoading(true);
     try {
+      // Clear old cached client telemetry from previous accounts
+      localStorage.removeItem('m3_courses_data');
+      localStorage.removeItem('m3_assessments_data');
+      localStorage.removeItem('m3_assessment_history');
+
       const res = await api.post('/auth/register', { 
         name, 
         email, 
@@ -79,11 +72,12 @@ export function AuthProvider({ children }) {
         careerGoal: targetRole || 'Full Stack Developer'
       });
       if (res.data?.success) {
-        setUser(res.data.user);
+        const newUser = res.data.user;
+        setUser(newUser);
         localStorage.setItem('learnpath_token', res.data.token);
-        localStorage.setItem('learnpath_user', JSON.stringify(res.data.user));
+        localStorage.setItem('learnpath_user', JSON.stringify(newUser));
         setLoading(false);
-        return { success: true, user: res.data.user };
+        return { success: true, user: newUser };
       }
       setLoading(false);
       return { success: false, error: res.data?.message || 'Registration failed' };
@@ -102,6 +96,7 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('learnpath_token');
     localStorage.removeItem('m3_courses_data');
     localStorage.removeItem('m3_assessments_data');
+    localStorage.removeItem('m3_assessment_history');
   };
 
   const updateUserProfile = async (updatedFields) => {
@@ -151,7 +146,6 @@ export function AuthProvider({ children }) {
       user, 
       loading, 
       login, 
-      
       signup, 
       logout, 
       updateUserProfile,
@@ -173,4 +167,3 @@ export function useAuth() {
 }
 
 export default AuthContext;
-

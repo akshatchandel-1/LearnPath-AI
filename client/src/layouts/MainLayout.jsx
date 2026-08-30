@@ -89,7 +89,7 @@ export default function MainLayout({ children }) {
       >
         <div className="max-w-[1500px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
           <span className="font-medium">
-            © 2026 LearnPath AI — AI-Powered Personalized Learning Path Recommender
+            ©© 2026 LearnPath AI — AI-Powered Personalized Learning Path Recommender
           </span>
           <span className="font-mono text-[11px] text-[#FF6B5F] font-semibold flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-[#FF6B5F] animate-pulse" />
@@ -100,3 +100,4 @@ export default function MainLayout({ children }) {
     </div>
   );
 }
+
