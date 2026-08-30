@@ -4,6 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '../common/Card';
 import Badge from '../common/Badge';
 import Button from '../common/Button';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import { useLearningPath } from '../../context/LearningPathContext';
 import { QuizModal } from '../quiz/QuizModal';
 import api from '../../services/api';
@@ -26,6 +27,8 @@ import {
 
 export default function AIChatInterface() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const { learningPath, skillGapReport } = useLearningPath();
   const navigate = useNavigate();
   const activeRole = user?.targetRole || user?.careerGoal || 'Full Stack Developer';
@@ -165,17 +168,17 @@ export default function AIChatInterface() {
   ];
 
   return (
-    <div className="flex flex-col h-[calc(100vh-12rem)] max-w-5xl mx-auto rounded-[24px] bg-[#111418] border border-white/[0.08] shadow-2xl overflow-hidden animate-in fade-in duration-200">
+    <div className={`flex flex-col h-[calc(100vh-12rem)] max-w-5xl mx-auto rounded-[24px] shadow-2xl overflow-hidden animate-in fade-in duration-200 transition-colors ${isDark ? "bg-[#111418] border border-white/[0.08]" : "bg-white border border-black/[0.08]"}`}>
       
       {/* Header */}
-      <div className="p-4 sm:p-5 border-b border-white/[0.08] bg-[#0E1114] flex items-center justify-between gap-4 shrink-0">
+      <div className={`p-4 sm:p-5 border-b flex items-center justify-between gap-4 shrink-0 ${isDark ? "border-white/[0.08] bg-[#0E1114]" : "border-black/[0.08] bg-[#F9FAFB]"}`}>
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#FF6B5F] to-[#E85548] text-white flex items-center justify-center shadow-lg shadow-[#FF6B5F]/25">
             <Bot className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-sm sm:text-base font-bold text-[#F5F1E8]">AI Learning Path Mentor</h3>
+              <h3 className={`text-sm sm:text-base font-bold ${isDark ? "text-[#F5F1E8]" : "text-[#111418]"}`}>AI Learning Path Mentor</h3>
               <Badge variant="coral" size="sm" dot>Live Telemetry</Badge>
             </div>
             <p className="text-[11px] text-[#8C877D]">
@@ -194,8 +197,7 @@ export default function AIChatInterface() {
           >
             <div
               className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 text-xs font-bold ${
-                msg.sender === 'user'
-                  ? 'bg-white/10 text-[#F5F1E8]'
+                msg.sender === 'user' ? (isDark ? 'bg-white/10 text-[#F5F1E8]' : 'bg-black/5 text-[#111418]')
                   : 'bg-[#FF6B5F]/15 text-[#FF857A] border border-[#FF6B5F]/30'
               }`}
             >
@@ -206,7 +208,7 @@ export default function AIChatInterface() {
               className={`relative max-w-[85%] sm:max-w-[78%] p-4 sm:p-5 rounded-2xl text-xs sm:text-sm leading-relaxed space-y-3 ${
                 msg.sender === 'user'
                   ? 'bg-gradient-to-r from-[#FF6B5F] to-[#E85548] text-white font-medium shadow-md'
-                  : 'bg-[#16191E] border border-white/[0.06] text-[#F5F1E8]'
+                  : isDark ? 'bg-[#16191E] border border-white/[0.06] text-[#F5F1E8]' : 'bg-white border border-black/[0.08] text-[#111418] shadow-sm'
               }`}
             >
               <div className="whitespace-pre-wrap font-sans leading-relaxed">{msg.text}</div>
@@ -246,7 +248,7 @@ export default function AIChatInterface() {
             <div className="w-8 h-8 rounded-xl bg-[#FF6B5F]/15 text-[#FF857A] border border-[#FF6B5F]/30 flex items-center justify-center shrink-0">
               <Bot className="w-4 h-4" />
             </div>
-            <div className="p-3.5 rounded-2xl bg-[#16191E] border border-white/[0.06] flex items-center gap-1.5">
+            <div className={`p-3.5 rounded-2xl border flex items-center gap-1.5 ${isDark ? "bg-[#16191E] border-white/[0.06]" : "bg-white border-black/[0.08]"}`}>
               <span className="w-2 h-2 rounded-full bg-[#FF6B5F] animate-bounce" style={{ animationDelay: '0ms' }} />
               <span className="w-2 h-2 rounded-full bg-[#FF6B5F] animate-bounce" style={{ animationDelay: '150ms' }} />
               <span className="w-2 h-2 rounded-full bg-[#FF6B5F] animate-bounce" style={{ animationDelay: '300ms' }} />
@@ -258,7 +260,7 @@ export default function AIChatInterface() {
       </div>
 
       {/* Suggested Quick Prompt Chips */}
-      <div className="p-3 border-t border-white/[0.06] bg-[#0E1114] flex items-center gap-2 overflow-x-auto scrollbar-none shrink-0">
+      <div className={`p-3 border-t flex items-center gap-2 overflow-x-auto scrollbar-none shrink-0 ${isDark ? "border-white/[0.06] bg-[#0E1114]" : "border-black/[0.08] bg-[#FAF7F2]"}`}>
         <span className="text-[10px] font-mono text-[#8C877D] uppercase font-bold shrink-0 pl-1">
           Suggestions:
         </span>
@@ -267,7 +269,7 @@ export default function AIChatInterface() {
             key={idx}
             type="button"
             onClick={() => handleSend(chip)}
-            className="px-3 py-1 rounded-xl text-xs font-semibold bg-[#16191E] border border-white/[0.06] text-[#C7C2B6] hover:text-[#FF857A] hover:border-[#FF6B5F]/30 transition-all shrink-0 cursor-pointer whitespace-nowrap"
+            className={`px-3 py-1 rounded-xl text-xs font-semibold transition-all shrink-0 cursor-pointer whitespace-nowrap ${isDark ? "bg-[#16191E] border border-white/[0.06] text-[#C7C2B6] hover:text-[#FF857A] hover:border-[#FF6B5F]/30" : "bg-white border border-black/[0.08] text-[#374151] hover:text-[#FF6B5F] hover:border-[#FF6B5F]/40"}`}
           >
             {chip}
           </button>
@@ -275,7 +277,7 @@ export default function AIChatInterface() {
       </div>
 
       {/* Input Box */}
-      <div className="p-3 sm:p-4 border-t border-white/[0.08] bg-[#0B0D0F] shrink-0">
+      <div className={`p-3 sm:p-4 border-t shrink-0 ${isDark ? "border-white/[0.08] bg-[#0B0D0F]" : "border-black/[0.08] bg-[#FAF7F2]"}`}>
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -288,7 +290,7 @@ export default function AIChatInterface() {
             value={inputVal}
             onChange={(e) => setInputVal(e.target.value)}
             placeholder={`Ask about ${activeRole} topics, code concepts, or study plans...`}
-            className="flex-1 bg-[#16191E] border border-white/[0.08] text-xs sm:text-sm text-[#F5F1E8] rounded-xl px-4 py-2.5 focus:outline-none focus:border-[#FF6B5F] focus:ring-1 focus:ring-[#FF6B5F]/40 placeholder:text-[#8C877D]"
+            className={`flex-1 text-xs sm:text-sm rounded-xl px-4 py-2.5 focus:outline-none focus:border-[#FF6B5F] focus:ring-1 focus:ring-[#FF6B5F]/40 ${isDark ? "bg-[#16191E] border border-white/[0.08] text-[#F5F1E8] placeholder:text-[#8C877D]" : "bg-white border border-black/[0.1] text-[#111418] placeholder:text-[#6B7280]"}`}
           />
           <button
             type="submit"

@@ -7,6 +7,7 @@ import Button from '../components/common/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/common/Card';
 import { useLearningPath } from '../context/LearningPathContext';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { CAREER_OBJECTIVES } from '../data/careerObjectives';
 import {
   Target,
@@ -50,6 +51,8 @@ const getStatusConfig = (status) => {
 export default function LearningPathPage() {
   const navigate = useNavigate();
   const { user, updateUserProfile } = useAuth();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const { learningPath, adaptRoadmap } = useLearningPath();
   const [expandedPhase, setExpandedPhase] = useState(1);
   const [viewMode, setViewMode] = useState('timeline');
@@ -163,10 +166,10 @@ export default function LearningPathPage() {
                   <select
                     value={goalText}
                     onChange={(e) => setGoalText(e.target.value)}
-                    className="text-sm font-black text-[#FF857A] bg-[#16191E] px-3 py-1.5 rounded-xl border border-[#FF6B5F]/40 focus:outline-none focus:ring-2 focus:ring-[#FF6B5F] w-full max-w-sm cursor-pointer"
+                    className={`text-sm font-black text-[#FF857A] px-3 py-1.5 rounded-xl border border-[#FF6B5F]/40 focus:outline-none focus:ring-2 focus:ring-[#FF6B5F] w-full max-w-sm cursor-pointer ${isDark ? "bg-[#16191E]" : "bg-white"}`}
                   >
                     {CAREER_OBJECTIVES.map((obj) => (
-                      <option key={obj} value={obj} className="bg-[#111418] text-[#F5F1E8]">
+                      <option key={obj} value={obj} className={isDark ? "bg-[#111418] text-[#F5F1E8]" : "bg-white text-[#111418]"}>
                         {obj}
                       </option>
                     ))}
@@ -175,7 +178,7 @@ export default function LearningPathPage() {
                   <h2 className="text-base sm:text-lg font-black text-[#FF857A]">{pathData.goal}</h2>
                 )}
               </div>
-              <p className="text-xs sm:text-sm text-[#C7C2B6] leading-relaxed max-w-2xl">
+              <p className={`text-xs sm:text-sm leading-relaxed max-w-2xl ${isDark ? "text-[#C7C2B6]" : "text-[#4B5563]"}`}>
                 {pathData.title}
               </p>
             </div>
@@ -200,7 +203,7 @@ export default function LearningPathPage() {
 
               <div className="flex items-center gap-2 text-xs text-[#8C877D]">
                 <span>View as:</span>
-                <div className="flex bg-[#111418] p-1 rounded-xl border border-white/[0.08]">
+                <div className={`flex p-1 rounded-xl border ${isDark ? "bg-[#111418] border-white/[0.08]" : "bg-white border-black/[0.08]"}`}>
                   <button 
                     onClick={() => setViewMode('timeline')}
                     className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${viewMode === 'timeline' ? 'bg-[#FF6B5F] text-white shadow-md shadow-[#FF6B5F]/20' : 'text-[#8C877D] hover:text-[#F5F1E8]'}`}
@@ -228,17 +231,17 @@ export default function LearningPathPage() {
               return (
                 <div key={phase.phaseNumber} className="relative mb-4">
                   {viewMode === 'timeline' && !isLast && (
-                    <div className="absolute left-[15px] top-10 bottom-[-24px] w-0.5 bg-white/[0.08] z-0" />
+                    <div className={`absolute left-[15px] top-10 bottom-[-24px] w-0.5 z-0 ${isDark ? "bg-white/[0.08]" : "bg-black/[0.08]"}`} />
                   )}
                   <div className={`flex items-start gap-4 relative z-10 ${viewMode === 'list' ? 'items-center' : ''}`}>
                     {viewMode === 'timeline' && (
-                      <div className={`w-8 h-8 mt-4 rounded-full flex items-center justify-center shrink-0 border-2 border-[#0B0D0F] ${colors.bg} text-[#0B0D0F] shadow-lg shadow-black/50 z-10 font-bold`}>
+                      <div className={`w-8 h-8 mt-4 rounded-full flex items-center justify-center shrink-0 border-2 ${isDark ? "border-[#0B0D0F]" : "border-[#FAF7F2]"} ${colors.bg} text-[#0B0D0F] shadow-lg shadow-black/50 z-10 font-bold`}>
                         <Icon className="w-4 h-4 text-white" />
                       </div>
                     )}
-                    <div className={`flex-1 bg-[#111418] rounded-2xl border ${isExpanded ? `border-l-4 ${colors.border}` : 'border-white/[0.08]'} shadow-sm overflow-hidden transition-all duration-300`}>
+                    <div className={`flex-1 rounded-2xl border ${isExpanded ? `border-l-4 ${colors.border}` : isDark ? "border-white/[0.08]" : "border-black/[0.08]"} ${isDark ? "bg-[#111418]" : "bg-white"} shadow-sm overflow-hidden transition-all duration-300`}>
                       <div
-                        className={`p-5 flex flex-col sm:flex-row sm:items-center justify-between cursor-pointer transition-colors ${isExpanded ? 'bg-[#16191E]' : 'hover:bg-white/[0.02]'}`}
+                        className={`p-5 flex flex-col sm:flex-row sm:items-center justify-between cursor-pointer transition-colors ${isExpanded ? (isDark ? "bg-[#16191E]" : "bg-[#FAF7F2]") : (isDark ? "hover:bg-white/[0.02]" : "hover:bg-black/[0.02]")}`}
                         onClick={() => setExpandedPhase(isExpanded ? null : phase.phaseNumber)}
                       >
                         <div className="flex-1 pr-4">
@@ -267,12 +270,12 @@ export default function LearningPathPage() {
                       </div>
 
                       {isExpanded && phase.resources?.length > 0 && (
-                        <div className="px-5 pb-5 pt-2 bg-[#0E1114] border-t border-white/[0.06]">
+                        <div className={`px-5 pb-5 pt-2 border-t ${isDark ? "bg-[#0E1114] border-white/[0.06]" : "bg-[#FAF7F2] border-black/[0.06]"}`}>
                           <ul className="space-y-2.5 mt-2">
                             {phase.resources.map((course, idx) => (
                               <li
                                 key={idx}
-                                className="flex items-center justify-between p-3 bg-[#111418] border border-white/[0.06] rounded-xl hover:border-[#FF6B5F]/30 hover:bg-[#16191E] transition-all cursor-pointer group"
+                                className={`flex items-center justify-between p-3 border rounded-xl transition-all cursor-pointer group ${isDark ? "bg-[#111418] border-white/[0.06] hover:bg-[#16191E]" : "bg-white border-black/[0.06] hover:bg-[#FAF7F2]"}`}
                                 onClick={() => navigate('/courses')}
                               >
                                 <div className="flex items-center gap-3">
@@ -281,7 +284,7 @@ export default function LearningPathPage() {
                                   ) : (
                                     <PlayCircle className="w-4 h-4 text-[#FF857A] group-hover:scale-110 transition-transform" />
                                   )}
-                                  <span className={`text-xs font-semibold ${!course.completed ? 'text-[#F5F1E8]' : 'text-[#8C877D] line-through'}`}>
+                                  <span className={`text-xs font-semibold ${!course.completed ? (isDark ? "text-[#F5F1E8]" : "text-[#111418]") : "text-[#8C877D] line-through"}`}>
                                     {course.title}
                                   </span>
                                 </div>
@@ -332,8 +335,8 @@ export default function LearningPathPage() {
                   </span>
                   <span className="font-black text-[#FF857A] font-mono">{pathData.overallProgress}%</span>
                 </div>
-                <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden">
-                  <div className="bg-gradient-to-r from-[#FF6B5F] to-[#E85548] h-full rounded-full transition-all duration-500" style={{ width: `${pathData.overallProgress}%` }} />
+                <div className={`w-full rounded-full h-2 overflow-hidden ${isDark ? "bg-white/5" : "bg-black/5"}`}>
+                    <div className="bg-gradient-to-r from-[#FF6B5F] to-[#E85548] h-full rounded-full transition-all duration-500" style={{ width: `${pathData.overallProgress}%` }} />
                 </div>
               </li>
             </ul>
@@ -345,9 +348,9 @@ export default function LearningPathPage() {
               <div className="w-7 h-7 rounded-lg bg-[#FF6B5F]/15 text-[#FF857A] flex items-center justify-center">
                 <Flag className="w-4 h-4" />
               </div>
-              <h3 className="text-sm font-bold text-[#F5F1E8]">Upcoming Milestone</h3>
+              <h3 className={`text-sm font-bold ${isDark ? "text-[#F5F1E8]" : "text-[#111418]"}`}>Upcoming Milestone</h3>
             </div>
-            <h4 className="font-bold text-[#F5F1E8] text-sm leading-snug mb-1.5">
+            <h4 className={`font-bold text-sm leading-snug mb-1.5 ${isDark ? "text-[#F5F1E8]" : "text-[#111418]"}`}>
               {currentPhaseData.milestone?.title || currentPhaseData.title}
             </h4>
             <p className="text-xs text-[#8C877D] mb-4 leading-relaxed">
@@ -372,13 +375,14 @@ export default function LearningPathPage() {
           <Card variant="default">
             <div className="flex items-center gap-2 mb-4">
               <Lightbulb className="w-4 h-4 text-[#FBBF24]" />
-              <h3 className="text-sm font-bold text-[#F5F1E8]">AI Adaptation Log</h3>
+              <h3 className={`text-sm font-bold ${isDark ? "text-[#F5F1E8]" : "text-[#111418]"}`}>AI Adaptation Log</h3>
             </div>
             <div className="space-y-3">
               {pathData.adaptationHistory && pathData.adaptationHistory.length > 0 ? (
                 pathData.adaptationHistory.slice(0, 3).map((history, idx) => (
-                  <div key={idx} className="flex flex-col border border-white/[0.06] p-3 rounded-xl bg-[#0E1114]">
-                    <h4 className="text-xs font-bold text-[#F5F1E8] leading-tight mb-1">{history.actionTaken}</h4>
+                  <div key={idx} className={`flex flex-col p-3 rounded-xl border ${isDark ? "border-white/[0.06] bg-[#0E1114]" : "border-black/[0.06] bg-[#FAF7F2]"}`}>
+                    <h4 className={`text-xs font-bold leading-tight mb-1 ${isDark ? "text-[#F5F1E8]" : "text-[#111418]"}`}>
+                      {history.actionTaken}</h4>
                     <p className="text-[11px] text-[#8C877D] mb-1 leading-relaxed">{history.reason}</p>
                     <span className="text-[9px] text-[#FF857A] font-mono mt-0.5">{new Date(history.timestamp).toLocaleDateString()}</span>
                   </div>

@@ -194,7 +194,7 @@ export default function Navbar({ onMobileMenuToggle, isMobileMenuOpen }) {
                 />
                 <kbd
                   onClick={() => setIsSearchOpen(true)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[#8C877D] cursor-pointer"
+                  className={`absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono px-1.5 py-0.5 rounded cursor-pointer ${isDark ? "bg-white/5 border border-white/10 text-[#8C877D]" : "bg-black/5 border border-black/10 text-[#6B7280]"}`}
                 >
                   ⌘K
                 </kbd>

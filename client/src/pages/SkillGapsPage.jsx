@@ -6,6 +6,7 @@ import Button from '../components/common/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/common/Card';
 import { useLearningPath, defaultSkillGapReport, defaultRecommendations } from '../context/LearningPathContext';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { generateSkillGapReportPDF } from '../utils/reportGenerator';
 import SkillRadarChart from '../components/skillGap/SkillRadarChart';
 import {
@@ -45,6 +46,8 @@ const getPriorityColor = (priority) => {
 export default function SkillGapsPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const { skillGapReport, recommendations } = useLearningPath();
   const [addedCourses, setAddedCourses] = useState({});
 
@@ -159,7 +162,7 @@ export default function SkillGapsPage() {
                   <stat.icon className="w-4 h-4" />
                 </div>
               </div>
-              <div className="text-2xl font-black text-[#F5F1E8] font-mono tracking-tight">{stat.value}</div>
+              <div className={`text-2xl font-black font-mono tracking-tight ${isDark ? "text-[#F5F1E8]" : "text-[#111418]"}`}>{stat.value}</div>
               <p className="text-[11px] text-[#8C877D] mt-1">{stat.subText}</p>
             </Card>
           ))}
@@ -172,11 +175,11 @@ export default function SkillGapsPage() {
           <div className="flex-1 w-full space-y-6">
             
             <Card variant="default">
-              <div className="flex items-center justify-between pb-4 border-b border-white/[0.08] mb-4">
+              <div className={`flex items-center justify-between pb-4 border-b mb-4 ${isDark ? "border-white/[0.08]" : "border-black/[0.08]"}`}>
                 <div>
-                  <CardTitle className="text-[#F5F1E8]">Role Competency Benchmark Breakdown</CardTitle>
+                  <CardTitle className={isDark ? "text-[#F5F1E8]" : "text-[#111418]"}>Role Competency Benchmark Breakdown</CardTitle>
                   <p className="text-xs text-[#8C877D]">
-                    Telemetry analysis for <strong className="text-[#F5F1E8]">{activeTargetRole}</strong>
+                    Telemetry analysis for <strong className={isDark ? "text-[#F5F1E8]" : "text-[#111418]"}>{activeTargetRole}</strong>
                   </p>
                 </div>
                 <span className="text-xs font-mono text-[#FF857A] bg-[#FF6B5F]/10 px-3 py-1 rounded-full border border-[#FF6B5F]/20 font-bold">
@@ -194,15 +197,15 @@ export default function SkillGapsPage() {
                   return (
                     <div
                       key={idx}
-                      className="p-4 rounded-2xl bg-[#0E1114] border border-white/[0.04] hover:border-white/[0.12] transition-all space-y-3"
+                      className={`p-4 rounded-2xl border transition-all space-y-3 ${isDark ? "bg-[#0E1114] border-white/[0.04] hover:border-white/[0.12]" : "bg-[#FAF7F2] border-black/[0.06] hover:border-black/[0.12]"}`}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-[#F5F1E8]">
+                          <div className={`w-9 h-9 rounded-xl border flex items-center justify-center ${isDark ? "bg-white/[0.04] border-white/[0.08] text-[#F5F1E8]" : "bg-white border-black/[0.08] text-[#111418]"}`}>
                             <IconComponent className="w-4 h-4 text-[#FF6B5F]" />
                           </div>
                           <div>
-                            <h4 className="text-sm font-bold text-[#F5F1E8]">{item.skill || item.name}</h4>
+                            <h4 className={`text-sm font-bold ${isDark ? "text-[#F5F1E8]" : "text-[#111418]"}`}>{item.skill || item.name}</h4>
                             <span className="text-[11px] text-[#8C877D] font-mono">{item.category || 'Core'} Domain</span>
                           </div>
                         </div>
@@ -219,10 +222,10 @@ export default function SkillGapsPage() {
 
                       <div className="space-y-1">
                         <div className="flex justify-between text-[11px] text-[#8C877D]">
-                          <span>Current: <strong className="text-[#F5F1E8] font-mono">{curr}%</strong></span>
+                          <span>Current: <strong className={`font-mono ${isDark ? "text-[#F5F1E8]" : "text-[#111418]"}`}>{curr}%</strong></span>
                           <span>Required: <strong className="text-[#38BDF8] font-mono">{req}%</strong></span>
                         </div>
-                        <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden relative">
+                        <div className={`w-full rounded-full h-2 overflow-hidden relative ${isDark ? "bg-white/5" : "bg-black/5"}`}>
                           <div
                             className="absolute top-0 bottom-0 w-1 bg-[#38BDF8] z-10"
                             style={{ left: `${req}%` }}
@@ -242,9 +245,9 @@ export default function SkillGapsPage() {
 
             {/* Recommended Bridge Courses */}
             <Card variant="default">
-              <div className="flex items-center justify-between pb-4 border-b border-white/[0.08] mb-4">
+              <div className={`flex items-center justify-between pb-4 border-b mb-4 ${isDark ? "border-white/[0.08]" : "border-black/[0.08]"}`}>
                 <div>
-                  <CardTitle className="text-[#F5F1E8]">Targeted Gap-Closing Curriculum</CardTitle>
+                  <CardTitle className={isDark ? "text-[#F5F1E8]" : "text-[#111418]"}>Targeted Gap-Closing Curriculum</CardTitle>
                   <p className="text-xs text-[#8C877D]">Courses prioritized for {activeTargetRole}</p>
                 </div>
                 <Button variant="outline" size="sm" onClick={() => navigate('/courses')}>
@@ -256,7 +259,7 @@ export default function SkillGapsPage() {
                 {recs.slice(0, 4).map((rec, idx) => (
                   <div
                     key={rec._id || idx}
-                    className="p-4 rounded-2xl bg-[#0E1114] border border-white/[0.06] hover:border-[#FF6B5F]/30 transition-all flex flex-col justify-between"
+                    className={`p-4 rounded-2xl border transition-all flex flex-col justify-between ${isDark ? "bg-[#0E1114] border-white/[0.06] hover:border-[#FF6B5F]/30" : "bg-[#FAF7F2] border-black/[0.06] hover:border-[#FF6B5F]/40"}`}
                   >
                     <div>
                       <div className="flex items-center justify-between mb-2">
@@ -267,11 +270,11 @@ export default function SkillGapsPage() {
                           {rec.matchScore || 95}% Match
                         </span>
                       </div>
-                      <h4 className="text-sm font-bold text-[#F5F1E8] mb-1 leading-snug">{rec.title}</h4>
+                      <h4 className={`text-sm font-bold mb-1 leading-snug ${isDark ? "text-[#F5F1E8]" : "text-[#111418]"}`}>{rec.title}</h4>
                       <p className="text-xs text-[#8C877D] line-clamp-2 mb-3 leading-relaxed">{rec.reason || rec.tagline || rec.description}</p>
                     </div>
 
-                    <div className="flex items-center justify-between pt-2 border-t border-white/[0.06] mt-2">
+                    <div className={`flex items-center justify-between pt-2 border-t mt-2 ${isDark ? "border-white/[0.06]" : "border-black/[0.06]"}`}>
                       <span className="text-[11px] text-[#8C877D] font-mono">{rec.duration || '4.0 Hours'}</span>
                       <Button
                         variant={addedCourses[idx] ? 'outline' : 'primary'}
@@ -295,7 +298,7 @@ export default function SkillGapsPage() {
             <Card variant="default">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-bold text-[#F5F1E8]">Skill Radar View</h3>
+                  <h3 className={`text-sm font-bold ${isDark ? "text-[#F5F1E8]" : "text-[#111418]"}`}>Skill Radar View</h3>
                   <Info className="w-3.5 h-3.5 text-[#8C877D]" />
                 </div>
                 <div className="flex items-center gap-3 text-[10px] font-mono">
@@ -308,7 +311,7 @@ export default function SkillGapsPage() {
                 </div>
               </div>
               
-              <div className="w-full relative flex items-center justify-center p-2 bg-[#0E1114] rounded-2xl border border-white/[0.04]">
+              <div className={`w-full relative flex items-center justify-center p-2 rounded-2xl border ${isDark ? "bg-[#0E1114] border-white/[0.04]" : "bg-[#FAF7F2] border-black/[0.06]"}`}>
                 <SkillRadarChart skills={gaps} />
               </div>
             </Card>
@@ -324,12 +327,12 @@ export default function SkillGapsPage() {
                   <>
                     Your highest-impact focus area is currently{' '}
                     <strong className="text-[#FF857A]">{criticalGaps[0]}</strong>. Bridging this specific gap will raise your overall readiness towards{' '}
-                    <strong className="text-[#F5F1E8]">{activeTargetRole}</strong> benchmarks.
+                    <strong className={isDark ? "text-[#F5F1E8]" : "text-[#111418]"}>{activeTargetRole}</strong> benchmarks.
                   </>
                 ) : (
                   <>
                     Your skill competency is progressing along the standard benchmark path for{' '}
-                    <strong className="text-[#F5F1E8]">{activeTargetRole}</strong>. Continue completing active roadmap modules.
+                    <strong className={isDark ? "text-[#F5F1E8]" : "text-[#111418]"}>{activeTargetRole}</strong>. Continue completing active roadmap modules.
                   </>
                 )}
               </p>

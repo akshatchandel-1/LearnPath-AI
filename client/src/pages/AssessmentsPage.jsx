@@ -4,6 +4,7 @@ import MainLayout from '../layouts/MainLayout';
 import AssessmentRunnerModal from '../components/assessments/AssessmentRunnerModal';
 import { INITIAL_ASSESSMENTS } from '../data/coursesAndAssessmentsData';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import {
   ClipboardCheck,
   Search,
@@ -27,6 +28,8 @@ import {
 export default function AssessmentsPage() {
   const navigate = useNavigate();
   const { user, awardXp, updateSkillMastery } = useAuth();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const storageKeyAssessments = user?._id ? `m3_assessments_data_${user._id}` : 'm3_assessments_data_guest';
   const storageKeyHistory = user?._id ? `m3_assessment_history_${user._id}` : 'm3_assessment_history_guest';
 
@@ -173,17 +176,17 @@ export default function AssessmentsPage() {
     <MainLayout>
       <div className="space-y-8 pb-12">
         {/* Header Hero */}
-        <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-[#16191E] via-[#1A1E24] to-[#0E1114] border border-white/[0.08] p-6 sm:p-8">
+        <div className={`relative rounded-3xl overflow-hidden border p-6 sm:p-8 transition-colors ${isDark ? "bg-gradient-to-r from-[#16191E] via-[#1A1E24] to-[#0E1114] border-white/[0.08]" : "bg-gradient-to-r from-white via-[#FAF7F2] to-[#F5F1E8] border-black/[0.08]"}`}>
           <div className="relative z-10 max-w-3xl space-y-3">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FF6B5F]/15 text-[#FF857A] border border-[#FF6B5F]/30 text-xs font-bold uppercase tracking-wider">
               <ShieldCheck className="w-3.5 h-3.5" />
               <span>Skill Gap & Assessment Benchmarks</span>
             </div>
-            <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
+            <h1 className={`text-2xl sm:text-4xl font-black tracking-tight ${isDark ? "text-white" : "text-[#111418]"}`}>
               Skill Verification & Competency Tests
             </h1>
-            <p className="text-sm text-neutral-400 leading-relaxed">
-              Validate your technical proficiency for <strong className="text-white">{user?.targetRole || user?.careerGoal || 'Engineering Professional'}</strong>.
+            <p className={`text-sm leading-relaxed ${isDark ? "text-neutral-400" : "text-[#4B5563]"}`}>
+              Validate your technical proficiency for <strong className={isDark ? "text-white" : "text-[#111418]"}>{user?.targetRole || user?.careerGoal || 'Engineering Professional'}</strong>.
               Every assessment dynamically randomizes questions and adapts your skill radar and learning path.
             </p>
           </div>
@@ -191,39 +194,39 @@ export default function AssessmentsPage() {
 
         {/* Telemetry Overview Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="p-5 rounded-2xl bg-[#16191E] border border-white/[0.06] flex items-center gap-4">
+          <div className={`p-5 rounded-2xl border flex items-center gap-4 transition-colors ${isDark ? "bg-[#16191E] border-white/[0.06]" : "bg-white border-black/[0.08]"}`}>
             <div className="w-12 h-12 rounded-xl bg-[#34D399]/15 flex items-center justify-center text-[#34D399] border border-[#34D399]/30 shrink-0">
               <CheckCircle2 className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-neutral-400">Passed Benchmarks</p>
-              <p className="text-xl sm:text-2xl font-black text-white font-mono mt-0.5">
+              <p className={`text-xs font-semibold ${isDark ? "text-neutral-400" : "text-[#6B7280]"}`}>Passed Benchmarks</p>
+              <p className={`text-xl sm:text-2xl font-black font-mono mt-0.5 ${isDark ? "text-white" : "text-[#111418]"}`}>
                 {passedAssessments} / {assessments.length}
               </p>
               <p className="text-[11px] text-[#34D399] font-semibold">Verified Competencies</p>
             </div>
           </div>
 
-          <div className="p-5 rounded-2xl bg-[#16191E] border border-white/[0.06] flex items-center gap-4">
+          <div className={`p-5 rounded-2xl border flex items-center gap-4 transition-colors ${isDark ? "bg-[#16191E] border-white/[0.06]" : "bg-white border-black/[0.08]"}`}>
             <div className="w-12 h-12 rounded-xl bg-[#38BDF8]/15 flex items-center justify-center text-[#38BDF8] border border-[#38BDF8]/30 shrink-0">
               <TrendingUp className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-neutral-400">Average Proficiency</p>
-              <p className="text-xl sm:text-2xl font-black text-white font-mono mt-0.5">
+              <p className={`text-xs font-semibold ${isDark ? "text-neutral-400" : "text-[#6B7280]"}`}>Average Proficiency</p>
+              <p className={`text-xl sm:text-2xl font-black font-mono mt-0.5 ${isDark ? "text-white" : "text-[#111418]"}`}>
                 {avgScore}%
               </p>
               <p className="text-[11px] text-[#38BDF8] font-semibold">Across Assessed Skills</p>
             </div>
           </div>
 
-          <div className="p-5 rounded-2xl bg-[#16191E] border border-white/[0.06] flex items-center gap-4">
+          <div className={`p-5 rounded-2xl border flex items-center gap-4 transition-colors ${isDark ? "bg-[#16191E] border-white/[0.06]" : "bg-white border-black/[0.08]"}`}>
             <div className="w-12 h-12 rounded-xl bg-[#FBBF24]/15 flex items-center justify-center text-[#FBBF24] border border-[#FBBF24]/30 shrink-0">
               <Award className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-neutral-400">Total Attempts</p>
-              <p className="text-xl sm:text-2xl font-black text-white font-mono mt-0.5">
+              <p className={`text-xs font-semibold ${isDark ? "text-neutral-400" : "text-[#6B7280]"}`}>Total Attempts</p>
+              <p className={`text-xl sm:text-2xl font-black font-mono mt-0.5 ${isDark ? "text-white" : "text-[#111418]"}`}>
                 {totalAttempts}
               </p>
               <p className="text-[11px] text-[#FBBF24] font-semibold">Evaluations Taken</p>
@@ -241,7 +244,7 @@ export default function AssessmentsPage() {
                 placeholder="Search assessments, skills, topics..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-[#16191E] border border-white/[0.08] rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#FF6B5F]"
+                className={`w-full rounded-xl pl-10 pr-4 py-2.5 text-xs focus:outline-none focus:border-[#FF6B5F] ${isDark ? "bg-[#16191E] border border-white/[0.08] text-white placeholder-neutral-500" : "bg-white border border-black/[0.1] text-[#111418] placeholder-neutral-400"}`}
               />
             </div>
 
@@ -249,7 +252,7 @@ export default function AssessmentsPage() {
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
-                className="bg-[#16191E] border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-neutral-300 focus:outline-none focus:border-[#FF6B5F] cursor-pointer"
+                className={`rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#FF6B5F] cursor-pointer ${isDark ? "bg-[#16191E] border border-white/[0.08] text-neutral-300" : "bg-white border border-black/[0.1] text-[#111418]"}`}
               >
                 <option value="All">All Statuses</option>
                 <option value="Ready to Take">Ready to Take</option>
@@ -268,7 +271,7 @@ export default function AssessmentsPage() {
                 className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all border cursor-pointer ${
                   selectedCategory === cat
                     ? 'bg-[#FF6B5F]/15 border-[#FF6B5F] text-[#FF857A]'
-                    : 'bg-[#16191E] border-white/[0.06] text-neutral-400 hover:border-white/20 hover:text-white'
+                    : isDark ? 'bg-[#16191E] border-white/[0.06] text-neutral-400 hover:border-white/20 hover:text-white' : 'bg-white border-black/[0.08] text-[#4B5563] hover:border-black/20 hover:text-[#111418]'
                 }`}
               >
                 {cat}
@@ -286,11 +289,11 @@ export default function AssessmentsPage() {
             return (
               <div
                 key={item.id}
-                className="rounded-2xl bg-[#16191E] border border-white/[0.06] hover:border-white/20 transition-all duration-200 flex flex-col justify-between overflow-hidden shadow-lg group"
+                className={`rounded-2xl border transition-all duration-200 flex flex-col justify-between overflow-hidden shadow-md group ${isDark ? "bg-[#16191E] border-white/[0.06] hover:border-white/20" : "bg-white border-black/[0.08] hover:border-[#FF6B5F]/40"}`}
               >
                 <div className="p-5 space-y-4">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white/[0.06] text-neutral-300 font-mono">
+                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider font-mono ${isDark ? "bg-white/[0.06] text-neutral-300" : "bg-black/[0.05] text-[#374151]"}`}>
                       {item.category}
                     </span>
                     <div className="flex items-center gap-1.5">
@@ -302,7 +305,7 @@ export default function AssessmentsPage() {
                       <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono ${
                         item.status === 'Passed'
                           ? 'bg-[#34D399]/15 text-[#34D399] border border-[#34D399]/30'
-                          : 'bg-white/[0.04] text-neutral-400'
+                          : isDark ? 'bg-white/[0.04] text-neutral-400' : 'bg-black/[0.04] text-[#6B7280]'
                       }`}>
                         {item.status}
                       </span>
@@ -310,16 +313,16 @@ export default function AssessmentsPage() {
                   </div>
 
                   <div>
-                    <h3 className="text-base font-bold text-white group-hover:text-[#FF857A] transition-colors leading-snug">
+                    <h3 className={`text-base font-bold group-hover:text-[#FF857A] transition-colors leading-snug ${isDark ? "text-white" : "text-[#111418]"}`}>
                       {item.title}
                     </h3>
                     <div className="flex items-center gap-2 text-xs text-neutral-400 mt-1">
-                      <span>Tested Skill: <strong className="text-white">{item.skillTested}</strong></span>
+                      <span>Tested Skill: <strong className={isDark ? "text-white" : "text-[#111418]"}>{item.skillTested}</strong></span>
                     </div>
                   </div>
 
                   {item.lastScore !== null && (
-                    <div className="p-3 rounded-xl bg-[#0E1114] border border-white/[0.04] flex items-center justify-between text-xs">
+                    <div className={`p-3 rounded-xl border flex items-center justify-between text-xs ${isDark ? "bg-[#0E1114] border-white/[0.04]" : "bg-[#FAF7F2] border-black/[0.06]"}`}>
                       <span className="text-neutral-400 font-medium">Last Score</span>
                       <span className={`font-mono font-bold text-sm ${
                         item.lastScore >= (item.passingScore || 70) ? 'text-[#34D399]' : 'text-[#F87171]'
@@ -330,8 +333,8 @@ export default function AssessmentsPage() {
                   )}
                 </div>
 
-                <div className="p-4 border-t border-white/[0.06] bg-[#0E1114]/50 flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-3 text-xs text-neutral-400 font-mono">
+                <div className={`p-4 border-t flex items-center justify-between gap-2 ${isDark ? "border-white/[0.06] bg-[#0E1114]/50" : "border-black/[0.06] bg-white"}`}>
+                  <div className={`flex items-center gap-3 text-xs font-mono ${isDark ? "text-neutral-400" : "text-[#6B7280]"}`}>
                     <span className="flex items-center gap-1">
                       <Clock className="w-3.5 h-3.5" />
                       {item.duration}
@@ -358,13 +361,13 @@ export default function AssessmentsPage() {
 
         {/* Assessment History Section */}
         {history.length > 0 && (
-          <div className="p-6 rounded-3xl bg-[#16191E] border border-white/[0.06] space-y-4">
+          <div className={`p-6 rounded-3xl border space-y-4 ${isDark ? "bg-[#16191E] border-white/[0.06]" : "bg-white border-black/[0.08]"}`}>
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
+              <h3 className={`text-base font-bold flex items-center gap-2 ${isDark ? "text-white" : "text-[#111418]"}`}>
                 <RotateCcw className="w-4 h-4 text-[#FF857A]" />
                 <span>Recent Assessment History</span>
               </h3>
-              <span className="text-xs text-neutral-400 font-mono">{history.length} attempts recorded</span>
+              <span className={`text-xs font-mono ${isDark ? "text-neutral-400" : "text-[#6B7280]"}`}>{history.length} attempts recorded</span>
             </div>
 
             <div className="divide-y divide-white/[0.04]">

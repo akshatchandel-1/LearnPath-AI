@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import {
   LayoutDashboard,
   User,
@@ -69,8 +70,10 @@ export const navigationItems = [
 
 export default function Sidebar({ isOpen, onClose }) {
   const { user, logout } = useAuth();
+  const { theme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
+  const isDark = theme === 'dark';
 
   const userStreak = user?.streakDays ?? user?.streak ?? 0;
 
@@ -81,15 +84,21 @@ export default function Sidebar({ isOpen, onClose }) {
   };
 
   const sidebarContent = (
-    <div className="flex flex-col h-full border-r w-64 select-none bg-[#111418] dark:bg-[#111418] border-white/[0.06] text-[#C7C2B6] shadow-2xl relative z-20">
+    <div className={`flex flex-col h-full border-r w-64 select-none transition-colors relative z-20 shadow-xl ${
+      isDark
+        ? 'bg-[#111418] border-white/[0.06] text-[#C7C2B6]'
+        : 'bg-[#FAF7F2] border-black/[0.08] text-[#4B5563]'
+    }`}>
       {/* Brand Header */}
-      <div className="p-5 border-b border-white/[0.06] flex items-center justify-between">
+      <div className={`p-5 border-b flex items-center justify-between ${
+        isDark ? 'border-white/[0.06]' : 'border-black/[0.06]'
+      }`}>
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#FF6B5F] to-[#E85548] flex items-center justify-center text-white shadow-lg shadow-[#FF6B5F]/25">
             <Sparkles className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-sm font-extrabold text-[#F5F1E8] tracking-tight">
+            <h2 className={`text-sm font-extrabold tracking-tight ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
               LearnPath AI
             </h2>
             <p className="text-[10px] text-[#8C877D] font-medium">
@@ -101,7 +110,9 @@ export default function Sidebar({ isOpen, onClose }) {
         {/* Mobile close button */}
         <button
           onClick={onClose}
-          className="p-1 rounded-lg text-[#8C877D] hover:text-[#F5F1E8] hover:bg-white/10 lg:hidden cursor-pointer"
+          className={`p-1 rounded-lg lg:hidden cursor-pointer transition-colors ${
+            isDark ? 'text-[#8C877D] hover:text-[#F5F1E8] hover:bg-white/10' : 'text-[#6B7280] hover:text-[#111418] hover:bg-black/5'
+          }`}
           aria-label="Close navigation sidebar"
         >
           <X className="w-5 h-5" />
@@ -128,7 +139,9 @@ export default function Sidebar({ isOpen, onClose }) {
               className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all group ${
                 isActive
                   ? 'bg-[#FF6B5F] text-white shadow-md shadow-[#FF6B5F]/20'
-                  : 'text-[#C7C2B6] hover:text-[#F5F1E8] hover:bg-white/[0.04]'
+                  : isDark
+                  ? 'text-[#C7C2B6] hover:text-[#F5F1E8] hover:bg-white/[0.04]'
+                  : 'text-[#4B5563] hover:text-[#111418] hover:bg-black/[0.04]'
               }`}
             >
               <div className="flex items-center gap-3 min-w-0">
@@ -144,8 +157,12 @@ export default function Sidebar({ isOpen, onClose }) {
         })}
       </nav>
 
-      {/* Learning Streak Card */}
-      <div className="p-3.5 m-3 rounded-2xl bg-[#16191E] border border-white/[0.08] text-white shadow-xl relative overflow-hidden">
+      {/* Learning Streak Card (Elevated white card on top of ivory sidebar in Light Mode) */}
+      <div className={`p-3.5 m-3 rounded-2xl border relative overflow-hidden transition-all ${
+        isDark
+          ? 'bg-[#16191E] border-white/[0.08] text-white shadow-xl'
+          : 'bg-white border-black/[0.08] text-[#111418] shadow-sm'
+      }`}>
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[11px] font-bold text-[#FF857A] flex items-center gap-1.5">
@@ -153,11 +170,13 @@ export default function Sidebar({ isOpen, onClose }) {
               Learning Streak
             </span>
           </div>
-          <div className="text-xl font-extrabold text-[#F5F1E8] tracking-tight font-mono">
+          <div className={`text-xl font-extrabold tracking-tight font-mono ${
+            isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'
+          }`}>
             {userStreak} Days
           </div>
           <div className="text-[10px] text-[#8C877D] mt-0.5 flex items-center justify-between">
-            <span>{userStreak > 0 ? 'Keep it up! 🔥' : 'Start your streak today!'}</span>
+            <span>{userStreak > 0 ? 'Keep it up! 🚀' : 'Start your streak today!'}</span>
             <span className="text-[#FF6B5F] font-semibold">+50 XP</span>
           </div>
         </div>
@@ -180,7 +199,9 @@ export default function Sidebar({ isOpen, onClose }) {
       </div>
 
       {/* Sidebar Footer & Logout */}
-      <div className="p-3 border-t border-white/[0.06] space-y-2">
+      <div className={`p-3 border-t space-y-2 ${
+        isDark ? 'border-white/[0.06]' : 'border-black/[0.06]'
+      }`}>
         <button
           onClick={handleSignOut}
           className="w-full flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-[#F87171] hover:bg-[#F87171]/10 transition-colors cursor-pointer"

@@ -105,3 +105,31 @@
 ::-webkit-scrollbar-track { background: var(--color-bg-base); }
 ::-webkit-scrollbar-thumb { background: rgba(245, 241, 232, 0.15); border-radius: 9999px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(255, 107, 95, 0.4); }
+
+
+/* Global Light Theme Typography & Form Controls */
+html:not(.dark) {
+  color-scheme: light;
+}
+
+html:not(.dark) h1,
+html:not(.dark) h2,
+html:not(.dark) h3,
+html:not(.dark) h4,
+html:not(.dark) h5,
+html:not(.dark) h6 {
+  color: #111418;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+html.dark h1,
+html.dark h2,
+html.dark h3,
+html.dark h4,
+html.dark h5,
+html.dark h6 {
+  color: #F5F1E8;
+}

@@ -21,18 +21,18 @@ export default function Badge({
   const variantStyles = {
     primary: 'bg-[#FF6B5F]/15 text-[#FF857A] border border-[#FF6B5F]/30',
     coral: 'bg-[#FF6B5F]/15 text-[#FF857A] border border-[#FF6B5F]/30',
-    secondary: 'bg-white/10 text-[#F5F1E8] border border-white/15',
+    secondary: 'bg-black/5 dark:bg-white/10 text-[#111418] dark:text-[#F5F1E8] border border-black/10 dark:border-white/15',
     success: 'bg-[#34D399]/15 text-[#34D399] border border-[#34D399]/30',
     warning: 'bg-[#FBBF24]/15 text-[#FBBF24] border border-[#FBBF24]/30',
     danger: 'bg-[#F87171]/15 text-[#F87171] border border-[#F87171]/30',
     info: 'bg-[#38BDF8]/15 text-[#38BDF8] border border-[#38BDF8]/30',
-    neutral: 'bg-white/5 text-[#C7C2B6] border border-white/10',
+    neutral: 'bg-black/5 dark:bg-white/5 text-[#4B5563] dark:text-[#C7C2B6] border border-black/10 dark:border-white/10',
   };
 
   const dotColors = {
     primary: 'bg-[#FF6B5F]',
     coral: 'bg-[#FF6B5F]',
-    secondary: 'bg-[#F5F1E8]',
+    secondary: 'bg-[#FF6B5F]',
     success: 'bg-[#34D399]',
     warning: 'bg-[#FBBF24]',
     danger: 'bg-[#F87171]',

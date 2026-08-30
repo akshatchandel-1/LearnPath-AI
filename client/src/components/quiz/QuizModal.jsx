@@ -14,10 +14,13 @@ import api from '../../services/api';
 import confetti from 'canvas-confetti';
 import { useLearningPath } from '../../context/LearningPathContext';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 
 export const QuizModal = ({ skillName, count = 3, isOpen, onClose }) => {
   const { refreshAll } = useLearningPath();
   const { user, updateUserProfile } = useAuth();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
 
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -74,30 +77,26 @@ export const QuizModal = ({ skillName, count = 3, isOpen, onClose }) => {
 
       const res = await api.post('/quiz/submit', {
         quizId: quiz._id,
+        skill: skillName || quiz.skill || 'General',
         answers: answerPayload,
+        targetRole: user?.targetRole || user?.careerGoal || 'Full Stack Developer',
       });
 
       if (res.data.success) {
         setResult(res.data.result);
-        await refreshAll();
-
-        if (res.data.result.percentage >= 70) {
+        if (res.data.user && updateUserProfile) {
+          updateUserProfile(res.data.user);
+        }
+        if (res.data.result.passed) {
           try {
             confetti({
-              particleCount: 80,
-              spread: 70,
-              origin: { y: 0.6 },
+              particleCount: 75,
+              spread: 60,
+              origin: { y: 0.6 }
             });
           } catch (e) {}
         }
-
-        if (res.data.user) {
-          updateUserProfile(res.data.user);
-        } else if (user && res.data.result.earnedPoints) {
-          updateUserProfile({
-            points: (user.points || 0) + res.data.result.earnedPoints,
-          });
-        }
+        if (refreshAll) refreshAll();
       }
     } catch (err) {
       console.error('Error submitting quiz:', err);
@@ -108,97 +107,173 @@ export const QuizModal = ({ skillName, count = 3, isOpen, onClose }) => {
 
   if (!isOpen) return null;
 
+  const currentQ = quiz?.questions?.[currentQuestionIdx];
+  const totalQuestions = quiz?.questions?.length || count || 3;
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-      <div className="relative w-full max-w-xl max-h-[90vh] flex flex-col rounded-3xl bg-[#16191E] border border-white/10 shadow-2xl overflow-hidden text-white p-6 sm:p-7">
-        <button
-          onClick={onClose}
-          className="absolute top-5 right-5 p-2 rounded-xl text-neutral-400 hover:text-white hover:bg-white/10 transition-colors"
-        >
-          <X className="w-5 h-5" />
-        </button>
-
-        {loading ? (
-          <div className="py-16 text-center space-y-4">
-            <RefreshCw className="w-8 h-8 text-[#FF6B5F] animate-spin mx-auto" />
-            <p className="text-sm font-medium text-neutral-300">
-              Generating dynamic checkpoint questions for {skillName}...
-            </p>
-          </div>
-        ) : !result ? (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
-              <div>
-                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#FF6B5F]/15 text-[#FF857A] border border-[#FF6B5F]/30">
-                  {skillName} Checkpoint
-                </span>
-                <h3 className="text-base font-bold text-white mt-1">
-                  Question {currentQuestionIdx + 1} of {quiz?.questions?.length || 3}
-                </h3>
-              </div>
-              <span className="text-xs font-mono text-neutral-400">
-                Passing: {quiz?.passingScore || 70}%
-              </span>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in overflow-y-auto">
+      <div className={`rounded-[28px] max-w-xl w-full shadow-2xl overflow-hidden my-8 border relative flex flex-col max-h-[90vh] transition-colors ${
+        isDark ? 'bg-[#111418] border-white/[0.1] text-[#F5F1E8]' : 'bg-white border-black/[0.1] text-[#111418]'
+      }`}>
+        
+        {/* Header */}
+        <div className={`p-5 border-b flex items-center justify-between gap-4 shrink-0 ${
+          isDark ? 'border-white/[0.08] bg-[#0E1114]' : 'border-black/[0.08] bg-[#F9FAFB]'
+        }`}>
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-[#FF6B5F]/15 border border-[#FF6B5F]/30 text-[#FF857A] flex items-center justify-center">
+              <Zap className="w-4 h-4" />
             </div>
+            <div>
+              <h3 className={`font-black text-base flex items-center gap-2 ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
+                {skillName || 'Skill'} Diagnostic Quiz
+              </h3>
+              <p className="text-xs text-[#8C877D]">
+                Question {currentQuestionIdx + 1} of {totalQuestions}
+              </p>
+            </div>
+          </div>
 
-            {quiz?.questions && quiz.questions[currentQuestionIdx] && (
-              <div className="space-y-4">
-                <div className="p-4 rounded-2xl bg-[#0E1114] border border-white/[0.06]">
-                  <p className="text-sm font-semibold text-white leading-relaxed">
-                    {quiz.questions[currentQuestionIdx].question}
-                  </p>
+          <button
+            onClick={onClose}
+            className={`p-2 rounded-xl transition-colors cursor-pointer ${
+              isDark ? 'text-[#8C877D] hover:text-[#F5F1E8] hover:bg-white/5' : 'text-[#6B7280] hover:text-[#111418] hover:bg-black/5'
+            }`}
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Content Body */}
+        <div className="p-6 overflow-y-auto flex-1 space-y-5">
+          {loading ? (
+            <div className="py-16 flex flex-col items-center justify-center gap-3 text-center">
+              <div className="w-8 h-8 border-3 border-[#FF6B5F]/20 border-t-[#FF6B5F] rounded-full animate-spin" />
+              <p className="text-xs text-[#8C877D]">Generating specialized questions with AI...</p>
+            </div>
+          ) : result ? (
+            /* Result View */
+            <div className="space-y-6 text-center animate-in fade-in">
+              <div className={`p-6 rounded-3xl border space-y-3 ${
+                result.passed
+                  ? 'bg-[#34D399]/10 border-[#34D399]/30 text-[#34D399]'
+                  : 'bg-[#F87171]/10 border-[#F87171]/30 text-[#F87171]'
+              }`}>
+                <div className="w-14 h-14 rounded-full mx-auto flex items-center justify-center bg-current/20">
+                  <Award className="w-7 h-7" />
                 </div>
+                <h4 className="text-2xl font-black font-mono">{result.score}% Score</h4>
+                <p className="text-xs font-bold">
+                  {result.passed ? 'Skill Checkpoint Verified! +100 XP awarded' : 'Keep practicing this concept'}
+                </p>
+                <p className="text-[11px] opacity-80">
+                  {result.correctCount} of {result.totalQuestions} questions correct
+                </p>
+              </div>
 
-                <div className="space-y-2.5">
-                  {quiz.questions[currentQuestionIdx].options.map((opt, optIdx) => {
-                    const isSelected = selectedAnswers[currentQuestionIdx] === optIdx;
-                    return (
-                      <button
-                        key={optIdx}
-                        type="button"
-                        onClick={() => handleSelectOption(currentQuestionIdx, optIdx)}
-                        className={`w-full text-left p-3.5 rounded-xl border transition-all duration-150 text-xs sm:text-sm font-medium flex items-center gap-3 ${
-                          isSelected
-                            ? 'bg-[#FF6B5F]/15 border-[#FF6B5F] text-white shadow-sm shadow-[#FF6B5F]/20'
-                            : 'bg-[#1C2026] border-white/[0.06] text-neutral-300 hover:border-white/20 hover:bg-[#22272E]'
-                        }`}
-                      >
-                        <span className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs font-mono font-bold shrink-0 ${
+              {/* Answers breakdown */}
+              <div className="space-y-3 text-left">
+                {result.detailedAnswers?.map((ans, idx) => (
+                  <div
+                    key={idx}
+                    className={`p-3.5 rounded-2xl border text-xs space-y-1.5 ${
+                      ans.isCorrect
+                        ? 'border-[#34D399]/30 bg-[#34D399]/5'
+                        : 'border-[#F87171]/30 bg-[#F87171]/5'
+                    }`}
+                  >
+                    <p className={`font-bold ${isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'}`}>
+                      {idx + 1}. {ans.question}
+                    </p>
+                    <p className="text-[#8C877D]">
+                      <strong className="text-[#34D399]">Correct:</strong> {ans.options?.[ans.correctAnswerIndex]}
+                    </p>
+                    {ans.explanation && (
+                      <p className={`text-[11px] border-t pt-1 mt-1 ${
+                        isDark ? 'border-white/5 text-[#8C877D]' : 'border-black/5 text-[#6B7280]'
+                      }`}>
+                        {ans.explanation}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : currentQ ? (
+            /* Active Question */
+            <div className="space-y-4">
+              <div className={`p-4 rounded-2xl border space-y-2 ${
+                isDark ? 'bg-[#16191E] border-white/[0.06]' : 'bg-[#FAF7F2] border-black/[0.06]'
+              }`}>
+                <span className="text-[10px] font-mono text-[#FF857A] uppercase font-bold">
+                  Question #{currentQuestionIdx + 1}
+                </span>
+                <p className={`text-sm font-bold leading-relaxed ${
+                  isDark ? 'text-[#F5F1E8]' : 'text-[#111418]'
+                }`}>
+                  {currentQ.question}
+                </p>
+              </div>
+
+              <div className="space-y-2.5">
+                {currentQ.options?.map((opt, optIdx) => {
+                  const isSelected = selectedAnswers[currentQuestionIdx] === optIdx;
+                  return (
+                    <button
+                      key={optIdx}
+                      onClick={() => handleSelectOption(currentQuestionIdx, optIdx)}
+                      className={`w-full text-left p-3.5 rounded-2xl border transition-all flex items-center justify-between cursor-pointer ${
+                        isSelected
+                          ? 'bg-[#FF6B5F]/15 border-[#FF6B5F] text-[#FF857A]'
+                          : isDark
+                          ? 'bg-[#0E1114] border-white/[0.06] text-[#C7C2B6] hover:border-white/20'
+                          : 'bg-white border-black/[0.08] text-[#374151] hover:border-black/20'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className={`w-6 h-6 rounded-lg flex items-center justify-center font-mono text-xs font-bold ${
                           isSelected
                             ? 'bg-[#FF6B5F] text-white'
-                            : 'bg-white/[0.06] text-neutral-400'
+                            : isDark
+                            ? 'bg-white/5 text-[#8C877D]'
+                            : 'bg-black/5 text-[#6B7280]'
                         }`}>
                           {String.fromCharCode(65 + optIdx)}
                         </span>
-                        <span className="leading-snug">{opt}</span>
-                      </button>
-                    );
-                  })}
-                </div>
+                        <span className="text-xs font-medium leading-snug">{opt}</span>
+                      </div>
+                      {isSelected && <CheckCircle2 className="w-4 h-4 text-[#FF6B5F] shrink-0" />}
+                    </button>
+                  );
+                })}
               </div>
-            )}
+            </div>
+          ) : null}
+        </div>
 
-            <div className="flex items-center justify-between pt-4 border-t border-white/[0.08]">
-              <div className="flex items-center gap-1.5">
-                {(quiz?.questions || []).map((_, idx) => (
-                  <div
-                    key={idx}
-                    className={`w-2.5 h-2.5 rounded-full transition-all ${
-                      idx === currentQuestionIdx
-                        ? 'bg-[#FF6B5F] scale-125'
-                        : selectedAnswers[idx] !== undefined
-                        ? 'bg-[#34D399]'
-                        : 'bg-white/10'
-                    }`}
-                  />
-                ))}
-              </div>
+        {/* Footer */}
+        <div className={`p-5 border-t flex items-center justify-between gap-4 shrink-0 ${
+          isDark ? 'border-white/[0.08] bg-[#0E1114]' : 'border-black/[0.08] bg-[#F9FAFB]'
+        }`}>
+          {!result ? (
+            <>
+              <button
+                type="button"
+                onClick={() => setCurrentQuestionIdx((p) => Math.max(0, p - 1))}
+                disabled={currentQuestionIdx === 0 || loading}
+                className={`px-4 py-2 rounded-xl text-xs font-bold border transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer ${
+                  isDark ? 'border-white/10 text-[#C7C2B6] hover:bg-white/5' : 'border-black/10 text-[#4B5563] hover:bg-black/5'
+                }`}
+              >
+                Previous
+              </button>
 
-              {currentQuestionIdx < (quiz?.questions?.length || 3) - 1 ? (
+              {currentQuestionIdx < totalQuestions - 1 ? (
                 <button
                   type="button"
-                  onClick={() => setCurrentQuestionIdx(prev => prev + 1)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold bg-[#FF6B5F] hover:bg-[#E85548] text-white shadow-md transition-all flex items-center gap-1 cursor-pointer"
+                  onClick={() => setCurrentQuestionIdx((p) => Math.min(totalQuestions - 1, p + 1))}
+                  disabled={loading}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#FF6B5F] hover:bg-[#E85548] text-white text-xs font-bold transition-all shadow-md shadow-[#FF6B5F]/20 cursor-pointer"
                 >
                   <span>Next</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -207,100 +282,24 @@ export const QuizModal = ({ skillName, count = 3, isOpen, onClose }) => {
                 <button
                   type="button"
                   onClick={handleSubmitQuiz}
-                  disabled={submitting || Object.keys(selectedAnswers).length === 0}
-                  className="px-5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-[#34D399] to-[#059669] hover:opacity-90 text-white shadow-lg transition-all disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
+                  disabled={submitting || loading}
+                  className="flex items-center gap-1.5 px-5 py-2 rounded-xl bg-[#34D399] hover:bg-[#059669] text-white text-xs font-bold transition-all shadow-md shadow-[#34D399]/20 cursor-pointer"
                 >
-                  <Zap className="w-3.5 h-3.5" />
-                  <span>{submitting ? 'Evaluating...' : 'Submit Assessment'}</span>
+                  <span>{submitting ? 'Scoring...' : 'Submit Quiz'}</span>
                 </button>
               )}
-            </div>
-          </div>
-        ) : (
-          <div className="space-y-6 text-center">
-            <div className="w-16 h-16 rounded-full bg-[#FF6B5F]/20 border border-[#FF6B5F]/40 mx-auto flex items-center justify-center shadow-xl">
-              <Award className="w-8 h-8 text-[#FF6B5F]" />
-            </div>
-
-            <div>
-              <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-white/[0.06] text-neutral-300 border border-white/10">
-                Assessment Evaluated
-              </span>
-              <h2 className="text-2xl font-black text-white mt-2">
-                You Scored {result.percentage}% ({result.correctCount}/{result.totalQuestions})
-              </h2>
-            </div>
-
-            <div className="p-4 rounded-xl bg-[#0E1114] border border-white/10 text-left space-y-3">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-bold text-neutral-400 uppercase">
-                    Skill Calibration Delta
-                  </p>
-                  <p className="text-sm font-semibold text-white">
-                    {skillName}: {result.previousSkillLevel}% &rarr; {result.newSkillLevel}%
-                  </p>
-                </div>
-                <span
-                  className={`px-3 py-1 rounded-xl text-sm font-black ${
-                    (result.skillDelta ?? 0) >= 0
-                      ? 'bg-[#34D399]/20 text-[#34D399] border border-[#34D399]/30'
-                      : 'bg-[#F87171]/20 text-[#F87171] border border-[#F87171]/30'
-                  }`}
-                >
-                  {(result.skillDelta ?? 0) >= 0 ? `+${result.skillDelta}%` : `${result.skillDelta}%`}
-                </span>
-              </div>
-
-              {result.adaptiveTriggered && (
-                <div className="p-3 rounded-lg bg-[#38BDF8]/10 border border-[#38BDF8]/20 text-xs text-[#38BDF8] flex items-start gap-2">
-                  <Sparkles className="w-4 h-4 text-[#38BDF8] shrink-0 mt-0.5" />
-                  <span><strong>Adaptive Roadmap Triggered:</strong> {result.adaptiveMessage || 'Learning path adapted'}</span>
-                </div>
-              )}
-            </div>
-
-            <div className="text-left space-y-3 max-h-60 overflow-y-auto pr-1">
-              <p className="text-xs font-bold uppercase tracking-wider text-neutral-400">
-                Question Explanations
-              </p>
-              {(result.detailedAnswers || []).map((ans, i) => (
-                <div
-                  key={i}
-                  className={`p-3.5 rounded-xl border text-xs space-y-1.5 ${
-                    ans.isCorrect
-                      ? 'bg-[#34D399]/10 border-[#34D399]/20 text-neutral-200'
-                      : 'bg-[#F87171]/10 border-[#F87171]/20 text-neutral-200'
-                  }`}
-                >
-                  <div className="flex items-start gap-2">
-                    {ans.isCorrect ? (
-                      <CheckCircle2 className="w-4 h-4 text-[#34D399] shrink-0 mt-0.5" />
-                    ) : (
-                      <XCircle className="w-4 h-4 text-[#F87171] shrink-0 mt-0.5" />
-                    )}
-                    <p className="font-semibold text-white">{ans.question}</p>
-                  </div>
-                  {ans.explanation && (
-                    <p className="text-[11px] text-neutral-400 pl-6 leading-relaxed">
-                      <strong>Explanation:</strong> {ans.explanation}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
-
+            </>
+          ) : (
             <button
+              type="button"
               onClick={onClose}
-              className="w-full py-3 rounded-xl text-sm font-bold bg-[#FF6B5F] hover:bg-[#E85548] text-white shadow-lg transition-all cursor-pointer"
+              className="w-full py-2.5 rounded-xl bg-[#FF6B5F] hover:bg-[#E85548] text-white text-xs font-bold transition-all shadow-md shadow-[#FF6B5F]/20 cursor-pointer"
             >
-              Continue to Roadmap
+              Close & Return to Roadmap
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
 };
-
-export default QuizModal;

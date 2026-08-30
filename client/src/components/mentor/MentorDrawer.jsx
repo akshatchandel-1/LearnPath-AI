@@ -142,12 +142,12 @@ export const MentorDrawer = ({ isOpen, onClose }) => {
     <div className="fixed inset-0 z-50 overflow-hidden bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="absolute inset-y-0 right-0 max-w-full flex pl-6 sm:pl-10">
         <div className={`w-screen max-w-md sm:max-w-lg flex flex-col shadow-2xl border-l transition-colors ${
-          isDark ? 'bg-[#0E1114] border-white/[0.08] text-[#F5F1E8]' : 'bg-[#FFFFFF] border-black/[0.08] text-[#111418]'
+          isDark ? 'bg-[#0E1114] border-white/[0.08] text-[#F5F1E8]' : 'bg-[#FAF7F2] border-black/[0.08] text-[#111418]'
         }`}>
           
           {/* Header */}
           <div className={`p-4 sm:p-5 border-b flex items-center justify-between gap-3 shrink-0 ${
-            isDark ? 'border-white/[0.08] bg-[#111418]' : 'border-black/[0.08] bg-[#F9FAFB]'
+            isDark ? 'border-white/[0.08] bg-[#111418]' : 'border-black/[0.08] bg-[#FAF7F2]'
           }`}>
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#FF6B5F] to-[#E85548] text-white flex items-center justify-center shadow-md shadow-[#FF6B5F]/20">
@@ -189,7 +189,7 @@ export const MentorDrawer = ({ isOpen, onClose }) => {
                 <p className="text-xs text-[#8C877D]">Connecting to AI Mentor reasoning engine...</p>
               </div>
             ) : messages.length === 0 ? (
-              <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.04] text-center space-y-3 my-auto">
+              <div className={`p-6 rounded-2xl border text-center space-y-3 my-auto ${isDark ? "bg-white/[0.02] border-white/[0.04]" : "bg-white border-black/[0.06]"}`}>
                 <Bot className="w-8 h-8 mx-auto text-[#FF857A]" />
                 <h4 className="text-sm font-bold">How can I help you today?</h4>
                 <p className="text-xs text-[#8C877D] leading-relaxed">
@@ -215,7 +215,7 @@ export const MentorDrawer = ({ isOpen, onClose }) => {
                         ? 'bg-[#FF6B5F] text-white font-medium rounded-tr-sm shadow-md shadow-[#FF6B5F]/20'
                         : isDark
                         ? 'bg-[#16191E] border border-white/[0.06] text-[#F5F1E8] rounded-tl-sm'
-                        : 'bg-[#F3F4F6] border border-black/[0.06] text-[#111418] rounded-tl-sm'
+                        : 'bg-white border border-black/[0.08] text-[#111418] rounded-tl-sm shadow-sm'
                     }`}>
                       <div className="whitespace-pre-wrap">{msg.content}</div>
                     </div>
@@ -276,7 +276,7 @@ export const MentorDrawer = ({ isOpen, onClose }) => {
 
           {/* Quick Suggestions */}
           <div className={`p-3 border-t overflow-x-auto shrink-0 flex gap-2 ${
-            isDark ? 'border-white/[0.06] bg-[#111418]' : 'border-black/[0.06] bg-[#F9FAFB]'
+            isDark ? 'border-white/[0.06] bg-[#111418]' : 'border-black/[0.06] bg-[#FAF7F2]'
           }`}>
             {suggestedPrompts.map((prompt, idx) => (
               <button
@@ -296,7 +296,7 @@ export const MentorDrawer = ({ isOpen, onClose }) => {
 
           {/* Input Box */}
           <div className={`p-4 border-t shrink-0 ${
-            isDark ? 'border-white/[0.08] bg-[#0E1114]' : 'border-black/[0.08] bg-[#FFFFFF]'
+            isDark ? 'border-white/[0.08] bg-[#0E1114]' : 'border-black/[0.08] bg-[#FAF7F2]'
           }`}>
             <form
               onSubmit={(e) => {

@@ -5,6 +5,7 @@ import CourseDetailsModal from '../components/courses/CourseDetailsModal';
 import AssessmentRunnerModal from '../components/assessments/AssessmentRunnerModal';
 import { INITIAL_COURSES, INITIAL_ASSESSMENTS } from '../data/coursesAndAssessmentsData';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import {
   BookOpen,
   Search,
@@ -30,6 +31,8 @@ import {
 export default function CoursesPage() {
   const navigate = useNavigate();
   const { user, awardXp } = useAuth();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const storageKeyCourses = user?._id ? `m3_courses_data_${user._id}` : 'm3_courses_data_guest';
   const storageKeyAssessments = user?._id ? `m3_assessments_data_${user._id}` : 'm3_assessments_data_guest';
 
@@ -291,18 +294,18 @@ export default function CoursesPage() {
     <MainLayout>
       <div className="space-y-8 pb-12">
         {/* Header Hero */}
-        <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-[#16191E] via-[#1A1E24] to-[#0E1114] border border-white/[0.08] p-6 sm:p-8">
+        <div className={`relative rounded-3xl overflow-hidden border p-6 sm:p-8 transition-colors ${isDark ? "bg-gradient-to-r from-[#16191E] via-[#1A1E24] to-[#0E1114] border-white/[0.08]" : "bg-gradient-to-r from-white via-[#FAF7F2] to-[#F5F1E8] border-black/[0.08]"}`}>
           <div className="relative z-10 max-w-3xl space-y-3">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FF6B5F]/15 text-[#FF857A] border border-[#FF6B5F]/30 text-xs font-bold uppercase tracking-wider">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Personalized Role Curriculum</span>
             </div>
-            <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
+            <h1 className={`text-2xl sm:text-4xl font-black tracking-tight ${isDark ? "text-white" : "text-[#111418]"}`}>
               Course Catalog & Skill Learning Paths
             </h1>
-            <p className="text-sm text-neutral-400 leading-relaxed">
+            <p className={`text-sm leading-relaxed ${isDark ? "text-neutral-400" : "text-[#4B5563]"}`}>
               Curated, production-grade learning modules tailored for your objective as{' '}
-              <strong className="text-white">{user?.targetRole || user?.careerGoal || 'Engineering Professional'}</strong>.
+              <strong className={isDark ? "text-white" : "text-[#111418]"}>{user?.targetRole || user?.careerGoal || 'Engineering Professional'}</strong>.
               Track your lesson completions, earn verified XP, and unlock assessment checkpoints.
             </p>
           </div>
@@ -310,39 +313,39 @@ export default function CoursesPage() {
 
         {/* Telemetry Overview Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="p-5 rounded-2xl bg-[#16191E] border border-white/[0.06] flex items-center gap-4">
+          <div className={`p-5 rounded-2xl border flex items-center gap-4 transition-colors ${isDark ? "bg-[#16191E] border-white/[0.06]" : "bg-white border-black/[0.08]"}`}>
             <div className="w-12 h-12 rounded-xl bg-[#38BDF8]/15 flex items-center justify-center text-[#38BDF8] border border-[#38BDF8]/30 shrink-0">
               <BookmarkCheck className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-neutral-400">Active Enrolled</p>
-              <p className="text-xl sm:text-2xl font-black text-white font-mono mt-0.5">
+              <p className={`text-xs font-semibold ${isDark ? "text-neutral-400" : "text-[#6B7280]"}`}>Active Enrolled</p>
+              <p className={`text-xl sm:text-2xl font-black font-mono mt-0.5 ${isDark ? "text-white" : "text-[#111418]"}`}>
                 {enrolledCount}
               </p>
               <p className="text-[11px] text-[#38BDF8] font-semibold">Courses In Progress</p>
             </div>
           </div>
 
-          <div className="p-5 rounded-2xl bg-[#16191E] border border-white/[0.06] flex items-center gap-4">
+          <div className={`p-5 rounded-2xl border flex items-center gap-4 transition-colors ${isDark ? "bg-[#16191E] border-white/[0.06]" : "bg-white border-black/[0.08]"}`}>
             <div className="w-12 h-12 rounded-xl bg-[#34D399]/15 flex items-center justify-center text-[#34D399] border border-[#34D399]/30 shrink-0">
               <CheckCircle2 className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-neutral-400">Lessons Completed</p>
-              <p className="text-xl sm:text-2xl font-black text-white font-mono mt-0.5">
+              <p className={`text-xs font-semibold ${isDark ? "text-neutral-400" : "text-[#6B7280]"}`}>Lessons Completed</p>
+              <p className={`text-xl sm:text-2xl font-black font-mono mt-0.5 ${isDark ? "text-white" : "text-[#111418]"}`}>
                 {totalCompletedLessons}
               </p>
               <p className="text-[11px] text-[#34D399] font-semibold">Mastery Units Finished</p>
             </div>
           </div>
 
-          <div className="p-5 rounded-2xl bg-[#16191E] border border-white/[0.06] flex items-center gap-4">
+          <div className={`p-5 rounded-2xl border flex items-center gap-4 transition-colors ${isDark ? "bg-[#16191E] border-white/[0.06]" : "bg-white border-black/[0.08]"}`}>
             <div className="w-12 h-12 rounded-xl bg-[#FBBF24]/15 flex items-center justify-center text-[#FBBF24] border border-[#FBBF24]/30 shrink-0">
               <Award className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-neutral-400">Course XP Earned</p>
-              <p className="text-xl sm:text-2xl font-black text-white font-mono mt-0.5">
+              <p className={`text-xs font-semibold ${isDark ? "text-neutral-400" : "text-[#6B7280]"}`}>Course XP Earned</p>
+              <p className={`text-xl sm:text-2xl font-black font-mono mt-0.5 ${isDark ? "text-white" : "text-[#111418]"}`}>
                 +{userEarnedCourseXp} XP
               </p>
               <p className="text-[11px] text-[#FBBF24] font-semibold">Verified Skill Points</p>
@@ -351,7 +354,9 @@ export default function CoursesPage() {
         </div>
 
         {/* AI Custom Course Synthesizer Bar */}
-        <form onSubmit={handleSynthesizeCustomCourse} className="p-4 rounded-2xl bg-[#16191E] border border-white/[0.06] flex flex-col sm:flex-row items-center gap-3">
+        <form onSubmit={handleSynthesizeCustomCourse} className={`p-4 rounded-2xl border flex flex-col sm:flex-row items-center gap-3 transition-colors ${
+          isDark ? "bg-[#16191E] border-white/[0.06]" : "bg-white border-black/[0.08] shadow-sm"
+        }`}>
           <div className="flex items-center gap-2 text-xs font-bold text-[#FF857A] shrink-0">
             <Sparkles className="w-4 h-4" />
             <span>AI Fast-Track Synthesizer:</span>
@@ -361,7 +366,9 @@ export default function CoursesPage() {
             placeholder="Type any skill (e.g., GraphQL, Rust, Terraform, Pandas, PyTorch)..."
             value={customSkillPrompt}
             onChange={(e) => setCustomSkillPrompt(e.target.value)}
-            className="flex-1 w-full bg-[#0E1114] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#FF6B5F]"
+            className={`flex-1 w-full rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-[#FF6B5F] ${
+              isDark ? "bg-[#0E1114] border border-white/10 text-white placeholder-neutral-500" : "bg-[#FAF7F2] border border-black/[0.08] text-[#111418] placeholder-neutral-400"
+            }`}
           />
           <button
             type="submit"
@@ -390,12 +397,12 @@ export default function CoursesPage() {
                 placeholder="Search courses, skills, topics..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-[#16191E] border border-white/[0.08] rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#FF6B5F]"
+                className={`w-full rounded-xl pl-10 pr-4 py-2.5 text-xs focus:outline-none focus:border-[#FF6B5F] ${isDark ? "bg-[#16191E] border border-white/[0.08] text-white placeholder-neutral-500" : "bg-white border border-black/[0.1] text-[#111418] placeholder-neutral-400"}`}
               />
             </div>
 
             <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-1 md:pb-0">
-              <div className="flex items-center gap-1 bg-[#16191E] p-1 rounded-xl border border-white/[0.06] shrink-0">
+              <div className={`flex items-center gap-1 p-1 rounded-xl border shrink-0 ${isDark ? "bg-[#16191E] border-white/[0.06]" : "bg-white border-black/[0.08]"}`}>
                 {['All', 'Enrolled', 'Available'].map((mode) => (
                   <button
                     key={mode}
@@ -415,7 +422,7 @@ export default function CoursesPage() {
               <select
                 value={selectedDifficulty}
                 onChange={(e) => setSelectedDifficulty(e.target.value)}
-                className="bg-[#16191E] border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-neutral-300 focus:outline-none focus:border-[#FF6B5F] cursor-pointer"
+                className={`rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#FF6B5F] cursor-pointer ${isDark ? "bg-[#16191E] border border-white/[0.08] text-neutral-300" : "bg-white border border-black/[0.1] text-[#111418]"}`}
               >
                 <option value="All">All Difficulties</option>
                 <option value="Beginner">Beginner</option>
@@ -435,7 +442,7 @@ export default function CoursesPage() {
                 className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all border cursor-pointer ${
                   selectedCategory === cat
                     ? 'bg-[#FF6B5F]/15 border-[#FF6B5F] text-[#FF857A]'
-                    : 'bg-[#16191E] border-white/[0.06] text-neutral-400 hover:border-white/20 hover:text-white'
+                    : isDark ? 'bg-[#16191E] border-white/[0.06] text-neutral-400 hover:border-white/20 hover:text-white' : 'bg-white border-black/[0.08] text-[#4B5563] hover:border-black/20 hover:text-[#111418]'
                 }`}
               >
                 {cat}
@@ -453,12 +460,12 @@ export default function CoursesPage() {
             return (
               <div
                 key={course.id}
-                className="rounded-2xl bg-[#16191E] border border-white/[0.06] hover:border-white/20 transition-all duration-200 flex flex-col justify-between overflow-hidden group shadow-lg"
+                className={`rounded-2xl border transition-all duration-200 flex flex-col justify-between overflow-hidden group shadow-md ${isDark ? "bg-[#16191E] border-white/[0.06] hover:border-white/20" : "bg-white border-black/[0.08] hover:border-[#FF6B5F]/40"}`}
               >
                 <div className="p-5 space-y-4">
                   {/* Top Badges */}
                   <div className="flex items-center justify-between gap-2">
-                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white/[0.06] text-neutral-300 font-mono">
+                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider font-mono ${isDark ? "bg-white/[0.06] text-neutral-300" : "bg-black/[0.05] text-[#374151]"}`}>
                       {course.category}
                     </span>
                     <div className="flex items-center gap-1.5">
@@ -477,11 +484,11 @@ export default function CoursesPage() {
                   <div>
                     <h3
                       onClick={() => setSelectedCourse(course)}
-                      className="text-base font-bold text-white group-hover:text-[#FF857A] transition-colors cursor-pointer leading-snug line-clamp-2"
+                      className={`text-base font-bold group-hover:text-[#FF857A] transition-colors cursor-pointer leading-snug line-clamp-2 ${isDark ? "text-white" : "text-[#111418]"}`}
                     >
                       {course.title}
                     </h3>
-                    <p className="text-xs text-neutral-400 mt-1 line-clamp-2 leading-relaxed">
+                    <p className={`text-xs mt-1 line-clamp-2 leading-relaxed ${isDark ? "text-neutral-400" : "text-[#4B5563]"}`}>
                       {course.tagline}
                     </p>
                   </div>
@@ -491,7 +498,7 @@ export default function CoursesPage() {
                     {course.skillsCovered.slice(0, 3).map((skill, idx) => (
                       <span
                         key={idx}
-                        className="px-2 py-0.5 rounded-md bg-[#0E1114] border border-white/[0.04] text-[11px] text-neutral-300 font-mono"
+                        className={`px-2 py-0.5 rounded-md text-[11px] font-mono ${isDark ? "bg-[#0E1114] border border-white/[0.04] text-neutral-300" : "bg-[#FAF7F2] border border-black/[0.06] text-[#374151]"}`}
                       >
                         {skill}
                       </span>
@@ -507,12 +514,12 @@ export default function CoursesPage() {
                   {course.enrolled && (
                     <div className="space-y-1.5 pt-1">
                       <div className="flex justify-between text-[11px] font-semibold">
-                        <span className="text-neutral-400">Track Progress</span>
-                        <span className="text-white font-mono">{course.progress || 0}%</span>
+                        <span className={isDark ? "text-neutral-400" : "text-[#6B7280]"}>Track Progress</span>
+                        <span className={`font-mono ${isDark ? "text-white" : "text-[#111418]"}`}>{course.progress || 0}%</span>
                       </div>
-                      <div className="h-1.5 w-full bg-white/[0.06] rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-[#34D399] rounded-full transition-all duration-300"
+                      <div className={`h-1.5 w-full rounded-full overflow-hidden ${isDark ? "bg-white/[0.06]" : "bg-black/[0.06]"}`}>
+                          <div
+                            className="h-full bg-[#34D399] rounded-full transition-all duration-300"
                           style={{ width: `${course.progress || 0}%` }}
                         />
                       </div>
@@ -521,8 +528,8 @@ export default function CoursesPage() {
                 </div>
 
                 {/* Card Footer */}
-                <div className="p-4 border-t border-white/[0.06] bg-[#0E1114]/50 flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-3 text-xs text-neutral-400 font-mono">
+                <div className={`p-4 border-t flex items-center justify-between gap-2 ${isDark ? "border-white/[0.06] bg-[#0E1114]/50" : "border-black/[0.06] bg-white"}`}>
+                    <div className={`flex items-center gap-3 text-xs font-mono ${isDark ? "text-neutral-400" : "text-[#6B7280]"}`}>
                     <span className="flex items-center gap-1">
                       <Clock className="w-3.5 h-3.5" />
                       {course.duration}
@@ -537,7 +544,7 @@ export default function CoursesPage() {
                     <button
                       type="button"
                       onClick={() => setSelectedCourse(course)}
-                      className="px-3 py-1.5 rounded-lg border border-white/10 text-xs font-semibold text-neutral-300 hover:text-white hover:bg-white/[0.04] transition-all cursor-pointer"
+                      className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all cursor-pointer ${isDark ? "border-white/10 text-neutral-300 hover:text-white hover:bg-white/[0.04]" : "border-black/10 text-[#374151] hover:text-[#111418] hover:bg-black/[0.04]"}`}
                     >
                       View
                     </button>
@@ -560,10 +567,10 @@ export default function CoursesPage() {
         </div>
 
         {filteredCourses.length === 0 && (
-          <div className="p-12 text-center rounded-3xl bg-[#16191E] border border-white/[0.06] space-y-3">
-            <BookOpen className="w-10 h-10 text-neutral-500 mx-auto" />
-            <h3 className="text-base font-bold text-white">No courses match your active filter</h3>
-            <p className="text-xs text-neutral-400 max-w-sm mx-auto">
+          <div className={`p-12 text-center rounded-3xl border space-y-3 ${isDark ? "bg-[#16191E] border-white/[0.06]" : "bg-white border-black/[0.08]"}`}>
+              <BookOpen className="w-10 h-10 text-neutral-500 mx-auto" />
+            <h3 className={`text-base font-bold ${isDark ? "text-white" : "text-[#111418]"}`}>No courses match your active filter</h3>
+            <p className={`text-xs max-w-sm mx-auto ${isDark ? "text-neutral-400" : "text-[#6B7280]"}`}>
               Try adjusting your search query, difficulty, or category filter to explore other engineering tracks.
             </p>
           </div>
