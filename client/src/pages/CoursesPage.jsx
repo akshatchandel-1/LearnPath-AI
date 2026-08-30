@@ -283,7 +283,7 @@ export default function CoursesPage() {
   const enrolledCourses = courses.filter((c) => c.enrolled);
   const enrolledCount = enrolledCourses.length;
   const totalCompletedLessons = courses.reduce((acc, c) => acc + (c.completedLessons || 0), 0);
-  const totalXpAvailable = courses.reduce((acc, c) => acc + (c.xpReward || 300), 0);
+  const userEarnedCourseXp = user?.points ?? user?.totalXp ?? 0;
 
   const categories = ['All', 'Frontend', 'Backend', 'Data Science', 'DevOps', 'Business Analytics', 'Full Stack'];
 
@@ -341,11 +341,11 @@ export default function CoursesPage() {
               <Award className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-neutral-400">Total Course XP</p>
+              <p className="text-xs font-semibold text-neutral-400">Course XP Earned</p>
               <p className="text-xl sm:text-2xl font-black text-white font-mono mt-0.5">
-                {totalXpAvailable}
+                +{userEarnedCourseXp} XP
               </p>
-              <p className="text-[11px] text-[#FBBF24] font-semibold">XP Unlockable in Catalog</p>
+              <p className="text-[11px] text-[#FBBF24] font-semibold">Verified Skill Points</p>
             </div>
           </div>
         </div>

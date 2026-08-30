@@ -14,13 +14,9 @@ class LLMService {
     }
 
     const models = [
-      "gemini-3.6-flash",
-      "gemini-3.5-flash",
       "gemini-3.5-flash-lite",
-      "gemini-3.1-flash-lite",
-      "gemini-flash-lite-latest",
-      "gemma-4-26b-a4b-it",
-      "gemma-4-31b-it"
+      "gemini-3.5-flash",
+      "gemini-3.6-flash"
     ];
     const timeoutMs = options.timeout || 15000;
 
@@ -51,7 +47,6 @@ class LLMService {
           const data = await response.json();
           let text = data.candidates?.[0]?.content?.parts?.[0]?.text;
           if (text && text.trim().length > 0) {
-            // Strip any thinking tags if present
             text = text.replace(/<thought>[\s\S]*?<\/thought>/gi, "").trim();
             if (text.length > 0) {
               return text;
@@ -59,7 +54,7 @@ class LLMService {
           }
         }
       } catch (err) {
-        // Continue to fallback model if network or timeout occurs
+        // Fallback to next available model
       }
     }
 
@@ -69,4 +64,3 @@ class LLMService {
 
 const llmService = new LLMService();
 module.exports = llmService;
-

@@ -34,7 +34,7 @@ class MentorService {
 
   extractQuizRequest(userMessage = "") {
     const msgLower = (userMessage || "").toLowerCase();
-    const isQuizIntent = msgLower.includes("quiz") || msgLower.includes("test me") || msgLower.includes("question");
+    const isQuizIntent = msgLower.includes("quiz") || msgLower.includes("test me") || msgLower.includes("questions");
     if (!isQuizIntent) return null;
 
     const countMatch = userMessage.match(/\b(\d+)\b/);
@@ -56,8 +56,15 @@ class MentorService {
     const skillGapAnalysis = skillGapEngine.calculateSkillGap(userSkills, currentRole);
     const currentPhase = learningPath?.phases?.find(p => p.status === "in-progress") || learningPath?.phases?.[0];
 
-    const systemPrompt = `You are LearnPath AI Mentor, an expert senior engineering tutor and pedagogical assistant.
-You provide clear, structured, technically deep, and encouraging explanations tailored to the learner.
+    const recentMessages = (conversation.messages || []).slice(-6);
+    let historyContext = "";
+    if (recentMessages.length > 0) {
+      historyContext = "\n\nRecent Conversation Context:\n" +
+        recentMessages.map(m => `${m.role === "user" ? "Learner" : "Assistant"}: ${m.content}`).join("\n");
+    }
+
+    const systemPrompt = `You are LearnPath AI Mentor, an expert senior engineering tutor, career advisor, and technical chatbot.
+You provide clear, accurate, structured, technically deep, and encouraging explanations tailored to the learner.
 
 Learner Context:
 - Target Engineering Objective: ${currentRole}
@@ -66,12 +73,12 @@ Learner Context:
 - Critical Skill Gaps: ${skillGapAnalysis.criticalGaps.length > 0 ? skillGapAnalysis.criticalGaps.join(", ") : "Foundational skills in progress"}
 
 Instructions:
-1. Directly and accurately answer the learner question.
-2. Provide technical clarity with concise examples, key principles, and structured points where helpful.
-3. Align advice and concepts with their target role (${currentRole}) and career trajectory.
-4. Keep tone professional, encouraging, and clear.`;
+1. Directly and accurately answer whatever technical or conceptual question the learner asks (e.g., Java, React, REST API, MongoDB, Docker, Git, async/await, databases, etc.).
+2. For follow-up questions (e.g., "Why is it useful?", "Give me an example"), resolve pronouns using recent conversation context.
+3. Provide concise examples, key principles, and structured points where helpful.
+4. Keep tone professional, encouraging, concise, and clear.`;
 
-    const prompt = `${systemPrompt}\n\nLearner Question: "${userMessage}"\n\nMentor Response:`;
+    const prompt = `${systemPrompt}${historyContext}\n\nLearner Question: "${userMessage}"\n\nMentor Response:`;
 
     let replyContent = await llmService.generateContent(prompt);
     let relatedTopics = [];
@@ -108,7 +115,7 @@ Instructions:
         payload: {},
       });
     } else {
-      console.warn("LLM generation unavailable or empty response. Returning standard fallback.");
+      console.warn("LLM generation unavailable. Returning standard fallback.");
       replyContent = "The AI service is temporarily unavailable. Please try again shortly.";
       relatedTopics = [`${currentRole} Strategy`, "Roadmap Milestones"];
       suggestedActions = [
@@ -147,7 +154,7 @@ Instructions:
         messages: [
           {
             role: "assistant",
-            content: `Hello! I am your **LearnPath AI Mentor**.\n\nI am connected to your live roadmap, skill gaps, and learning telemetry. How can I accelerate your learning today?`,
+            content: "Hello! I am your **LearnPath AI Mentor**.\n\nI am connected to your live roadmap, skill gaps, and learning telemetry. How can I accelerate your learning today?",
             timestamp: new Date(),
           },
         ],
@@ -163,4 +170,3 @@ Instructions:
 
 const mentorService = new MentorService();
 module.exports = mentorService;
-

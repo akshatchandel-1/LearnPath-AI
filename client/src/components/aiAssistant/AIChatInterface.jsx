@@ -25,7 +25,7 @@ import {
 } from 'lucide-react';
 
 export default function AIChatInterface() {
-  const { user } = useAuth();
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
   const { learningPath, skillGapReport } = useLearningPath();
   const navigate = useNavigate();
   const activeRole = user?.targetRole || user?.careerGoal || 'Full Stack Developer';
@@ -104,7 +104,7 @@ export default function AIChatInterface() {
         const aiReply = {
           id: `m-ai-${Date.now()}`,
           sender: 'ai',
-          text: res.data.message.content,
+          text: res.data.message?.content || res.data.message?.text || res.data.reply || "",
           suggestedActions: res.data.suggestedActions || [],
           relatedTopics: res.data.relatedTopics || []
         };
