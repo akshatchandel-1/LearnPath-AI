@@ -111,7 +111,7 @@ export default function AuthPage({ defaultIsLogin = true }) {
               LearnPath <span className="text-[#FF6B5F]">AI</span>
             </span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-black tracking-tight text-[#F5F1E8]">
+          <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white dark:text-white" style={{ color: '#FFFFFF' }}>
             {isLogin ? 'Welcome Back' : 'Launch Your Career Path'}
           </h1>
           <p className="text-xs sm:text-sm text-[#8C877D] mt-1">

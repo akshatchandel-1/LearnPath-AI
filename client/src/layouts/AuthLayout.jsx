@@ -32,7 +32,7 @@ export default function AuthLayout({ children, title, subtitle }) {
             </span>
           </Link>
           {title && (
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#F5F1E8]">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white dark:text-white" style={{ color: '#FFFFFF' }}>
               {title}
             </h1>
           )}

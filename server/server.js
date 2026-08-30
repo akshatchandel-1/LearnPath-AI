@@ -38,7 +38,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Root and Health Endpoints (No DB dependency required)
+// Backend Root Endpoint
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'LearnPath AI API is running',
+    version: '1.0.0',
+  });
+});
+
+// API Root Endpoint
 app.get('/api', (req, res) => {
   res.json({
     success: true,
