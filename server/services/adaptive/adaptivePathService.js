@@ -1,418 +1,583 @@
 ﻿const LearningPath = require('../../models/LearningPath');
-const User = require('../../models/User');
-const LearnerProfile = require('../../models/LearnerProfile');
 const Resource = require('../../models/Resource');
-const prerequisiteEngine = require('../recommendation/prerequisiteEngine');
+const User = require('../../models/User');
 
-const ROLE_PHASE_TEMPLATES = {
-  'data scientist': [
-    {
-      phaseNumber: 1,
-      title: 'Python for Data Science, Pandas & Data Wrangling',
-      description: 'Master Python syntax, NumPy array vectorization, Pandas DataFrame manipulation, and data cleaning pipelines.',
-      estimatedWeeks: 2,
-      skills: ['Python Programming', 'Pandas & Data Wrangling'],
-      milestone: {
-        title: 'Exploratory Data Analysis (EDA) Pipeline',
-        description: 'Build an automated cleaning and statistical summary pipeline for multi-gigabyte datasets.',
-        deliverables: ['Modular Pandas pipeline', 'Automated missing-value imputation script'],
+const ROLE_TEMPLATES = {
+  'frontend': {
+    title: 'Frontend Developer Master Roadmap',
+    phases: [
+      {
+        phaseNumber: 1,
+        title: 'HTML5 Semantics, Modern CSS3 & Responsive Architecture',
+        description: 'Semantic tags, Flexbox, CSS Grid, mobile-first design, and CSS custom properties.',
+        estimatedWeeks: 3,
+        milestone: { title: 'Responsive Design System', description: 'Build an accessible, responsive component library.' },
+        requiredSkillNames: ['HTML & CSS', 'Responsive Web Design'],
       },
-      quiz: {
-        title: 'Python & Pandas Data Science Checkpoint',
-        skill: 'Python Programming',
-        minPassingScore: 70,
+      {
+        phaseNumber: 2,
+        title: 'Modern JavaScript (ES6+), Asynchronous Control Flow & DOM',
+        description: 'Closures, Event Loop, Promises, Fetch API, and DOM reconciliation patterns.',
+        estimatedWeeks: 3,
+        milestone: { title: 'Async API Explorer Application', description: 'Create an interactive single-page app consuming REST APIs.' },
+        requiredSkillNames: ['JavaScript', 'DOM Manipulation'],
       },
-      status: 'in-progress',
-      completionPercentage: 0,
-    },
-    {
-      phaseNumber: 2,
-      title: 'Applied Statistics, Probability & Hypothesis Testing',
-      description: 'Probability distributions, central limit theorem, A/B testing frameworks, and confidence intervals.',
-      estimatedWeeks: 2,
-      skills: ['Applied Statistics & Probability'],
-      milestone: {
-        title: 'Statistical Hypothesis & A/B Experiment Engine',
-        description: 'Run parametric and non-parametric hypothesis tests on real conversion telemetry.',
-        deliverables: ['Statistical significance notebook', 'A/B test decision report'],
+      {
+        phaseNumber: 3,
+        title: 'React.js Component Architecture, Custom Hooks & Tailwind CSS',
+        description: 'JSX, component tree decomposition, useState, useEffect, custom hooks, and Tailwind CSS.',
+        estimatedWeeks: 4,
+        milestone: { title: 'Full Interactive React Dashboard', description: 'Deliver a production React client with optimized state management.' },
+        requiredSkillNames: ['React.js', 'Tailwind CSS'],
       },
-      quiz: {
-        title: 'Statistical Inference Assessment',
-        skill: 'Applied Statistics & Probability',
-        minPassingScore: 70,
+      {
+        phaseNumber: 4,
+        title: 'Global State Management (Zustand/Redux) & TypeScript',
+        description: 'Type-safe interfaces, generics, global stores, selectors, and immutable state updates.',
+        estimatedWeeks: 3,
+        milestone: { title: 'Type-Safe Enterprise Client', description: 'Architect a TypeScript React app with global store hydration.' },
+        requiredSkillNames: ['TypeScript', 'State Management'],
       },
-      status: 'locked',
-      completionPercentage: 0,
-    },
-    {
-      phaseNumber: 3,
-      title: 'Classical Machine Learning Algorithms & Scikit-Learn',
-      description: 'Supervised regression, classification, decision trees, ensemble methods (XGBoost/RandomForest), and cross-validation.',
-      estimatedWeeks: 3,
-      skills: ['Machine Learning Algorithms'],
-      milestone: {
-        title: 'Predictive Churn & Classification Model',
-        description: 'Train, evaluate, and tune an ensemble model achieving >88% ROC-AUC with feature importance analysis.',
-        deliverables: ['Trained model pipeline (.joblib)', 'Hyperparameter search log'],
+      {
+        phaseNumber: 5,
+        title: 'Web Performance, Accessibility (a11y) & Testing',
+        description: 'Core Web Vitals, code-splitting, lazy loading, ARIA roles, and Vitest/Playwright test suites.',
+        estimatedWeeks: 3,
+        milestone: { title: 'Audit & Test Suite Capstone', description: 'Achieve 95+ Lighthouse score and 90% unit/E2E test coverage.' },
+        requiredSkillNames: ['Testing', 'Web Performance'],
       },
-      quiz: {
-        title: 'Machine Learning Algorithms Checkpoint',
-        skill: 'Machine Learning Algorithms',
-        minPassingScore: 75,
-      },
-      status: 'locked',
-      completionPercentage: 0,
-    },
-    {
-      phaseNumber: 4,
-      title: 'Deep Learning, Neural Networks & PyTorch',
-      description: 'Backpropagation, PyTorch tensors, convolutional networks (CNNs), sequence models, and transfer learning.',
-      estimatedWeeks: 3,
-      skills: ['Deep Learning & Neural Networks'],
-      milestone: {
-        title: 'Computer Vision / Deep Learning Classifier',
-        description: 'Architect and fine-tune a deep neural network with learning rate scheduling and early stopping.',
-        deliverables: ['PyTorch model training script', 'Validation loss curve dashboard'],
-      },
-      quiz: {
-        title: 'Deep Learning & Neural Networks Assessment',
-        skill: 'Deep Learning & Neural Networks',
-        minPassingScore: 75,
-      },
-      status: 'locked',
-      completionPercentage: 0,
-    },
-    {
-      phaseNumber: 5,
-      title: 'Production MLOps, Model Serving & FastAPI Microservices',
-      description: 'Model serialization, ONNX runtime, FastAPI inference endpoints, Docker containerization, and drift monitoring.',
-      estimatedWeeks: 2,
-      skills: ['FastAPI & Microservices', 'Docker & Deployment'],
-      milestone: {
-        title: 'Production ML Inference REST Service',
-        description: 'Deploy a containerized real-time inference microservice with Swagger documentation and latency profiling.',
-        deliverables: ['Dockerized FastAPI service', 'Load-tested endpoint benchmark'],
-      },
-      quiz: {
-        title: 'MLOps & Model Serving Checkpoint',
-        skill: 'FastAPI & Microservices',
-        minPassingScore: 70,
-      },
-      status: 'locked',
-      completionPercentage: 0,
-    },
-  ],
+    ],
+  },
 
-  'cloud engineer': [
-    {
-      phaseNumber: 1,
-      title: 'Linux Administration, Bash Scripting & Networking Fundamentals',
-      description: 'POSIX permissions, systemd services, SSH tunneling, DNS/TCP routing, and automated bash maintenance scripts.',
-      estimatedWeeks: 2,
-      skills: ['Linux & Bash Scripting'],
-      milestone: {
-        title: 'Automated Server Provisioning & Hardening Script',
-        description: 'Script a zero-touch Linux server bootstrap configuring firewall (UFW), SSH keys, and system monitors.',
-        deliverables: ['Idempotent Bash setup script', 'Security audit report'],
+  'backend': {
+    title: 'Backend Developer Master Roadmap',
+    phases: [
+      {
+        phaseNumber: 1,
+        title: 'Node.js Runtime Architecture, Event Loop & Streams',
+        description: 'Libuv event loop, non-blocking asynchronous I/O, Buffer manipulation, and Stream pipelines.',
+        estimatedWeeks: 3,
+        milestone: { title: 'High-Throughput Stream Processor', description: 'Build an asynchronous streaming file and data pipeline.' },
+        requiredSkillNames: ['Node.js', 'Asynchronous Programming'],
       },
-      quiz: {
-        title: 'Linux & Networking Assessment',
-        skill: 'Linux & Bash Scripting',
-        minPassingScore: 70,
+      {
+        phaseNumber: 2,
+        title: 'Express.js RESTful API Design, Middleware & Routing',
+        description: 'HTTP protocol standards, error-handling middleware, request validation, and routing.',
+        estimatedWeeks: 3,
+        milestone: { title: 'Modular REST API Server', description: 'Deploy a clean REST API with comprehensive schema validation.' },
+        requiredSkillNames: ['Express.js', 'RESTful APIs'],
       },
-      status: 'in-progress',
-      completionPercentage: 0,
-    },
-    {
-      phaseNumber: 2,
-      title: 'Docker Containerization & Image Optimization',
-      description: 'Multi-stage Dockerfiles, non-root container users, volume mounts, bridge networks, and Docker Compose stacks.',
-      estimatedWeeks: 2,
-      skills: ['Docker & Containerization'],
-      milestone: {
-        title: 'Multi-Tier Containerized Application Stack',
-        description: 'Containerize frontend, backend, and redis cache with health checks and minimal alpine base images.',
-        deliverables: ['Multi-stage Dockerfile (<50MB)', 'Production docker-compose.yml'],
+      {
+        phaseNumber: 3,
+        title: 'Database Modeling with MongoDB & PostgreSQL',
+        description: 'Schema normalization, compound indexing, aggregation pipelines, and transaction isolation.',
+        estimatedWeeks: 4,
+        milestone: { title: 'Dual-Engine Persistence Layer', description: 'Implement an indexed, multi-tenant database persistence layer.' },
+        requiredSkillNames: ['MongoDB', 'SQL & Relational Databases'],
       },
-      quiz: {
-        title: 'Docker Architecture Checkpoint',
-        skill: 'Docker & Containerization',
-        minPassingScore: 75,
+      {
+        phaseNumber: 4,
+        title: 'Authentication, JWT Lifecycles, RBAC & API Security',
+        description: 'Bcrypt hashing, refresh token rotation, role-based authorization, rate limiting, and CORS.',
+        estimatedWeeks: 3,
+        milestone: { title: 'Hardened Auth Microservice', description: 'Build a secure authentication and authorization microservice.' },
+        requiredSkillNames: ['Web Security & Auth', 'JWT & OAuth'],
       },
-      status: 'locked',
-      completionPercentage: 0,
-    },
-    {
-      phaseNumber: 3,
-      title: 'Kubernetes Cluster Orchestration & Deployment',
-      description: 'Pods, Deployments, Services, Ingress controllers, ConfigMaps, Secrets, and Horizontal Pod Autoscaling (HPA).',
-      estimatedWeeks: 3,
-      skills: ['Kubernetes & Orchestration'],
-      milestone: {
-        title: 'Zero-Downtime Rolling Kubernetes Deployment',
-        description: 'Deploy a high-availability microservice cluster with self-healing readiness/liveness probes and autoscaling.',
-        deliverables: ['K8s manifests YAML suite', 'Helm chart package'],
+      {
+        phaseNumber: 5,
+        title: 'Redis In-Memory Caching & Message Queues',
+        description: 'Key-value caching, Pub/Sub patterns, session stores, and asynchronous job processing with BullMQ.',
+        estimatedWeeks: 3,
+        milestone: { title: 'Distributed Cache & Job Worker', description: 'Implement a Redis caching layer with asynchronous background worker queues.' },
+        requiredSkillNames: ['Redis', 'Distributed Systems'],
       },
-      quiz: {
-        title: 'Kubernetes Cluster Engineering Assessment',
-        skill: 'Kubernetes & Orchestration',
-        minPassingScore: 75,
-      },
-      status: 'locked',
-      completionPercentage: 0,
-    },
-    {
-      phaseNumber: 4,
-      title: 'AWS Cloud Fundamentals, IAM & Infrastructure',
-      description: 'EC2, VPC subnets, Internet Gateways, S3 bucket policies, IAM least-privilege roles, and Application Load Balancers.',
-      estimatedWeeks: 2.5,
-      skills: ['AWS Cloud Fundamentals'],
-      milestone: {
-        title: 'Secure Multi-AZ Cloud Architecture Blueprint',
-        description: 'Architect a high-availability VPC with public/private subnets and NAT gateways on AWS.',
-        deliverables: ['VPC topology architecture diagram', 'IAM policy verification log'],
-      },
-      quiz: {
-        title: 'AWS Cloud Architecture Checkpoint',
-        skill: 'AWS Cloud Fundamentals',
-        minPassingScore: 75,
-      },
-      status: 'locked',
-      completionPercentage: 0,
-    },
-    {
-      phaseNumber: 5,
-      title: 'Terraform Infrastructure as Code (IaC) & CI/CD Pipelines',
-      description: 'Declarative HCL syntax, state management, remote backends (S3/DynamoDB), modules, and GitHub Actions automation.',
-      estimatedWeeks: 2,
-      skills: ['Terraform & IaC', 'CI/CD & GitHub Actions'],
-      milestone: {
-        title: 'Automated GitOps Infrastructure Pipeline',
-        description: 'Provision complete cloud infrastructure automatically through GitHub Actions on merge request.',
-        deliverables: ['Modular Terraform codebase', 'Automated CI/CD pipeline workflow'],
-      },
-      quiz: {
-        title: 'Terraform & CI/CD Engineering Assessment',
-        skill: 'Terraform & IaC',
-        minPassingScore: 80,
-      },
-      status: 'locked',
-      completionPercentage: 0,
-    },
-  ],
+    ],
+  },
 
-  'full stack developer': [
-    {
-      phaseNumber: 1,
-      title: 'Modern JavaScript & Asynchronous Foundations',
-      description: 'Master ES6+ syntax, scope, closures, array pipelines, Promises, and the Event Loop.',
-      estimatedWeeks: 2,
-      skills: ['JavaScript', 'HTML & CSS'],
-      milestone: {
-        title: 'Interactive Asynchronous Dashboard Widget',
-        description: 'Build a vanilla JS client consuming public REST APIs with debounce and caching.',
-        deliverables: ['Clean modular ES6 code', 'Async fetch handler with error boundaries'],
+  'datascientist': {
+    title: 'Data Scientist Master Roadmap',
+    phases: [
+      {
+        phaseNumber: 1,
+        title: 'Python for Data Science, Pandas & Data Wrangling',
+        description: 'NumPy vectorization, Pandas DataFrame manipulation, missing data imputation, and EDA.',
+        estimatedWeeks: 3,
+        milestone: { title: 'Exploratory Data Analysis Report', description: 'Analyze, clean, and visualize multi-variable structured datasets.' },
+        requiredSkillNames: ['Python', 'Pandas & NumPy'],
       },
-      quiz: {
-        title: 'JavaScript Core & Async Mastery Checkpoint',
-        skill: 'JavaScript',
-        minPassingScore: 70,
+      {
+        phaseNumber: 2,
+        title: 'Applied Statistics, Probability & Hypothesis Testing',
+        description: 'Descriptive metrics, normal distributions, p-values, A/B testing, and regression analysis.',
+        estimatedWeeks: 3,
+        milestone: { title: 'A/B Experimentation Framework', description: 'Design and validate hypothesis test pipelines with confidence intervals.' },
+        requiredSkillNames: ['Applied Statistics', 'Probability'],
       },
-      status: 'in-progress',
-      completionPercentage: 0,
-    },
-    {
-      phaseNumber: 2,
-      title: 'React.js Component Architecture & State Management',
-      description: 'Component lifecycles, custom hooks (useEffect, useMemo, useCallback), Context API, and state immutability.',
-      estimatedWeeks: 2,
-      skills: ['React.js', 'Tailwind CSS'],
-      milestone: {
-        title: 'Dynamic Portfolio Project Showcase',
-        description: 'Architect a multi-view responsive React SPA with Tailwind and Context API.',
-        deliverables: ['Custom hook for data synchronization', 'Accessible glassmorphic UI'],
+      {
+        phaseNumber: 3,
+        title: 'Classical Machine Learning Algorithms & Scikit-Learn',
+        description: 'Linear/logistic regression, decision trees, random forests, gradient boosting, and cross-validation.',
+        estimatedWeeks: 4,
+        milestone: { title: 'Predictive Modeling Pipeline', description: 'Train and tune ML models with hyperparameter search and ROC-AUC evaluation.' },
+        requiredSkillNames: ['Machine Learning', 'Scikit-Learn'],
       },
-      quiz: {
-        title: 'React.js Component Architecture Assessment',
-        skill: 'React.js',
-        minPassingScore: 70,
+      {
+        phaseNumber: 4,
+        title: 'Deep Learning Foundations, PyTorch & Neural Networks',
+        description: 'Backpropagation, feedforward networks, convolutional networks (CNNs), and PyTorch tensors.',
+        estimatedWeeks: 4,
+        milestone: { title: 'Deep Vision / NLP Classifier', description: 'Train a convolutional or recurrent neural network in PyTorch.' },
+        requiredSkillNames: ['Deep Learning', 'PyTorch'],
       },
-      status: 'locked',
-      completionPercentage: 0,
-    },
-    {
-      phaseNumber: 3,
-      title: 'Node.js Runtime, Event Loop & Express Middleware',
-      description: 'Server architecture, non-blocking I/O, Express routing, middleware stacks, and error handling.',
-      estimatedWeeks: 2,
-      skills: ['Node.js', 'Express.js'],
-      milestone: {
-        title: 'RESTful Micro-Service Boilerplate',
-        description: 'Construct a modular Express REST API with centralized error handling and logging.',
-        deliverables: ['Modular routes and controllers', 'Comprehensive input validation'],
+      {
+        phaseNumber: 5,
+        title: 'Production MLOps, Model Serving & FastAPI Microservices',
+        description: 'FastAPI inference endpoints, MLflow experiment tracking, Docker containerization, and data drift monitoring.',
+        estimatedWeeks: 3,
+        milestone: { title: 'Deployed ML Inference API', description: 'Deploy an automated model inference service on cloud infrastructure.' },
+        requiredSkillNames: ['MLOps', 'FastAPI'],
       },
-      quiz: {
-        title: 'Node.js & Express RESTful Backend Checkpoint',
-        skill: 'Node.js',
-        minPassingScore: 70,
+    ],
+  },
+
+  'aiengineer': {
+    title: 'AI & Machine Learning Engineer Master Roadmap',
+    phases: [
+      {
+        phaseNumber: 1,
+        title: 'Advanced Python, Vectorized Math & Matrix Computation',
+        description: 'High-performance NumPy operations, linear algebra, multithreading, and algorithmic complexity.',
+        estimatedWeeks: 3,
+        milestone: { title: 'Vector Math & Tensor Engine', description: 'Implement foundational matrix multiplication and tensor routines.' },
+        requiredSkillNames: ['Python', 'NumPy'],
       },
-      status: 'locked',
-      completionPercentage: 0,
-    },
-    {
-      phaseNumber: 4,
-      title: 'MongoDB Schema Modeling & Aggregation Pipelines',
-      description: 'NoSQL document design, Mongoose schemas, indexes, compound lookups, and aggregation frameworks.',
-      estimatedWeeks: 2,
-      skills: ['MongoDB'],
-      milestone: {
-        title: 'E-Commerce Relational Document Model',
-        description: 'Design normalized and embedded Mongoose schemas with multi-stage $facet aggregations.',
-        deliverables: ['Optimized compound index queries', 'Seeded aggregation scripts'],
+      {
+        phaseNumber: 2,
+        title: 'Deep Neural Networks, Transformers & Attention Mechanisms',
+        description: 'Self-attention, multi-head attention, positional encoding, and transformer architectures.',
+        estimatedWeeks: 4,
+        milestone: { title: 'Transformer Sequence Encoder', description: 'Build and train a multi-head self-attention module in PyTorch.' },
+        requiredSkillNames: ['PyTorch', 'Transformers'],
       },
-      quiz: {
-        title: 'MongoDB & Schema Design Assessment',
-        skill: 'MongoDB',
-        minPassingScore: 70,
+      {
+        phaseNumber: 3,
+        title: 'Large Language Models (LLMs), Prompt Engineering & Fine-Tuning',
+        description: 'OpenAI/Gemini API integration, tokenization, PEFT/LoRA fine-tuning, and model evaluation.',
+        estimatedWeeks: 4,
+        milestone: { title: 'Domain-Adapted LLM Service', description: 'Fine-tune an open-source model using parameter-efficient fine-tuning (LoRA).' },
+        requiredSkillNames: ['LLM Engineering', 'Prompt Engineering'],
       },
-      status: 'locked',
-      completionPercentage: 0,
-    },
-    {
-      phaseNumber: 5,
-      title: 'RESTful API Engineering & Authentication Security',
-      description: 'JWT token lifecycles, HTTP-only cookies, bcrypt salt hashing, CORS policies, and RBAC authorization.',
-      estimatedWeeks: 1.5,
-      skills: ['REST APIs', 'Authentication & Security'],
-      milestone: {
-        title: 'Production-Grade Auth & Security Gateway',
-        description: 'Implement refresh-token rotation with protected middleware guards.',
-        deliverables: ['JWT refresh token endpoint', 'Rate limiting and helmet protection'],
+      {
+        phaseNumber: 4,
+        title: 'Retrieval-Augmented Generation (RAG) & Vector Databases',
+        description: 'Embeddings generation, chunking strategies, vector search with ChromaDB/Pinecone, and reranking.',
+        estimatedWeeks: 4,
+        milestone: { title: 'Production Enterprise RAG System', description: 'Deploy a full hybrid-search RAG pipeline over private knowledge bases.' },
+        requiredSkillNames: ['RAG Architecture', 'Vector Databases'],
       },
-      quiz: {
-        title: 'REST APIs & Architecture Checkpoint',
-        skill: 'REST APIs',
-        minPassingScore: 70,
+      {
+        phaseNumber: 5,
+        title: 'AI Agent Workflows & Production Microservice Serving',
+        description: 'Tool calling, multi-agent orchestration, LangChain/LlamaIndex, and high-throughput vLLM serving.',
+        estimatedWeeks: 3,
+        milestone: { title: 'Autonomous Multi-Agent Copilot', description: 'Deploy an autonomous AI agent capable of multi-step tool execution.' },
+        requiredSkillNames: ['AI Agents', 'Model Deployment'],
       },
-      status: 'locked',
-      completionPercentage: 0,
-    },
-    {
-      phaseNumber: 6,
-      title: 'Full Stack MERN Capstone Platform Integration',
-      description: 'End-to-end integration connecting React SPA with authenticated Express API and MongoDB.',
-      estimatedWeeks: 2.5,
-      skills: ['React.js', 'Node.js', 'Express.js', 'MongoDB', 'REST APIs'],
-      milestone: {
-        title: 'AI SaaS Platform Capstone',
-        description: 'Ship a full-stack SaaS application with payment gateway and AI recommendations.',
-        deliverables: ['Live deployed demo', 'Modular GitHub repository with documentation'],
+    ],
+  },
+
+  'cloud': {
+    title: 'Cloud & Infrastructure Engineer Master Roadmap',
+    phases: [
+      {
+        phaseNumber: 1,
+        title: 'Linux Systems Administration & Networking Protocols',
+        description: 'TCP/IP, DNS, OSI layer analysis, systemd services, process management, and SSH hardening.',
+        estimatedWeeks: 3,
+        milestone: { title: 'Hardened Linux Gateway', description: 'Configure an automated, secured Linux gateway with firewall rules.' },
+        requiredSkillNames: ['Linux', 'Computer Networking'],
       },
-      quiz: {
-        title: 'Full Stack MERN Architecture Assessment',
-        skill: 'Full Stack Integration',
-        minPassingScore: 75,
+      {
+        phaseNumber: 2,
+        title: 'Docker Containerization & Microservice Architecture',
+        description: 'Multi-stage Dockerfiles, image optimization, volume persistence, and docker-compose orchestration.',
+        estimatedWeeks: 3,
+        milestone: { title: 'Optimized Container Fleet', description: 'Containerize multi-tier applications with minimal attack surface images.' },
+        requiredSkillNames: ['Docker', 'Microservices'],
       },
-      status: 'locked',
-      completionPercentage: 0,
-    },
-  ],
+      {
+        phaseNumber: 3,
+        title: 'AWS Cloud Architecture, VPCs & IAM Governance',
+        description: 'Amazon EC2, S3, RDS, VPC peering, subnets, routing tables, and least-privilege IAM policies.',
+        estimatedWeeks: 4,
+        milestone: { title: 'High-Availability Cloud VPC', description: 'Architect a fault-tolerant, multi-AZ cloud infrastructure.' },
+        requiredSkillNames: ['AWS Cloud', 'IAM Security'],
+      },
+      {
+        phaseNumber: 4,
+        title: 'Infrastructure as Code (IaC) with Terraform',
+        description: 'HCL syntax, provider configuration, state locking with S3/DynamoDB, and reusable modules.',
+        estimatedWeeks: 4,
+        milestone: { title: 'Automated Terraform Infrastructure', description: 'Provision complete multi-environment cloud resources via Terraform.' },
+        requiredSkillNames: ['Terraform', 'Infrastructure as Code'],
+      },
+      {
+        phaseNumber: 5,
+        title: 'Kubernetes Cluster Administration & Service Mesh',
+        description: 'Pods, Deployments, Services, Ingress controllers, Helm charts, and Istio service mesh.',
+        estimatedWeeks: 4,
+        milestone: { title: 'Production Kubernetes Cluster', description: 'Deploy an auto-scaling Kubernetes cluster with ingress routing.' },
+        requiredSkillNames: ['Kubernetes', 'Cloud Operations'],
+      },
+    ],
+  },
+
+  'devops': {
+    title: 'DevOps & Site Reliability Engineer (SRE) Master Roadmap',
+    phases: [
+      {
+        phaseNumber: 1,
+        title: 'Linux Internals, Git Workflow & Shell Automation',
+        description: 'Advanced Git branching, rebasing, Bash automation scripts, and cron task orchestration.',
+        estimatedWeeks: 3,
+        milestone: { title: 'Automated Server Setup Scripts', description: 'Write idempotent bash automation for complete server provisioning.' },
+        requiredSkillNames: ['Linux', 'Git & Version Control'],
+      },
+      {
+        phaseNumber: 2,
+        title: 'Continuous Integration & Delivery (CI/CD) with GitHub Actions',
+        description: 'Pipeline syntax, build matrices, artifact caching, security secret scanning, and automated testing.',
+        estimatedWeeks: 3,
+        milestone: { title: 'Zero-Downtime Deployment Pipeline', description: 'Implement an automated build, test, and release workflow.' },
+        requiredSkillNames: ['CI/CD Pipelines', 'GitHub Actions'],
+      },
+      {
+        phaseNumber: 3,
+        title: 'Docker & Production Kubernetes Cluster Orchestration',
+        description: 'Container security, Kubernetes manifest management, ConfigMaps, Secrets, and HPA autoscaling.',
+        estimatedWeeks: 4,
+        milestone: { title: 'GitOps Continuous Deployment', description: 'Deploy microservices automatically using ArgoCD and Kubernetes.' },
+        requiredSkillNames: ['Docker', 'Kubernetes'],
+      },
+      {
+        phaseNumber: 4,
+        title: 'Infrastructure as Code with Terraform & Ansible',
+        description: 'Declarative cloud provisioning, configuration management, and automated cluster bootstrapping.',
+        estimatedWeeks: 4,
+        milestone: { title: 'Multi-Cloud Automated IaC Fleet', description: 'Provision and configure cloud instances automatically with Terraform and Ansible.' },
+        requiredSkillNames: ['Terraform', 'Ansible'],
+      },
+      {
+        phaseNumber: 5,
+        title: 'Prometheus Observability, Grafana Telemetry & SRE Alerting',
+        description: 'Metrics scraping, custom Prometheus exporters, Grafana dashboards, and PagerDuty alert routing.',
+        estimatedWeeks: 3,
+        milestone: { title: 'Full-Stack Observability Dashboard', description: 'Build real-time monitoring with alerting on latency, errors, and saturation.' },
+        requiredSkillNames: ['Prometheus & Grafana', 'Site Reliability Engineering'],
+      },
+    ],
+  },
+
+  'dataanalyst': {
+    title: 'Data Analyst Master Roadmap',
+    phases: [
+      {
+        phaseNumber: 1,
+        title: 'Advanced SQL Querying, Joins & Aggregations',
+        description: 'Complex inner/outer joins, CTEs, subqueries, group by rollups, and window functions.',
+        estimatedWeeks: 3,
+        milestone: { title: 'Relational Analytics Portfolio', description: 'Write complex analytical queries on multi-table business databases.' },
+        requiredSkillNames: ['SQL', 'Relational Databases'],
+      },
+      {
+        phaseNumber: 2,
+        title: 'Data Wrangling, Cleaning & Python with Pandas',
+        description: 'Handling missing values, data type casting, string parsing, and pivot tables in Pandas.',
+        estimatedWeeks: 3,
+        milestone: { title: 'Automated Data Cleansing Pipeline', description: 'Build reusable Python scripts to transform messy business data.' },
+        requiredSkillNames: ['Python', 'Pandas'],
+      },
+      {
+        phaseNumber: 3,
+        title: 'Business Intelligence & Interactive Dashboarding (PowerBI/Tableau)',
+        description: 'Data modeling, DAX measures, calculated columns, interactive drill-downs, and dashboard UX.',
+        estimatedWeeks: 4,
+        milestone: { title: 'Executive BI Dashboard', description: 'Publish an interactive executive KPI dashboard with real-time filters.' },
+        requiredSkillNames: ['PowerBI / Tableau', 'Data Visualization'],
+      },
+      {
+        phaseNumber: 4,
+        title: 'Statistical Analysis, Correlation & Business Metrics',
+        description: 'Statistical significance, hypothesis testing, cohort analysis, customer churn modeling, and KPIs.',
+        estimatedWeeks: 3,
+        milestone: { title: 'Business Insights & Churn Analysis', description: 'Deliver statistical findings and revenue recommendations.' },
+        requiredSkillNames: ['Statistics', 'Business Analytics'],
+      },
+    ],
+  },
+
+  'cybersecurity': {
+    title: 'Cybersecurity & Application Security Master Roadmap',
+    phases: [
+      {
+        phaseNumber: 1,
+        title: 'Computer Networking, Protocol Analysis & Wireshark',
+        description: 'TCP/IP, UDP, ICMP, DNS, packet capture analysis, subnetting, and network topology mapping.',
+        estimatedWeeks: 3,
+        milestone: { title: 'Network Traffic Analysis Report', description: 'Analyze packet captures and identify anomalous network communications.' },
+        requiredSkillNames: ['Networking', 'Wireshark'],
+      },
+      {
+        phaseNumber: 2,
+        title: 'Linux Security, Hardening & Identity Controls',
+        description: 'User permission models, sudoers security, PAM authentication, iptables firewalls, and auditd.',
+        estimatedWeeks: 3,
+        milestone: { title: 'Hardened Operating System Image', description: 'Harden a Linux server against CIS benchmark standards.' },
+        requiredSkillNames: ['Linux Hardening', 'Access Controls'],
+      },
+      {
+        phaseNumber: 3,
+        title: 'Web Application Security & OWASP Top 10 Vulnerabilities',
+        description: 'SQL Injection, XSS, CSRF, SSRF, Broken Object Level Auth (BOLA), and security headers.',
+        estimatedWeeks: 4,
+        milestone: { title: 'Web App Penetration Test & Report', description: 'Conduct a simulated penetration audit and write remediation guidelines.' },
+        requiredSkillNames: ['OWASP Security', 'Penetration Testing'],
+      },
+      {
+        phaseNumber: 4,
+        title: 'Cryptography, PKI, SSL/TLS & Secure Protocols',
+        description: 'Symmetric/asymmetric encryption, hashing algorithms, digital certificates, and TLS handshakes.',
+        estimatedWeeks: 3,
+        milestone: { title: 'Secure Cryptographic Service', description: 'Implement an end-to-end encrypted messaging or token verification service.' },
+        requiredSkillNames: ['Cryptography', 'PKI'],
+      },
+      {
+        phaseNumber: 5,
+        title: 'SIEM Log Monitoring, Threat Hunting & Incident Response',
+        description: 'ELK Stack / Splunk log aggregation, rule correlation, intrusion detection (Snort), and IR playbooks.',
+        estimatedWeeks: 3,
+        milestone: { title: 'Incident Response Playbook & SIEM', description: 'Configure an alert pipeline that detects and mitigates simulated brute-force attacks.' },
+        requiredSkillNames: ['SIEM', 'Incident Response'],
+      },
+    ],
+  },
+
+  'softwareengineer': {
+    title: 'Software Engineer & Systems Architect Master Roadmap',
+    phases: [
+      {
+        phaseNumber: 1,
+        title: 'Data Structures, Algorithms & Time-Space Complexity',
+        description: 'Arrays, linked lists, trees, graphs, heaps, dynamic programming, and Big-O notation.',
+        estimatedWeeks: 4,
+        milestone: { title: 'Algorithm Suite & Complexity Analysis', description: 'Implement and benchmark core graph and dynamic programming algorithms.' },
+        requiredSkillNames: ['Data Structures', 'Algorithms'],
+      },
+      {
+        phaseNumber: 2,
+        title: 'Object-Oriented Design, Design Patterns & Clean Code',
+        description: 'SOLID principles, Factory, Singleton, Observer, Strategy patterns, and modular refactoring.',
+        estimatedWeeks: 3,
+        milestone: { title: 'Clean Architecture Domain Model', description: 'Architect an extensible, loosely coupled domain model using design patterns.' },
+        requiredSkillNames: ['Software Design', 'Design Patterns'],
+      },
+      {
+        phaseNumber: 3,
+        title: 'Concurrency, Multithreading & Database Systems',
+        description: 'Locks, semaphores, race conditions, ACID transactions, and query optimization.',
+        estimatedWeeks: 4,
+        milestone: { title: 'Concurrent Data Engine', description: 'Build a thread-safe in-memory key-value store with transaction locking.' },
+        requiredSkillNames: ['Concurrency', 'Database Systems'],
+      },
+      {
+        phaseNumber: 4,
+        title: 'Distributed Systems Design & Scalable Architecture',
+        description: 'CAP theorem, load balancing, horizontal partitioning (sharding), message brokers, and fault tolerance.',
+        estimatedWeeks: 4,
+        milestone: { title: 'Distributed Systems Architecture Spec', description: 'Draft a production system architecture supporting 100k requests/second.' },
+        requiredSkillNames: ['Distributed Systems', 'System Design'],
+      },
+    ],
+  },
+
+  'fullstack': {
+    title: 'Full Stack MERN Developer Master Roadmap',
+    phases: [
+      {
+        phaseNumber: 1,
+        title: 'Modern JavaScript & Asynchronous Foundations',
+        description: 'ES6+ modules, lexical scope, event loop, Promises, Fetch API, and modern data structures.',
+        estimatedWeeks: 3,
+        milestone: { title: 'Async JavaScript Utility Library', description: 'Build an asynchronous utility engine with comprehensive unit tests.' },
+        requiredSkillNames: ['JavaScript', 'HTML & CSS'],
+      },
+      {
+        phaseNumber: 2,
+        title: 'React.js Component Architecture & State Management',
+        description: 'Virtual DOM, component lifecycles, custom hooks, context API, and modular CSS architecture.',
+        estimatedWeeks: 4,
+        milestone: { title: 'Interactive Single Page Application', description: 'Develop a responsive frontend application consuming REST APIs.' },
+        requiredSkillNames: ['React.js', 'Responsive Web Design'],
+      },
+      {
+        phaseNumber: 3,
+        title: 'Node.js Runtime & Express.js REST APIs',
+        description: 'Asynchronous event loop, stream processing, middleware pipelines, and RESTful routing standards.',
+        estimatedWeeks: 3,
+        milestone: { title: 'Scalable REST API Backend', description: 'Deploy a modular Node.js/Express service with request validation.' },
+        requiredSkillNames: ['Node.js', 'Express.js'],
+      },
+      {
+        phaseNumber: 4,
+        title: 'MongoDB Schema Design & Aggregation Framework',
+        description: 'Document data modeling, compound indexes, aggregation pipelines, and transaction semantics.',
+        estimatedWeeks: 3,
+        milestone: { title: 'Indexed Database Layer', description: 'Design an indexed MongoDB database layer with aggregation analytics.' },
+        requiredSkillNames: ['MongoDB', 'Database Design'],
+      },
+      {
+        phaseNumber: 5,
+        title: 'Authentication Security & API Hardening',
+        description: 'JWT token lifecycles, bcrypt password hashing, CORS, rate limiting, and RBAC authorization.',
+        estimatedWeeks: 3,
+        milestone: { title: 'Hardened Authentication Service', description: 'Implement a secure authentication microservice with refresh token rotation.' },
+        requiredSkillNames: ['Web Security', 'JWT Auth'],
+      },
+      {
+        phaseNumber: 6,
+        title: 'Full Stack Platform Deployment & CI/CD',
+        description: 'Connecting React client with Express backend, MongoDB Atlas, Docker containerization, and cloud deployment.',
+        estimatedWeeks: 3,
+        milestone: { title: 'Production Full Stack Deployment', description: 'Deploy a complete production MERN web application with automated CI/CD.' },
+        requiredSkillNames: ['Full Stack Integration', 'Cloud Deployment'],
+      },
+    ],
+  },
 };
 
 class AdaptivePathService {
-  getTemplateForRole(careerGoal = '') {
-    const goalLower = (careerGoal || '').toLowerCase();
-    if (goalLower.includes('data scientist') || goalLower.includes('data science') || goalLower.includes('data analyst')) {
-      return { title: 'Data Scientist Master Roadmap', phases: ROLE_PHASE_TEMPLATES['data scientist'] };
+  matchTemplateForGoal(goal = '') {
+    const g = (goal || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (g.includes('frontend') || g.includes('react') || g.includes('vue') || g.includes('angular') || g.includes('ui')) {
+      return ROLE_TEMPLATES.frontend;
     }
-    if (goalLower.includes('cloud') || goalLower.includes('devops') || goalLower.includes('aws') || goalLower.includes('kubernetes')) {
-      return { title: 'Cloud DevOps & Infrastructure Roadmap', phases: ROLE_PHASE_TEMPLATES['cloud engineer'] };
+    if (g.includes('backend') || g.includes('nodejs') || g.includes('express') || g.includes('api') || g.includes('microservice')) {
+      return ROLE_TEMPLATES.backend;
     }
-    return { title: 'Full Stack MERN Developer Master Roadmap', phases: ROLE_PHASE_TEMPLATES['full stack developer'] };
+    if (g.includes('datascientist') || g.includes('datascience')) {
+      return ROLE_TEMPLATES.datascientist;
+    }
+    if (g.includes('ai') || g.includes('machinelearning') || g.includes('ml') || g.includes('deeplearning') || g.includes('nlp')) {
+      return ROLE_TEMPLATES.aiengineer;
+    }
+    if (g.includes('cloud') || g.includes('aws') || g.includes('azure') || g.includes('gcp') || g.includes('architect')) {
+      return ROLE_TEMPLATES.cloud;
+    }
+    if (g.includes('devops') || g.includes('sre') || g.includes('reliability') || g.includes('cicd')) {
+      return ROLE_TEMPLATES.devops;
+    }
+    if (g.includes('dataanalyst') || g.includes('dataanalytics') || g.includes('bi') || g.includes('tableau') || g.includes('powerbi')) {
+      return ROLE_TEMPLATES.dataanalyst;
+    }
+    if (g.includes('cyber') || g.includes('security') || g.includes('ethical') || g.includes('infosec')) {
+      return ROLE_TEMPLATES.cybersecurity;
+    }
+    if (g.includes('softwareengineer') || g.includes('algorithms') || g.includes('systemdesign')) {
+      return ROLE_TEMPLATES.softwareengineer;
+    }
+    return ROLE_TEMPLATES.fullstack;
   }
 
-  async generateLearningPath(userId, targetRole = null) {
+  async generateLearningPath(userId, targetRole) {
     const user = await User.findById(userId);
-    const goal = targetRole || user?.targetRole || user?.careerGoal || 'Full Stack MERN Developer';
+    const effectiveGoal = targetRole || user?.careerGoal || 'Full Stack MERN Developer';
+    const template = this.matchTemplateForGoal(effectiveGoal);
 
-    const { title, phases: rawPhases } = this.getTemplateForRole(goal);
+    // Fetch catalog courses from MongoDB to bind real resource IDs
+    const allCourses = await Resource.find({}).lean();
 
-    const resources = await Resource.find({});
+    const phases = template.phases.map((tmplPhase, idx) => {
+      // Find matching courses for this phase based on skills/keywords
+      const matchedCourses = allCourses.filter(c => {
+        const titleLower = c.title.toLowerCase();
+        const catLower = (c.category || '').toLowerCase();
+        return tmplPhase.requiredSkillNames.some(sk => 
+          titleLower.includes(sk.toLowerCase()) || catLower.includes(sk.toLowerCase())
+        );
+      });
 
-    const phases = rawPhases.map((p) => {
-      const matchedResources = resources
-        .filter(r => r.skills && r.skills.some(sk => p.skills.includes(sk)))
-        .slice(0, 3)
-        .map(r => ({
-          resource: r._id,
-          title: r.title,
-          type: r.type,
-          url: r.url,
-          duration: r.duration,
-          difficulty: r.difficulty,
-          completed: p.status === 'completed',
-        }));
+      const resources = matchedCourses.length > 0
+        ? matchedCourses.slice(0, 3).map(c => ({
+            course: c._id,
+            title: c.title,
+            completed: false,
+            estimatedHours: c.durationHours || 4,
+          }))
+        : tmplPhase.requiredSkillNames.map(sk => ({
+            title: `Mastery Module: ${sk}`,
+            completed: false,
+            estimatedHours: 4,
+          }));
 
       return {
-        ...p,
-        resources: matchedResources,
+        phaseNumber: tmplPhase.phaseNumber,
+        title: tmplPhase.title,
+        description: tmplPhase.description,
+        status: idx === 0 ? 'in-progress' : 'locked',
+        completionPercentage: 0,
+        estimatedWeeks: tmplPhase.estimatedWeeks,
+        resources,
+        milestone: {
+          title: tmplPhase.milestone.title,
+          description: tmplPhase.milestone.description,
+          completed: false,
+          requiredResourcesCompleted: 0,
+          totalResourcesRequired: resources.length,
+        },
       };
     });
 
-    await LearningPath.deleteMany({ user: userId });
+    // Deactivate previous paths
+    await LearningPath.updateMany({ user: userId }, { active: false });
+
+    // Create new zero-baseline learning path
     const learningPath = await LearningPath.create({
       user: userId,
-      title,
-      goal,
-      targetRole: goal,
-      totalEstimatedWeeks: phases.reduce((acc, p) => acc + (p.estimatedWeeks || 2), 0),
+      goal: effectiveGoal,
+      title: `${effectiveGoal} Master Roadmap`,
+      phases,
       currentPhase: 1,
       overallProgress: 0,
-      phases,
       active: true,
+      adaptationHistory: [
+        {
+          timestamp: new Date(),
+          reason: `Personalized curriculum calibrated for ${effectiveGoal}`,
+          changesMade: `Generated ${phases.length} structured phases starting from Phase 1`,
+        },
+      ],
     });
-
-    user.currentLearningPath = learningPath._id;
-    if (targetRole) {
-      user.careerGoal = targetRole;
-      user.targetRole = targetRole;
-    }
-    await user.save();
-
-    await LearnerProfile.findOneAndUpdate(
-      { user: userId },
-      { $set: { careerGoal: goal, targetRole: goal } },
-      { upsert: true }
-    );
 
     return learningPath;
   }
 
-  async adaptLearningPath(userId, options = {}) {
+  async adaptLearningPath(userId, reason) {
     const user = await User.findById(userId);
-    const newGoal = options.goal || options.targetRole || user?.targetRole || user?.careerGoal || 'Full Stack MERN Developer';
+    const incomingGoal = typeof reason === 'object' ? (reason?.goal || reason?.targetRole) : null;
+    const targetGoal = incomingGoal || user?.targetRole || user?.careerGoal || 'Full Stack MERN Developer';
 
-    if (newGoal && newGoal !== user.careerGoal) {
-      user.careerGoal = newGoal;
-      user.targetRole = newGoal;
+    if (incomingGoal && user) {
+      user.careerGoal = incomingGoal;
+      user.targetRole = incomingGoal;
       await user.save();
     }
 
-    const learningPath = await this.generateLearningPath(userId, newGoal);
-
-    learningPath.adaptationHistory = [
-      {
-        actionTaken: `Calibrated roadmap for ${newGoal}`,
-        reason: options.reason || 'AI Roadmap re-calibration',
-        timestamp: new Date(),
-      },
-      ...(learningPath.adaptationHistory || []),
-    ];
-    await learningPath.save();
-
-    return learningPath;
+    return await this.generateLearningPath(userId, targetGoal);
   }
 }
 
 const adaptivePathService = new AdaptivePathService();
 module.exports = adaptivePathService;
+
+

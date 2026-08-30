@@ -178,10 +178,17 @@ export default function ProfileOverview() {
       const res = await api.put('/profile/resume-data', parsedData);
       if (res.data?.success) {
         setUploadSuccess('Extracted skills and background synchronized to your learner profile!');
+        const updatedSkills = res.data.user?.skills || res.data.profile?.skills || user?.skills;
+        setProfileData(prev => ({
+          ...prev,
+          name: res.data.user?.name || prev.name,
+          skills: updatedSkills,
+          resumeData: res.data.user?.resumeData || parsedData,
+        }));
         if (updateUserProfile) {
-          updateUserProfile({
+          updateUserProfile(res.data.user || {
             name: res.data.profile?.name || user?.name,
-            skills: res.data.profile?.skills || user?.skills,
+            skills: updatedSkills,
             resumeData: res.data.profile?.resumeData || parsedData
           });
         }
@@ -682,4 +689,5 @@ export default function ProfileOverview() {
     </div>
   );
 }
+
 

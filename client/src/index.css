@@ -55,22 +55,22 @@
     color: var(--color-text-base);
   }
 
-  .dark h1, .dark h2, .dark h3 {
+  html.dark h1, html.dark h2, html.dark h3 {
     color: #F5F1E8;
   }
-  :not(.dark) h1, :not(.dark) h2, :not(.dark) h3 {
+  html:not(.dark) h1, html:not(.dark) h2, html:not(.dark) h3 {
     color: #111418;
   }
-  .dark h4, .dark h5 {
+  html.dark h4, html.dark h5, html.dark h6 {
     color: #C7C2B6;
   }
-  :not(.dark) h4, :not(.dark) h5 {
+  html:not(.dark) h4, html:not(.dark) h5, html:not(.dark) h6 {
     color: #374151;
   }
-  .dark p {
+  html.dark p {
     color: #C7C2B6;
   }
-  :not(.dark) p {
+  html:not(.dark) p {
     color: #4B5563;
   }
 }

@@ -29,7 +29,7 @@ import {
 
 export default function CoursesPage() {
   const navigate = useNavigate();
-  const { awardXp } = useAuth();
+  const { user, awardXp } = useAuth();
 
   const [courses, setCourses] = useState(() => {
     const saved = localStorage.getItem('m3_courses_data');
@@ -633,5 +633,6 @@ export default function CoursesPage() {
     </MainLayout>
   );
 }
+
 
 
