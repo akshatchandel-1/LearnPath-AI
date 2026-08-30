@@ -542,7 +542,7 @@ export default function CoursesPage() {
                       : 'bg-[#FF6B5F] hover:bg-[#E85548] text-white shadow-md shadow-[#FF6B5F]/20'
                   }`}
                 >
-                  {course.enrolled ? 'Enrolled âœ“' : 'Enroll'}
+                  {course.enrolled ? 'Enrolled' : 'Enroll'}
                 </button>
               </div>
             </div>
@@ -633,6 +633,7 @@ export default function CoursesPage() {
     </MainLayout>
   );
 }
+
 
 
 

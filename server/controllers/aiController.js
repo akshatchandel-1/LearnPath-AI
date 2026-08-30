@@ -1,4 +1,4 @@
-const mentorService = require('../services/ai/mentorService');
+﻿const mentorService = require('../services/ai/mentorService');
 const goalAnalyzer = require('../services/ai/goalAnalyzer');
 const skillAnalyzer = require('../services/ai/skillAnalyzer');
 const insightGenerator = require('../services/ai/insightGenerator');
@@ -10,11 +10,11 @@ const AIInsight = require('../models/AIInsight');
 const chatWithMentor = async (req, res, next) => {
   try {
     const { message } = req.body;
-    if (!message) {
-      return res.status(400).json({ success: false, message: 'Message is required' });
+    if (!message || typeof message !== 'string' || !message.trim()) {
+      return res.status(400).json({ success: false, message: 'Message text is required' });
     }
 
-    const result = await mentorService.processMessage(req.user._id, message);
+    const result = await mentorService.processMessage(req.user._id, message.trim());
     res.json({ success: true, ...result });
   } catch (error) {
     next(error);
@@ -26,7 +26,7 @@ const chatWithMentor = async (req, res, next) => {
 // @access  Private
 const getMentorConversation = async (req, res, next) => {
   try {
-    const conversation = await mentorService.getHistory(req.user._id);
+    const conversation = await mentorService.getConversation(req.user._id);
     res.json({ success: true, conversation });
   } catch (error) {
     next(error);

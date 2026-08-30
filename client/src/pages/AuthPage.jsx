@@ -288,7 +288,7 @@ export default function AuthPage({ defaultIsLogin = true }) {
 
         {/* Footer info */}
         <p className="text-center text-xs text-[#8C877D] mt-6">
-          LearnPath AI â€” Personalized Learning Path & Competency Recommender
+          LearnPath AI — Personalized Learning Path & Competency Recommender
         </p>
       </div>
     </div>

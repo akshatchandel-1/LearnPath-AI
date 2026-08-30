@@ -6,6 +6,22 @@
  */
 
 const ROLE_TAXONOMY_MAP = {
+  'business analyst': [
+    { name: 'Business Analysis Fundamentals', targetLevel: 85, importance: 1.0 },
+    { name: 'SQL & Relational Databases', targetLevel: 85, importance: 0.95 },
+    { name: 'Excel & Advanced Analytics', targetLevel: 85, importance: 1.0 },
+    { name: 'Data Visualization & BI', targetLevel: 80, importance: 0.9 },
+    { name: 'Agile & Requirements Engineering', targetLevel: 80, importance: 0.85 },
+    { name: 'Business Metrics & Forecasting', targetLevel: 75, importance: 0.8 },
+  ],
+  'research engineer': [
+    { name: 'Python Programming', targetLevel: 90, importance: 1.0 },
+    { name: 'Applied Statistics & Probability', targetLevel: 90, importance: 1.0 },
+    { name: 'Linear Algebra & Optimization', targetLevel: 85, importance: 0.95 },
+    { name: 'Machine Learning Algorithms', targetLevel: 90, importance: 1.0 },
+    { name: 'Deep Learning & Neural Networks', targetLevel: 85, importance: 0.95 },
+    { name: 'Research Methodology & Benchmarking', targetLevel: 80, importance: 0.85 },
+  ],
   'data scientist': [
     { name: 'Python Programming', targetLevel: 85, importance: 1.0 },
     { name: 'Machine Learning Algorithms', targetLevel: 85, importance: 1.0 },
@@ -88,6 +104,20 @@ const ROLE_TAXONOMY_MAP = {
     { name: 'LLM Engineering & RAG', targetLevel: 90, importance: 1.0 },
     { name: 'FastAPI & Microservices', targetLevel: 75, importance: 0.8 },
   ],
+  'cybersecurity engineer': [
+    { name: 'Computer Networking & Protocols', targetLevel: 85, importance: 0.95 },
+    { name: 'Linux Security & Hardening', targetLevel: 85, importance: 1.0 },
+    { name: 'OWASP Web Security', targetLevel: 90, importance: 1.0 },
+    { name: 'Cryptography & PKI', targetLevel: 80, importance: 0.9 },
+    { name: 'SIEM & Threat Monitoring', targetLevel: 75, importance: 0.85 },
+  ],
+  'software engineer': [
+    { name: 'Data Structures & Algorithms', targetLevel: 90, importance: 1.0 },
+    { name: 'Object-Oriented Design & Patterns', targetLevel: 85, importance: 0.95 },
+    { name: 'Concurrency & Multithreading', targetLevel: 80, importance: 0.9 },
+    { name: 'Database Systems & SQL', targetLevel: 80, importance: 0.85 },
+    { name: 'Distributed Systems & Scalability', targetLevel: 80, importance: 0.9 },
+  ],
 };
 
 class SkillGapEngine {
@@ -116,7 +146,6 @@ class SkillGapEngine {
     let totalWeight = 0;
 
     requiredSkills.forEach((req) => {
-      // Find direct or partial match
       let currentLevel = 0;
       const reqLower = req.name.toLowerCase();
       for (const [sName, sLevel] of userSkillMap.entries()) {
@@ -143,19 +172,35 @@ class SkillGapEngine {
       totalWeight += req.importance;
     });
 
-    // Sort by gap score descending (biggest gaps first)
-    gapDetails.sort((a, b) => b.gapScore - a.gapScore);
+    const overallGap = totalWeight > 0 ? Math.round(totalWeightedGap / totalWeight) : 0;
+    const overallReadiness = Math.max(0, Math.min(100, 100 - overallGap));
 
-    const overallGapIndex = totalWeight > 0 ? Math.round(totalWeightedGap / totalWeight) : 100;
-    const readinessScore = Math.max(0, 100 - overallGapIndex);
+    const criticalGaps = gapDetails
+      .filter((g) => g.priority === 'High')
+      .map((g) => g.skill);
 
     return {
       targetRole: careerGoal,
-      overallGapIndex,
-      readinessScore,
-      gaps: gapDetails,
-      criticalGaps: gapDetails.filter(g => g.gapScore > 40).map(g => g.skill),
+      overallReadiness,
+      overallGap,
+      criticalGaps,
+      skills: gapDetails,
+      readinessTier:
+        overallReadiness >= 85
+          ? 'Job Ready'
+          : overallReadiness >= 60
+          ? 'Intermediate Proficiency'
+          : overallReadiness >= 30
+          ? 'Developing Foundations'
+          : 'Early Learner / Unassessed',
     };
+  }
+
+  async analyzeUser(userId, careerGoal) {
+    const User = require('../../models/User');
+    const user = await User.findById(userId);
+    const goal = careerGoal || user?.careerGoal || user?.targetRole || 'Full Stack MERN Developer';
+    return this.calculateSkillGap(user?.skills || [], goal);
   }
 }
 

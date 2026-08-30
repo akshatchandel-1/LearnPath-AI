@@ -1,5 +1,5 @@
 ﻿/**
- * LearnPath AI â€” Client-Side Report Generator Utility
+ * LearnPath AI — Client-Side Report Generator Utility
  * Generates beautifully styled, printable PDF documents for Skill Gaps and Progress Analytics.
  */
 
@@ -29,7 +29,7 @@ export const generateSkillGapReportPDF = (reportData, user) => {
     <html lang="en">
     <head>
       <meta charset="UTF-8">
-      <title>LearnPath AI â€” Skill Gap Competency Audit</title>
+      <title>LearnPath AI — Skill Gap Competency Audit</title>
       <style>
         @page { size: A4; margin: 18mm; }
         body {
@@ -237,7 +237,7 @@ export const generateSkillGapReportPDF = (reportData, user) => {
       </div>
 
       <div class="footer">
-        Â© 2026 LearnPath AI Platform â€¢ This competency report is generated deterministically based on learner activity telemetry and assessment benchmark data.
+        © 2026 LearnPath AI Platform â€¢ This competency report is generated deterministically based on learner activity telemetry and assessment benchmark data.
       </div>
 
       <script>
@@ -282,7 +282,7 @@ export const generateProgressReportPDF = (progressData, user, enrolledCourses = 
     <html lang="en">
     <head>
       <meta charset="UTF-8">
-      <title>LearnPath AI â€” Learning Journey & Study Progress Audit</title>
+      <title>LearnPath AI — Learning Journey & Study Progress Audit</title>
       <style>
         @page { size: A4; margin: 18mm; }
         body {
@@ -469,7 +469,7 @@ export const generateProgressReportPDF = (progressData, user, enrolledCourses = 
       </table>
 
       <div class="footer">
-        Â© 2026 LearnPath AI Platform â€¢ Official Learning Progress & Analytics Record
+        © 2026 LearnPath AI Platform â€¢ Official Learning Progress & Analytics Record
       </div>
 
       <script>

@@ -253,7 +253,7 @@ export const QuizModal = ({ skillName, count = 3, isOpen, onClose }) => {
                     Skill Calibration Delta
                   </p>
                   <p className="text-sm font-semibold text-white">
-                    {skillName}: {result.previousSkillLevel}% â†’ {result.newSkillLevel}%
+                    {skillName}: {result.previousSkillLevel}% &rarr; {result.newSkillLevel}%
                   </p>
                 </div>
                 <span
@@ -319,4 +319,5 @@ export const QuizModal = ({ skillName, count = 3, isOpen, onClose }) => {
 };
 
 export default QuizModal;
+
 

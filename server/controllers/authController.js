@@ -17,15 +17,16 @@ const generateToken = (id) => {
 const registerUser = async (req, res, next) => {
   try {
     const { name, email, password, careerGoal, experienceLevel, preferredLearningStyle, weeklyHours, skills } = req.body;
+    const normalizedEmail = (email || '').trim().toLowerCase();
 
-    const userExists = await User.findOne({ email });
+    const userExists = await User.findOne({ email: normalizedEmail });
     if (userExists) {
       return res.status(400).json({ success: false, message: 'User already exists with this email' });
     }
 
     const user = await User.create({
       name,
-      email,
+      email: normalizedEmail,
       password,
       careerGoal: careerGoal || 'Full Stack MERN Developer',
       experienceLevel: experienceLevel || 'Beginner',
@@ -80,8 +81,9 @@ const registerUser = async (req, res, next) => {
 const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
+    const normalizedEmail = (email || '').trim().toLowerCase();
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: normalizedEmail });
     if (user && (await user.matchPassword(password))) {
       const stats = await statisticsService.calculateUserStatistics(user._id);
       const token = generateToken(user._id);
@@ -128,12 +130,9 @@ const getMe = async (req, res, next) => {
         avatar: user.avatar,
         careerGoal: user.careerGoal,
         experienceLevel: user.experienceLevel,
-        preferredLearningStyle: user.preferredLearningStyle,
-        weeklyHours: user.weeklyHours,
         streak: stats.streak,
         points: stats.xp,
         skills: user.skills,
-        badges: user.badges,
         resume: user.resume,
         resumeData: user.resumeData,
       },
@@ -143,20 +142,11 @@ const getMe = async (req, res, next) => {
   }
 };
 
-// @desc    Logout user / clear cookie
+// @desc    Logout user / clear session
 // @route   POST /api/auth/logout
 // @access  Public
-const logoutUser = (req, res) => {
-  res.cookie('token', '', {
-    httpOnly: true,
-    expires: new Date(0),
-  });
-  res.status(200).json({ success: true, message: 'Logged out successfully' });
+const logoutUser = async (req, res) => {
+  res.json({ success: true, message: 'Logged out successfully' });
 };
 
-module.exports = {
-  registerUser,
-  loginUser,
-  getMe,
-  logoutUser,
-};
+module.exports = { registerUser, loginUser, getMe, logoutUser };
