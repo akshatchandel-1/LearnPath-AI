@@ -10,34 +10,39 @@ const connectDB = async () => {
     let mongoUri = process.env.MONGO_URI;
 
     if (process.env.NODE_ENV === 'test' || !mongoUri || mongoUri === 'embedded') {
-      if (!mongoServer) {
-        const { MongoMemoryServer } = require('mongodb-memory-server');
-        mongoServer = await MongoMemoryServer.create();
+      if (!process.env.VERCEL) {
+        if (!mongoServer) {
+          const { MongoMemoryServer } = require('mongodb-memory-server');
+          mongoServer = await MongoMemoryServer.create();
+        }
+        mongoUri = mongoServer.getUri();
+        const conn = await mongoose.connect(mongoUri);
+        return conn;
       }
-      mongoUri = mongoServer.getUri();
-      const conn = await mongoose.connect(mongoUri);
-      return conn;
+      return null;
     }
 
     const conn = await mongoose.connect(mongoUri, {
-      serverSelectionTimeoutMS: 2000,
+      serverSelectionTimeoutMS: 5000,
     });
 
     return conn;
   } catch (error) {
     console.error(`MongoDB Connection Error: ${error.message}`);
-    try {
-      if (!mongoServer) {
-        const { MongoMemoryServer } = require('mongodb-memory-server');
-        mongoServer = await MongoMemoryServer.create();
+    if (!process.env.VERCEL && (process.env.NODE_ENV === 'test' || !process.env.MONGO_URI)) {
+      try {
+        if (!mongoServer) {
+          const { MongoMemoryServer } = require('mongodb-memory-server');
+          mongoServer = await MongoMemoryServer.create();
+        }
+        const mongoUri = mongoServer.getUri();
+        const conn = await mongoose.connect(mongoUri);
+        return conn;
+      } catch (e) {
+        console.error(`Unable to start embedded database: ${e.message}`);
       }
-      const mongoUri = mongoServer.getUri();
-      const conn = await mongoose.connect(mongoUri);
-      return conn;
-    } catch (e) {
-      console.error(`Fatal: Unable to start embedded database: ${e.message}`);
-      process.exit(1);
     }
+    return null;
   }
 };
 
