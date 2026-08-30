@@ -91,6 +91,11 @@ export function AuthProvider({ children }) {
     try {
       await api.post('/auth/logout');
     } catch (e) {}
+    if (user?._id) {
+      localStorage.removeItem(`m3_courses_data_${user._id}`);
+      localStorage.removeItem(`m3_assessments_data_${user._id}`);
+      localStorage.removeItem(`m3_assessment_history_${user._id}`);
+    }
     setUser(null);
     localStorage.removeItem('learnpath_user');
     localStorage.removeItem('learnpath_token');

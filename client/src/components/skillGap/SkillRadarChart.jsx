@@ -1,4 +1,4 @@
-﻿import React, { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import {
   Radar,
   RadarChart,
@@ -27,7 +27,7 @@ export const SkillRadarChart = ({ skills = [] }) => {
 
   const hasAssessedSkills = radarData.some((d) => d.Current > 0);
 
-  if (!skills || skills.length === 0) {
+  if (!skills || skills.length === 0 || !hasAssessedSkills) {
     return (
       <div className="py-16 text-center space-y-3">
         <Target className="w-8 h-8 mx-auto text-[#8C877D]" />
@@ -35,7 +35,7 @@ export const SkillRadarChart = ({ skills = [] }) => {
           No skills assessed yet.
         </p>
         <p className="text-[11px] text-[#8C877D] max-w-xs mx-auto">
-          Complete an assessment or add skills in your Profile to plot your competency radar.
+          Complete an assessment or verify skills in your Profile to plot your live competency radar against role benchmarks.
         </p>
       </div>
     );

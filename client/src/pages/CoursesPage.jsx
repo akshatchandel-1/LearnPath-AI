@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
 import CourseDetailsModal from '../components/courses/CourseDetailsModal';
@@ -30,21 +30,25 @@ import {
 export default function CoursesPage() {
   const navigate = useNavigate();
   const { user, awardXp } = useAuth();
-  const storageKeyCourses = user?._id ? `m3_courses_data_${user._id}` : 'm3_courses_data';
-  const storageKeyAssessments = user?._id ? `m3_assessments_data_${user._id}` : 'm3_assessments_data';
+  const storageKeyCourses = user?._id ? `m3_courses_data_${user._id}` : 'm3_courses_data_guest';
+  const storageKeyAssessments = user?._id ? `m3_assessments_data_${user._id}` : 'm3_assessments_data_guest';
 
   const [courses, setCourses] = useState(() => {
-    const saved = localStorage.getItem(storageKeyCourses) || localStorage.getItem('m3_courses_data');
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) { return INITIAL_COURSES; }
+    if (user?._id) {
+      const saved = localStorage.getItem(`m3_courses_data_${user._id}`);
+      if (saved) {
+        try { return JSON.parse(saved); } catch (e) { return INITIAL_COURSES; }
+      }
     }
     return INITIAL_COURSES;
   });
 
   const [assessments, setAssessments] = useState(() => {
-    const saved = localStorage.getItem(storageKeyAssessments) || localStorage.getItem('m3_assessments_data');
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) { return INITIAL_ASSESSMENTS; }
+    if (user?._id) {
+      const saved = localStorage.getItem(`m3_assessments_data_${user._id}`);
+      if (saved) {
+        try { return JSON.parse(saved); } catch (e) { return INITIAL_ASSESSMENTS; }
+      }
     }
     return INITIAL_ASSESSMENTS;
   });
@@ -64,14 +68,37 @@ export default function CoursesPage() {
   const [isSynthesizing, setIsSynthesizing] = useState(false);
   const [synthesizedSuccess, setSynthesizedSuccess] = useState(false);
 
+  // Re-hydrate on user change
+  useEffect(() => {
+    if (user?._id) {
+      const savedCourses = localStorage.getItem(`m3_courses_data_${user._id}`);
+      if (savedCourses) {
+        try { setCourses(JSON.parse(savedCourses)); } catch (e) { setCourses(INITIAL_COURSES); }
+      } else {
+        setCourses(INITIAL_COURSES);
+      }
+
+      const savedAssessments = localStorage.getItem(`m3_assessments_data_${user._id}`);
+      if (savedAssessments) {
+        try { setAssessments(JSON.parse(savedAssessments)); } catch (e) { setAssessments(INITIAL_ASSESSMENTS); }
+      } else {
+        setAssessments(INITIAL_ASSESSMENTS);
+      }
+    }
+  }, [user?._id]);
+
   // Persist course updates
   useEffect(() => {
-    localStorage.setItem(storageKeyCourses, JSON.stringify(courses));
-  }, [courses, storageKeyCourses]);
+    if (user?._id) {
+      localStorage.setItem(`m3_courses_data_${user._id}`, JSON.stringify(courses));
+    }
+  }, [courses, user?._id]);
 
   useEffect(() => {
-    localStorage.setItem(storageKeyAssessments, JSON.stringify(assessments));
-  }, [assessments, storageKeyAssessments]);
+    if (user?._id) {
+      localStorage.setItem(`m3_assessments_data_${user._id}`, JSON.stringify(assessments));
+    }
+  }, [assessments, user?._id]);
 
   // Toggle enrollment
   const handleEnrollToggle = (courseId) => {
@@ -100,29 +127,28 @@ export default function CoursesPage() {
     }
   };
 
-  // Toggle individual lesson
-  const handleStartLesson = (courseId, lessonId) => {
+  // Toggle Lesson Completion
+  const handleToggleLesson = (courseId, lessonId) => {
     setCourses((prev) =>
       prev.map((c) => {
         if (c.id === courseId) {
-          const updatedModules = c.modules.map((m) => ({
-            ...m,
-            lessons: m.lessons.map((l) =>
-              l.id === lessonId ? { ...l, completed: !l.completed } : l
-            ),
-          }));
+          let total = 0;
+          let completed = 0;
+          const updatedModules = c.modules.map((m) => {
+            const updatedLessons = m.lessons.map((l) => {
+              total++;
+              if (l.id === lessonId) {
+                const nextState = !l.completed;
+                if (nextState) completed++;
+                return { ...l, completed: nextState };
+              }
+              if (l.completed) completed++;
+              return l;
+            });
+            return { ...m, lessons: updatedLessons };
+          });
 
-          const total = updatedModules.reduce((acc, m) => acc + m.lessons.length, 0);
-          const completed = updatedModules.reduce(
-            (acc, m) => acc + m.lessons.filter((l) => l.completed).length,
-            0
-          );
-          const newProgress = Math.round((completed / total) * 100);
-
-          if (completed > (c.completedLessons || 0)) {
-            awardXp(25);
-          }
-
+          const newProgress = Math.round((completed / (total || 1)) * 100);
           return {
             ...c,
             enrolled: true,
@@ -137,20 +163,23 @@ export default function CoursesPage() {
 
     if (selectedCourse && selectedCourse.id === courseId) {
       setSelectedCourse((prev) => {
-        const updatedModules = prev.modules.map((m) => ({
-          ...m,
-          lessons: m.lessons.map((l) =>
-            l.id === lessonId ? { ...l, completed: !l.completed } : l
-          ),
-        }));
+        let total = 0;
+        let completed = 0;
+        const updatedModules = prev.modules.map((m) => {
+          const updatedLessons = m.lessons.map((l) => {
+            total++;
+            if (l.id === lessonId) {
+              const nextState = !l.completed;
+              if (nextState) completed++;
+              return { ...l, completed: nextState };
+            }
+            if (l.completed) completed++;
+            return l;
+          });
+          return { ...m, lessons: updatedLessons };
+        });
 
-        const total = updatedModules.reduce((acc, m) => acc + m.lessons.length, 0);
-        const completed = updatedModules.reduce(
-          (acc, m) => acc + m.lessons.filter((l) => l.completed).length,
-          0
-        );
-        const newProgress = Math.round((completed / total) * 100);
-
+        const newProgress = Math.round((completed / (total || 1)) * 100);
         return {
           ...prev,
           enrolled: true,
@@ -162,50 +191,21 @@ export default function CoursesPage() {
     }
   };
 
-  const handleLaunchAssessment = (assessmentId) => {
-    const target = assessments.find((a) => a.id === assessmentId);
-    if (target) {
-      setActiveAssessment(target);
-      if (selectedCourse) setSelectedCourse(null);
-    }
-  };
-
-  const handleAssessmentComplete = (result) => {
-    setAssessments((prev) =>
-      prev.map((a) => {
-        if (a.id === result.assessmentId) {
-          return {
-            ...a,
-            lastScore: result.score,
-            status: result.passed ? 'Passed' : 'Ready to Take',
-            attemptsCount: (a.attemptsCount || 0) + 1,
-            lastAttemptDate: 'Just now',
-          };
-        }
-        return a;
-      })
-    );
-
-    if (result.earnedXp > 0) {
-      awardXp(result.earnedXp);
-    }
-  };
-
-  const handleSynthesizeCurriculum = (e) => {
+  // Launch AI Synthesized Course
+  const handleSynthesizeCustomCourse = (e) => {
     e.preventDefault();
     if (!customSkillPrompt.trim()) return;
 
     setIsSynthesizing(true);
     setTimeout(() => {
-      const generatedId = `course-ai-${Date.now()}`;
       const newCourse = {
-        id: generatedId,
-        title: `AI Deep Dive: ${customSkillPrompt.trim()}`,
-        tagline: `Accelerated modular track dynamically generated for ${customSkillPrompt.trim()} mastery.`,
-        category: 'Advanced Web',
+        id: `custom-course-${Date.now()}`,
+        title: `Mastering ${customSkillPrompt.trim()}`,
+        tagline: `AI-synthesized fast-track curriculum targeting ${customSkillPrompt.trim()} mastery with practical lessons.`,
+        category: 'AI Synthesized',
         difficulty: 'Intermediate',
-        platform: 'LearnPath AI Engine',
-        instructor: 'LearnPath Neural Tutor',
+        platform: 'LearnPath AI Custom Lab',
+        instructor: 'LearnPath AI Engine',
         duration: '4.5 Hours',
         rating: 5.0,
         reviewsCount: 1,
@@ -214,45 +214,33 @@ export default function CoursesPage() {
         completedLessons: 0,
         totalLessons: 4,
         xpReward: 350,
-        skillsCovered: [customSkillPrompt.trim(), 'Architectural Patterns', 'Production Best Practices'],
-        targetRole: user?.careerGoal || 'Full Stack Developer',
-        thumbnailGradient: 'from-brand-600/30 via-coral-600/20 to-slate-900/40',
+        skillsCovered: [customSkillPrompt.trim(), 'Deep Practice', 'System Design'],
+        targetRole: user?.targetRole || user?.careerGoal || 'Full Stack Developer',
+        thumbnailGradient: 'from-amber-500/20 via-orange-600/10 to-slate-900/30',
         resources: {
-          officialDocs: {
-            title: `${customSkillPrompt.trim()} Official Standards`,
-            url: 'https://developer.mozilla.org',
-          },
-          youtubeVideo: {
-            title: `${customSkillPrompt.trim()} Architecture Guide`,
-            url: 'https://youtube.com',
-          },
-          youtubeChannel: {
-            title: 'Modern Software Engineering',
-            url: 'https://youtube.com',
-          },
-          learningPlatform: {
-            title: 'Interactive Code Playground',
-            url: 'https://github.com',
-          },
+          officialDocs: { title: 'Official Documentation & Guides', url: 'https://developer.mozilla.org/' },
+          youtubeVideo: { title: `${customSkillPrompt.trim()} Crash Course`, url: 'https://www.youtube.com' },
+          youtubeChannel: { title: 'freeCodeCamp.org', url: 'https://www.youtube.com/@freecodecamp' },
+          learningPlatform: { title: 'Hands-on Practice Sandbox', url: 'https://github.com' },
         },
         modules: [
           {
-            title: 'Module 1: Foundations & Architecture',
+            title: `Module 1: Core Fundamentals of ${customSkillPrompt.trim()}`,
             duration: '2.0 hrs',
             lessons: [
-              { id: `l_${Date.now()}_1`, title: 'Core Principles & Paradigm Overview', duration: '60 mins', completed: false },
-              { id: `l_${Date.now()}_2`, title: 'Memory Model, Lifecycles & Flow', duration: '60 mins', completed: false },
-            ],
+              { id: `c_l1_${Date.now()}`, title: 'Architecture & Mental Models', duration: '40 mins', completed: false },
+              { id: `c_l2_${Date.now()}`, title: 'Core Syntax & Paradigm Deep Dive', duration: '50 mins', completed: false },
+            ]
           },
           {
-            title: 'Module 2: Real-World Implementation',
+            title: 'Module 2: Production Applications & Best Practices',
             duration: '2.5 hrs',
             lessons: [
-              { id: `l_${Date.now()}_3`, title: 'Production Scalability & Edge Cases', duration: '75 mins', completed: false },
-              { id: `l_${Date.now()}_4`, title: 'Hands-On Benchmark Capstone Challenge', duration: '75 mins', completed: false },
-            ],
-          },
-        ],
+              { id: `c_l3_${Date.now()}`, title: 'Applied Project Implementation', duration: '60 mins', completed: false },
+              { id: `c_l4_${Date.now()}`, title: 'Performance Optimization & Benchmarks', duration: '55 mins', completed: false },
+            ]
+          }
+        ]
       };
 
       setCourses((prev) => [newCourse, ...prev]);
@@ -263,222 +251,160 @@ export default function CoursesPage() {
     }, 900);
   };
 
-  const activeRole = user?.targetRole || user?.careerGoal || 'Full Stack Developer';
+  // Filter and Sort Courses
+  const filteredCourses = useMemo(() => {
+    const userRole = (user?.targetRole || user?.careerGoal || '').toLowerCase();
 
-  // Sort & prioritize courses for the user's active role
-  const sortedCourses = useMemo(() => {
-    const roleLower = activeRole.toLowerCase();
-    return [...courses].sort((a, b) => {
-      const aMatch = (a.targetRole && a.targetRole.toLowerCase().includes(roleLower)) ||
-        (a.category && roleLower.includes(a.category.toLowerCase())) ||
-        (a.skillsCovered && a.skillsCovered.some(sk => roleLower.includes(sk.toLowerCase())));
-      const bMatch = (b.targetRole && b.targetRole.toLowerCase().includes(roleLower)) ||
-        (b.category && roleLower.includes(b.category.toLowerCase())) ||
-        (b.skillsCovered && b.skillsCovered.some(sk => roleLower.includes(sk.toLowerCase())));
+    return courses.filter((c) => {
+      const matchesSearch =
+        c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        c.tagline.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        c.skillsCovered.some((s) => s.toLowerCase().includes(searchQuery.toLowerCase()));
+
+      const matchesCategory = selectedCategory === 'All' || c.category.toLowerCase() === selectedCategory.toLowerCase();
+      const matchesDifficulty = selectedDifficulty === 'All' || c.difficulty === selectedDifficulty;
+      const matchesEnrollment =
+        enrollmentFilter === 'All'
+          ? true
+          : enrollmentFilter === 'Enrolled'
+          ? c.enrolled
+          : !c.enrolled;
+
+      return matchesSearch && matchesCategory && matchesDifficulty && matchesEnrollment;
+    }).sort((a, b) => {
+      const aMatch = (a.targetRole && userRole.includes(a.targetRole.toLowerCase())) || (a.category && userRole.includes(a.category.toLowerCase()));
+      const bMatch = (b.targetRole && userRole.includes(b.targetRole.toLowerCase())) || (b.category && userRole.includes(b.category.toLowerCase()));
       if (aMatch && !bMatch) return -1;
       if (!aMatch && bMatch) return 1;
       return 0;
     });
-  }, [courses, activeRole]);
-
-  // Filtered courses
-  const filteredCourses = sortedCourses.filter((c) => {
-    const matchesSearch =
-      c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      c.tagline.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      c.skillsCovered?.some((s) => s.toLowerCase().includes(searchQuery.toLowerCase()));
-
-    const matchesCategory =
-      selectedCategory === 'All' || c.category.toLowerCase() === selectedCategory.toLowerCase();
-
-    const matchesDifficulty =
-      selectedDifficulty === 'All' || c.difficulty.toLowerCase() === selectedDifficulty.toLowerCase();
-
-    const matchesEnrollment =
-      enrollmentFilter === 'All'
-        ? true
-        : enrollmentFilter === 'Enrolled'
-        ? c.enrolled
-        : !c.enrolled;
-
-    return matchesSearch && matchesCategory && matchesDifficulty && matchesEnrollment;
-  });
+  }, [courses, searchQuery, selectedCategory, selectedDifficulty, enrollmentFilter, user?.targetRole, user?.careerGoal]);
 
   const enrolledCourses = courses.filter((c) => c.enrolled);
   const enrolledCount = enrolledCourses.length;
   const totalCompletedLessons = courses.reduce((acc, c) => acc + (c.completedLessons || 0), 0);
   const totalXpAvailable = courses.reduce((acc, c) => acc + (c.xpReward || 300), 0);
 
+  const categories = ['All', 'Frontend', 'Backend', 'Data Science', 'DevOps', 'Business Analytics', 'Full Stack'];
+
   return (
     <MainLayout>
-      <div className="space-y-8 animate-in fade-in duration-200 max-w-7xl mx-auto pb-10">
-
-        {/* Page Header */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-white/[0.08]">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs sm:text-sm font-semibold text-[#FF857A]">
-                Curated Skill Tracks 📚
-              </span>
+      <div className="space-y-8 pb-12">
+        {/* Header Hero */}
+        <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-[#16191E] via-[#1A1E24] to-[#0E1114] border border-white/[0.08] p-6 sm:p-8">
+          <div className="relative z-10 max-w-3xl space-y-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FF6B5F]/15 text-[#FF857A] border border-[#FF6B5F]/30 text-xs font-bold uppercase tracking-wider">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Personalized Role Curriculum</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#F5F1E8] tracking-tight">
-              Courses & Educational Resources
+            <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
+              Course Catalog & Skill Learning Paths
             </h1>
-            <p className="mt-1 text-xs sm:text-sm text-[#8C877D] max-w-3xl leading-relaxed">
-              Smart, prioritized curriculum modules and curated educational resources matched to your active engineering goals ({activeRole}).
+            <p className="text-sm text-neutral-400 leading-relaxed">
+              Curated, production-grade learning modules tailored for your objective as{' '}
+              <strong className="text-white">{user?.targetRole || user?.careerGoal || 'Engineering Professional'}</strong>.
+              Track your lesson completions, earn verified XP, and unlock assessment checkpoints.
             </p>
-          </div>
-
-          <div className="flex items-center gap-2 shrink-0">
-            <button
-              onClick={() => setIsModuleScopeOpen(true)}
-              className="px-4 py-2.5 rounded-xl text-xs font-bold bg-[#16191E] text-[#F5F1E8] border border-white/[0.08] hover:bg-white/5 transition-all cursor-pointer flex items-center gap-1.5"
-            >
-              <Layers className="w-3.5 h-3.5 text-[#38BDF8]" />
-              <span>Module Scope</span>
-            </button>
           </div>
         </div>
 
-        {/* Dynamic Metric Summary Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-          <div className="p-4 sm:p-5 rounded-2xl bg-[#111418] border border-white/[0.08] flex items-center gap-4 shadow-sm">
-            <div className="w-12 h-12 rounded-2xl bg-[#FF6B5F]/15 border border-[#FF6B5F]/30 flex items-center justify-center text-[#FF857A] shrink-0 shadow-sm">
-              <BookOpen className="w-6 h-6" />
-            </div>
-            <div>
-              <p className="text-xs font-semibold text-[#8C877D]">Total Courses</p>
-              <p className="text-xl sm:text-2xl font-black text-[#F5F1E8] font-mono mt-0.5">
-                {courses.length}
-              </p>
-              <p className="text-[11px] text-[#FF857A] font-semibold">Catalog Tracks</p>
-            </div>
-          </div>
-
-          <div className="p-4 sm:p-5 rounded-2xl bg-[#111418] border border-white/[0.08] flex items-center gap-4 shadow-sm">
-            <div className="w-12 h-12 rounded-2xl bg-[#38BDF8]/15 border border-[#38BDF8]/30 flex items-center justify-center text-[#38BDF8] shrink-0 shadow-sm">
+        {/* Telemetry Overview Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="p-5 rounded-2xl bg-[#16191E] border border-white/[0.06] flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-[#38BDF8]/15 flex items-center justify-center text-[#38BDF8] border border-[#38BDF8]/30 shrink-0">
               <BookmarkCheck className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-[#8C877D]">Active Enrolled</p>
-              <p className="text-xl sm:text-2xl font-black text-[#F5F1E8] font-mono mt-0.5">
+              <p className="text-xs font-semibold text-neutral-400">Active Enrolled</p>
+              <p className="text-xl sm:text-2xl font-black text-white font-mono mt-0.5">
                 {enrolledCount}
               </p>
-              <p className="text-[11px] text-[#38BDF8] font-semibold">In Progress</p>
+              <p className="text-[11px] text-[#38BDF8] font-semibold">Courses In Progress</p>
             </div>
           </div>
 
-          <div className="p-4 sm:p-5 rounded-2xl bg-[#111418] border border-white/[0.08] flex items-center gap-4 shadow-sm">
-            <div className="w-12 h-12 rounded-2xl bg-[#34D399]/15 border border-[#34D399]/30 flex items-center justify-center text-[#34D399] shrink-0 shadow-sm">
+          <div className="p-5 rounded-2xl bg-[#16191E] border border-white/[0.06] flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-[#34D399]/15 flex items-center justify-center text-[#34D399] border border-[#34D399]/30 shrink-0">
               <CheckCircle2 className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-[#8C877D]">Completed Lessons</p>
-              <p className="text-xl sm:text-2xl font-black text-[#F5F1E8] font-mono mt-0.5">
+              <p className="text-xs font-semibold text-neutral-400">Lessons Completed</p>
+              <p className="text-xl sm:text-2xl font-black text-white font-mono mt-0.5">
                 {totalCompletedLessons}
               </p>
-              <p className="text-[11px] text-[#34D399] font-semibold">Logged Units</p>
+              <p className="text-[11px] text-[#34D399] font-semibold">Mastery Units Finished</p>
             </div>
           </div>
 
-          <div className="p-4 sm:p-5 rounded-2xl bg-[#111418] border border-white/[0.08] flex items-center gap-4 shadow-sm">
-            <div className="w-12 h-12 rounded-2xl bg-[#FBBF24]/15 border border-[#FBBF24]/30 flex items-center justify-center text-[#FBBF24] shrink-0 shadow-sm">
+          <div className="p-5 rounded-2xl bg-[#16191E] border border-white/[0.06] flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-[#FBBF24]/15 flex items-center justify-center text-[#FBBF24] border border-[#FBBF24]/30 shrink-0">
               <Award className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-[#8C877D]">Total XP Available</p>
-              <p className="text-xl sm:text-2xl font-black text-[#F5F1E8] font-mono mt-0.5">
-                +{totalXpAvailable} XP
+              <p className="text-xs font-semibold text-neutral-400">Total Course XP</p>
+              <p className="text-xl sm:text-2xl font-black text-white font-mono mt-0.5">
+                {totalXpAvailable}
               </p>
-              <p className="text-[11px] text-[#FBBF24] font-semibold">Track Rewards</p>
+              <p className="text-[11px] text-[#FBBF24] font-semibold">XP Unlockable in Catalog</p>
             </div>
           </div>
         </div>
 
-        {/* AI Custom Curriculum Generator Input Banner */}
-        <div className="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-[#1A1E24] via-[#16191E] to-[#111418] border border-[#FF6B5F]/20 relative overflow-hidden shadow-lg">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
-            <div className="space-y-1.5 max-w-xl">
-              <div className="flex items-center gap-2">
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#FF6B5F]/20 text-[#FF857A] border border-[#FF6B5F]/30 uppercase tracking-wider font-mono flex items-center gap-1">
-                  <Sparkles className="w-3 h-3" /> AI Curriculum Engine
-                </span>
-              </div>
-              <h3 className="text-base sm:text-lg font-bold text-[#F5F1E8]">
-                Need a tailored module for your target role ({activeRole})?
-              </h3>
-              <p className="text-xs text-[#8C877D] leading-relaxed">
-                Enter any framework or technology to generate a structured curriculum with lessons and checkpoints.
-              </p>
-            </div>
-
-            <form onSubmit={handleSynthesizeCurriculum} className="flex-1 max-w-md">
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={customSkillPrompt}
-                  onChange={(e) => setCustomSkillPrompt(e.target.value)}
-                  placeholder="e.g., PyTorch, GraphQL, Kubernetes..."
-                  className="flex-1 bg-[#0E1114] border border-white/[0.1] text-xs sm:text-sm text-[#F5F1E8] rounded-xl px-4 py-2.5 focus:outline-none focus:border-[#FF6B5F] placeholder:text-[#8C877D] font-medium"
-                />
-                <button
-                  type="submit"
-                  disabled={isSynthesizing || !customSkillPrompt.trim()}
-                  className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#FF6B5F] to-[#E85548] hover:from-[#FF857A] hover:to-[#FF6B5F] text-white text-xs font-bold transition-all disabled:opacity-50 shrink-0 cursor-pointer shadow-md shadow-[#FF6B5F]/25 flex items-center gap-1.5"
-                >
-                  {isSynthesizing ? (
-                    <span>Generating...</span>
-                  ) : (
-                    <>
-                      <Sparkles className="w-3.5 h-3.5" />
-                      <span>Synthesize</span>
-                    </>
-                  )}
-                </button>
-              </div>
-              {synthesizedSuccess && (
-                <p className="text-xs text-[#34D399] font-medium mt-1.5 flex items-center gap-1 animate-in fade-in">
-                  <CheckCircle2 className="w-3.5 h-3.5" /> Module synthesized and added to top of catalog!
-                </p>
-              )}
-            </form>
+        {/* AI Custom Course Synthesizer Bar */}
+        <form onSubmit={handleSynthesizeCustomCourse} className="p-4 rounded-2xl bg-[#16191E] border border-white/[0.06] flex flex-col sm:flex-row items-center gap-3">
+          <div className="flex items-center gap-2 text-xs font-bold text-[#FF857A] shrink-0">
+            <Sparkles className="w-4 h-4" />
+            <span>AI Fast-Track Synthesizer:</span>
           </div>
-        </div>
+          <input
+            type="text"
+            placeholder="Type any skill (e.g., GraphQL, Rust, Terraform, Pandas, PyTorch)..."
+            value={customSkillPrompt}
+            onChange={(e) => setCustomSkillPrompt(e.target.value)}
+            className="flex-1 w-full bg-[#0E1114] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#FF6B5F]"
+          />
+          <button
+            type="submit"
+            disabled={isSynthesizing || !customSkillPrompt.trim()}
+            className="w-full sm:w-auto px-4 py-2 rounded-xl bg-[#FF6B5F] hover:bg-[#E85548] text-white text-xs font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-1.5 shrink-0 cursor-pointer"
+          >
+            <Zap className="w-3.5 h-3.5" />
+            <span>{isSynthesizing ? 'Synthesizing...' : 'Generate Curriculum'}</span>
+          </button>
+        </form>
 
-        {/* Filter Controls Bar */}
-        <div className="p-4 rounded-2xl bg-[#111418] border border-white/[0.08] space-y-4">
-          <div className="flex flex-col md:flex-row gap-3 items-center justify-between">
-            {/* Search Input */}
-            <div className="relative w-full md:w-96">
-              <Search className="w-4 h-4 text-[#8C877D] absolute left-3.5 top-1/2 -translate-y-1/2" />
+        {synthesizedSuccess && (
+          <div className="p-3 rounded-xl bg-[#34D399]/15 border border-[#34D399]/30 text-xs text-[#34D399] flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4" />
+            <span>New AI-synthesized course added and enrolled at the top of your catalog!</span>
+          </div>
+        )}
+
+        {/* Search & Filters */}
+        <div className="space-y-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="relative w-full md:w-80">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
               <input
                 type="text"
+                placeholder="Search courses, skills, topics..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search tracks, topics, concepts..."
-                className="w-full bg-[#16191E] border border-white/[0.08] text-xs sm:text-sm text-[#F5F1E8] rounded-xl pl-10 pr-4 py-2 focus:outline-none focus:border-[#FF6B5F] placeholder:text-[#8C877D]"
+                className="w-full bg-[#16191E] border border-white/[0.08] rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#FF6B5F]"
               />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8C877D] hover:text-[#F5F1E8]"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              )}
             </div>
 
-            {/* Filter Pills */}
             <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-1 md:pb-0">
               <div className="flex items-center gap-1 bg-[#16191E] p-1 rounded-xl border border-white/[0.06] shrink-0">
                 {['All', 'Enrolled', 'Available'].map((mode) => (
                   <button
                     key={mode}
+                    type="button"
                     onClick={() => setEnrollmentFilter(mode)}
-                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                       enrollmentFilter === mode
                         ? 'bg-[#FF6B5F] text-white shadow-sm'
-                        : 'text-[#8C877D] hover:text-[#F5F1E8]'
+                        : 'text-neutral-400 hover:text-white'
                     }`}
                   >
                     {mode}
@@ -486,13 +412,12 @@ export default function CoursesPage() {
                 ))}
               </div>
 
-              {/* Difficulty Dropdown */}
               <select
                 value={selectedDifficulty}
                 onChange={(e) => setSelectedDifficulty(e.target.value)}
-                className="bg-[#16191E] border border-white/[0.08] text-xs font-semibold text-[#F5F1E8] rounded-xl px-3 py-2 focus:outline-none focus:border-[#FF6B5F] shrink-0 cursor-pointer"
+                className="bg-[#16191E] border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-neutral-300 focus:outline-none focus:border-[#FF6B5F] cursor-pointer"
               >
-                <option value="All">All Tiers</option>
+                <option value="All">All Difficulties</option>
                 <option value="Beginner">Beginner</option>
                 <option value="Intermediate">Intermediate</option>
                 <option value="Advanced">Advanced</option>
@@ -500,169 +425,177 @@ export default function CoursesPage() {
             </div>
           </div>
 
-          {/* Categories Pill List */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pt-1 pb-1">
-            <span className="text-[11px] font-bold text-[#8C877D] mr-2 uppercase tracking-wider shrink-0">
-              Domains:
-            </span>
-            {['All', 'Frontend', 'Backend', 'Database', 'Cloud & DevOps', 'AI & Data Science', 'Security', 'Advanced Web'].map(
-              (cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(cat)}
-                  className={`px-3 py-1 rounded-lg text-xs font-semibold shrink-0 transition-all cursor-pointer ${
-                    selectedCategory === cat
-                      ? 'bg-[#FF6B5F]/15 text-[#FF857A] border border-[#FF6B5F]/30 font-bold'
-                      : 'bg-[#16191E] text-[#8C877D] border border-white/[0.04] hover:text-[#F5F1E8] hover:border-white/10'
-                  }`}
-                >
-                  {cat}
-                </button>
-              )
-            )}
+          {/* Category Chips */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-2">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all border cursor-pointer ${
+                  selectedCategory === cat
+                    ? 'bg-[#FF6B5F]/15 border-[#FF6B5F] text-[#FF857A]'
+                    : 'bg-[#16191E] border-white/[0.06] text-neutral-400 hover:border-white/20 hover:text-white'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Results Counter */}
-        <div className="flex items-center justify-between text-xs text-[#8C877D] px-1">
-          <span>
-            Showing <strong className="text-[#F5F1E8]">{filteredCourses.length}</strong> of{' '}
-            {courses.length} courses
-          </span>
-          {enrollmentFilter !== 'All' && (
-            <span className="font-medium text-[#38BDF8]">Filter active: {enrollmentFilter}</span>
-          )}
-        </div>
+        {/* Courses Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {filteredCourses.map((course) => {
+            const isRoleMatch = (course.targetRole && (user?.targetRole || user?.careerGoal || '').toLowerCase().includes(course.targetRole.toLowerCase())) ||
+              (course.category && (user?.targetRole || user?.careerGoal || '').toLowerCase().includes(course.category.toLowerCase()));
 
-        {/* Course Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredCourses.map((course) => (
-            <div
-              key={course.id}
-              onClick={() => setSelectedCourse(course)}
-              className="rounded-2xl bg-[#111418] border border-white/[0.08] hover:border-[#FF6B5F]/40 transition-all flex flex-col justify-between overflow-hidden group cursor-pointer shadow-sm hover:shadow-xl hover:shadow-[#FF6B5F]/5"
-            >
-              {/* Header Gradient Banner */}
+            return (
               <div
-                className={`h-24 bg-gradient-to-br ${course.thumbnailGradient || 'from-brand-600/30 via-coral-600/20 to-slate-900/40'} p-4 flex items-start justify-between relative`}
+                key={course.id}
+                className="rounded-2xl bg-[#16191E] border border-white/[0.06] hover:border-white/20 transition-all duration-200 flex flex-col justify-between overflow-hidden group shadow-lg"
               >
-                <div className="flex items-center gap-1.5">
-                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-black/40 text-white backdrop-blur-sm border border-white/10 font-mono">
-                    {course.category}
-                  </span>
-                  <span
-                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase font-mono ${
-                      course.difficulty === 'Beginner'
-                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                        : course.difficulty === 'Intermediate'
-                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                        : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
-                    }`}
-                  >
-                    {course.difficulty}
-                  </span>
-                </div>
+                <div className="p-5 space-y-4">
+                  {/* Top Badges */}
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white/[0.06] text-neutral-300 font-mono">
+                      {course.category}
+                    </span>
+                    <div className="flex items-center gap-1.5">
+                      {isRoleMatch && (
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FF6B5F]/15 text-[#FF857A] border border-[#FF6B5F]/30">
+                          Role Match
+                        </span>
+                      )}
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-white/[0.04] text-neutral-400">
+                        {course.difficulty}
+                      </span>
+                    </div>
+                  </div>
 
-                <div className="flex items-center gap-1 bg-black/40 px-2 py-0.5 rounded-full text-[11px] font-bold text-amber-300 border border-white/10 font-mono backdrop-blur-sm">
-                  <Star className="w-3 h-3 fill-amber-300 text-amber-300" />
-                  <span>{course.rating}</span>
-                </div>
-              </div>
-
-              {/* Card Body */}
-              <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                <div className="space-y-2">
-                  <h3 className="text-base font-bold text-[#F5F1E8] group-hover:text-[#FF857A] transition-colors leading-snug line-clamp-2">
-                    {course.title}
-                  </h3>
-                  <p className="text-xs text-[#8C877D] line-clamp-2 leading-relaxed">
-                    {course.tagline}
-                  </p>
-                </div>
-
-                {/* Skills tags */}
-                <div className="flex flex-wrap gap-1.5">
-                  {course.skillsCovered?.slice(0, 3).map((sk, sIdx) => (
-                    <span
-                      key={sIdx}
-                      className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-white/[0.04] text-[#C7C2B6] border border-white/[0.06]"
+                  {/* Course Title & Tagline */}
+                  <div>
+                    <h3
+                      onClick={() => setSelectedCourse(course)}
+                      className="text-base font-bold text-white group-hover:text-[#FF857A] transition-colors cursor-pointer leading-snug line-clamp-2"
                     >
-                      {sk}
-                    </span>
-                  ))}
-                  {course.skillsCovered?.length > 3 && (
-                    <span className="text-[10px] text-[#8C877D] self-center">
-                      +{course.skillsCovered.length - 3} more
-                    </span>
+                      {course.title}
+                    </h3>
+                    <p className="text-xs text-neutral-400 mt-1 line-clamp-2 leading-relaxed">
+                      {course.tagline}
+                    </p>
+                  </div>
+
+                  {/* Skills Covered Tags */}
+                  <div className="flex flex-wrap gap-1.5">
+                    {course.skillsCovered.slice(0, 3).map((skill, idx) => (
+                      <span
+                        key={idx}
+                        className="px-2 py-0.5 rounded-md bg-[#0E1114] border border-white/[0.04] text-[11px] text-neutral-300 font-mono"
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                    {course.skillsCovered.length > 3 && (
+                      <span className="px-1.5 py-0.5 text-[11px] text-neutral-500 font-mono">
+                        +{course.skillsCovered.length - 3}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Progress bar if enrolled */}
+                  {course.enrolled && (
+                    <div className="space-y-1.5 pt-1">
+                      <div className="flex justify-between text-[11px] font-semibold">
+                        <span className="text-neutral-400">Track Progress</span>
+                        <span className="text-white font-mono">{course.progress || 0}%</span>
+                      </div>
+                      <div className="h-1.5 w-full bg-white/[0.06] rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-[#34D399] rounded-full transition-all duration-300"
+                          style={{ width: `${course.progress || 0}%` }}
+                        />
+                      </div>
+                    </div>
                   )}
                 </div>
 
-                {/* Progress bar if enrolled */}
-                {course.enrolled && (
-                  <div className="space-y-1.5 pt-1">
-                    <div className="flex justify-between text-[11px] font-semibold">
-                      <span className="text-[#8C877D]">Track Progress</span>
-                      <span className="text-[#34D399] font-mono">{course.progress || 0}%</span>
-                    </div>
-                    <div className="w-full bg-white/5 rounded-full h-1.5 overflow-hidden">
-                      <div
-                        className="bg-[#34D399] h-full rounded-full transition-all duration-300"
-                        style={{ width: `${course.progress || 0}%` }}
-                      />
-                    </div>
+                {/* Card Footer */}
+                <div className="p-4 border-t border-white/[0.06] bg-[#0E1114]/50 flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-3 text-xs text-neutral-400 font-mono">
+                    <span className="flex items-center gap-1">
+                      <Clock className="w-3.5 h-3.5" />
+                      {course.duration}
+                    </span>
+                    <span className="flex items-center gap-1 text-[#FBBF24]">
+                      <Award className="w-3.5 h-3.5" />
+                      +{course.xpReward || 300} XP
+                    </span>
                   </div>
-                )}
-              </div>
 
-              {/* Card Footer */}
-              <div className="px-5 py-3.5 bg-[#0E1114] border-t border-white/[0.06] flex items-center justify-between">
-                <div className="flex items-center gap-3 text-xs text-[#8C877D] font-medium">
-                  <span className="flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5" />
-                    {course.duration}
-                  </span>
-                  <span className="flex items-center gap-1 text-[#FBBF24]">
-                    <Award className="w-3.5 h-3.5" />
-                    +{course.xpReward} XP
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedCourse(course)}
+                      className="px-3 py-1.5 rounded-lg border border-white/10 text-xs font-semibold text-neutral-300 hover:text-white hover:bg-white/[0.04] transition-all cursor-pointer"
+                    >
+                      View
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleEnrollToggle(course.id)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        course.enrolled
+                          ? 'bg-[#34D399]/15 text-[#34D399] border border-[#34D399]/30'
+                          : 'bg-[#FF6B5F] hover:bg-[#E85548] text-white shadow-md shadow-[#FF6B5F]/20'
+                      }`}
+                    >
+                      {course.enrolled ? 'Enrolled' : 'Enroll'}
+                    </button>
+                  </div>
                 </div>
-
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleEnrollToggle(course.id);
-                  }}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                    course.enrolled
-                      ? 'bg-[#34D399]/15 text-[#34D399] border border-[#34D399]/30'
-                      : 'bg-[#FF6B5F] hover:bg-[#E85548] text-white shadow-md shadow-[#FF6B5F]/20'
-                  }`}
-                >
-                  {course.enrolled ? 'Enrolled' : 'Enroll'}
-                </button>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
-        {/* Course Details Modal */}
+        {filteredCourses.length === 0 && (
+          <div className="p-12 text-center rounded-3xl bg-[#16191E] border border-white/[0.06] space-y-3">
+            <BookOpen className="w-10 h-10 text-neutral-500 mx-auto" />
+            <h3 className="text-base font-bold text-white">No courses match your active filter</h3>
+            <p className="text-xs text-neutral-400 max-w-sm mx-auto">
+              Try adjusting your search query, difficulty, or category filter to explore other engineering tracks.
+            </p>
+          </div>
+        )}
+
+        {/* Modal for Details */}
         {selectedCourse && (
           <CourseDetailsModal
             course={selectedCourse}
+            isOpen={!!selectedCourse}
             onClose={() => setSelectedCourse(null)}
-            onEnrollToggle={handleEnrollToggle}
-            onStartLesson={handleStartLesson}
-            onLaunchAssessment={handleLaunchAssessment}
+            onEnrollToggle={() => handleEnrollToggle(selectedCourse.id)}
+            onToggleLesson={(lessonId) => handleToggleLesson(selectedCourse.id, lessonId)}
+            onLaunchAssessment={(assessmentId) => {
+              const matched = assessments.find((a) => a.id === assessmentId) || assessments[0];
+              setActiveAssessment(matched);
+            }}
           />
         )}
 
-        {/* Assessment Runner Modal */}
+        {/* Modal for Assessment */}
         {activeAssessment && (
           <AssessmentRunnerModal
             assessment={activeAssessment}
+            isOpen={!!activeAssessment}
             onClose={() => setActiveAssessment(null)}
-            onComplete={handleAssessmentComplete}
+            onComplete={(payload) => {
+              if (payload.passed && payload.xpEarned) {
+                awardXp(payload.xpEarned);
+              }
+              setActiveAssessment(null);
+            }}
           />
         )}
       </div>

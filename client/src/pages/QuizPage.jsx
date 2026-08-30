@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import { QuizModal } from '../components/quiz/QuizModal';
 import { Award, Clock, Sparkles, RefreshCw, Zap, CheckCircle2, History } from 'lucide-react';
 
 export const QuizPage = () => {
+  const { isAuthenticated, loading: authLoading } = useAuth();
   const [quizzes, setQuizzes] = useState([]);
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -11,8 +13,10 @@ export const QuizPage = () => {
   const [customSkillInput, setCustomSkillInput] = useState('');
 
   useEffect(() => {
-    fetchQuizzesAndHistory();
-  }, []);
+    if (isAuthenticated && !authLoading) {
+      fetchQuizzesAndHistory();
+    }
+  }, [isAuthenticated, authLoading]);
 
   const fetchQuizzesAndHistory = async () => {
     try {

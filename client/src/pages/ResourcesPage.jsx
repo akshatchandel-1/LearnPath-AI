@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import { useLearningPath } from '../context/LearningPathContext';
 import { ResourceCard } from '../components/cards/ResourceCard';
 import { ExplainabilityModal } from '../components/explainability/ExplainabilityModal';
 import { BookOpen, Search, Filter, RefreshCw, Sparkles, ExternalLink } from 'lucide-react';
 
 export const ResourcesPage = () => {
+  const { isAuthenticated, loading: authLoading } = useAuth();
   const { recommendations } = useLearningPath();
   const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,8 +16,10 @@ export const ResourcesPage = () => {
   const [selectedExplainRec, setSelectedExplainRec] = useState(null);
 
   useEffect(() => {
-    fetchResources();
-  }, [typeFilter, search]);
+    if (isAuthenticated && !authLoading) {
+      fetchResources();
+    }
+  }, [typeFilter, search, isAuthenticated, authLoading]);
 
   const fetchResources = async () => {
     try {

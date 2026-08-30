@@ -1,11 +1,10 @@
 /**
- * LearnPath AI — Verified Course & Assessment Catalog
- * Comprehensive curriculum across Beginner, Intermediate, and Advanced tiers.
- * Every course includes verified official docs, YouTube tutorials/channels, and practice platforms.
+ * LearnPath AI - Verified Multi-Role Course & Assessment Catalog
+ * Covers beginner to advanced tiers across all supported engineering & analytics roles.
  */
 
 export const INITIAL_COURSES = [
-  // ── BEGINNER TIER COURSES ──
+  // --- FRONTEND DEVELOPER ---
   {
     id: 'course-web-foundations',
     title: 'Web Development & Modern JavaScript Foundations',
@@ -27,26 +26,14 @@ export const INITIAL_COURSES = [
     assessmentId: 'assess-js-foundations',
     thumbnailGradient: 'from-amber-500/20 via-orange-600/10 to-slate-900/30',
     resources: {
-      officialDocs: {
-        title: 'MDN Web Docs (JavaScript & Web APIs)',
-        url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript'
-      },
-      youtubeVideo: {
-        title: 'JavaScript Full Course for Beginners — freeCodeCamp',
-        url: 'https://www.youtube.com/watch?v=PkZNo7MFNFg'
-      },
-      youtubeChannel: {
-        title: 'freeCodeCamp.org Channel',
-        url: 'https://www.youtube.com/@freecodecamp'
-      },
-      learningPlatform: {
-        title: 'JavaScript.info Interactive Tutorial',
-        url: 'https://javascript.info/'
-      }
+      officialDocs: { title: 'MDN Web Docs', url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript' },
+      youtubeVideo: { title: 'JavaScript Full Course for Beginners', url: 'https://www.youtube.com/watch?v=PkZNo7MFNFg' },
+      youtubeChannel: { title: 'freeCodeCamp.org', url: 'https://www.youtube.com/@freecodecamp' },
+      learningPlatform: { title: 'JavaScript.info Tutorial', url: 'https://javascript.info/' }
     },
     modules: [
       {
-        title: 'Module 1: HTML5 Semantics & CSS Layout Mastery',
+        title: 'Module 1: HTML5 Semantics & CSS Layouts',
         duration: '2.5 hrs',
         lessons: [
           { id: 'l_bf1', title: 'Semantic HTML Elements & Accessibility (a11y)', duration: '40 mins', completed: false },
@@ -55,488 +42,340 @@ export const INITIAL_COURSES = [
         ]
       },
       {
-        title: 'Module 2: Modern JavaScript ES6+ Core Concepts',
+        title: 'Module 2: Modern JavaScript ES6+ Core',
         duration: '3.5 hrs',
         lessons: [
           { id: 'l_bf4', title: 'Variables, Scope, Closures & Arrow Functions', duration: '50 mins', completed: false },
           { id: 'l_bf5', title: 'Arrays, Objects, Destructuring & Spread Operator', duration: '45 mins', completed: false },
-          { id: 'l_bf6', title: 'DOM Selection, Event Listeners & Event Bubbling', duration: '55 mins', completed: false },
-          { id: 'l_bf7', title: 'Async JS: Promises, Async/Await & Fetch API', duration: '60 mins', completed: false },
+          { id: 'l_bf6', title: 'Async JS: Promises, Async/Await & Fetch API', duration: '60 mins', completed: false },
         ]
       }
     ]
   },
   {
-    id: 'course-python-basics',
-    title: 'Python Programming & Data Structures Fundamentals',
-    tagline: 'Learn Python programming syntax, control flow, object-oriented programming, and essential data structures.',
-    category: 'Languages',
-    difficulty: 'Beginner',
-    platform: 'LearnPath AI Essentials',
-    instructor: 'Angela Yu (Senior Software Instructor)',
-    duration: '5.5 Hours',
-    rating: 4.8,
-    reviewsCount: 480,
-    enrolled: false,
-    progress: 0,
-    completedLessons: 0,
-    totalLessons: 9,
-    xpReward: 250,
-    skillsCovered: ['Python', 'OOP', 'Data Structures', 'File I/O'],
-    targetRole: 'Data Scientist',
-    assessmentId: 'assess-python-core',
-    thumbnailGradient: 'from-blue-500/20 via-sky-600/10 to-indigo-950/30',
-    resources: {
-      officialDocs: {
-        title: 'Python Official Documentation & Tutorial',
-        url: 'https://docs.python.org/3/tutorial/'
-      },
-      youtubeVideo: {
-        title: 'Python for Beginners — Programming with Mosh',
-        url: 'https://www.youtube.com/watch?v=_uQrJ0TkZlc'
-      },
-      youtubeChannel: {
-        title: 'Programming with Mosh Channel',
-        url: 'https://www.youtube.com/@programmingwithmosh'
-      },
-      learningPlatform: {
-        title: 'Real Python Tutorials & Guides',
-        url: 'https://realpython.com/'
-      }
-    },
-    modules: [
-      {
-        title: 'Module 1: Python Fundamentals & Flow Control',
-        duration: '2.5 hrs',
-        lessons: [
-          { id: 'l_py1', title: 'Python Syntax, Types, Lists, Dicts & Tuples', duration: '45 mins', completed: false },
-          { id: 'l_py2', title: 'Loops, Conditionals & Comprehensions', duration: '50 mins', completed: false },
-          { id: 'l_py3', title: 'Functions, Default Args & Lambda Expressions', duration: '55 mins', completed: false },
-        ]
-      },
-      {
-        title: 'Module 2: OOP & Data Handling',
-        duration: '3.0 hrs',
-        lessons: [
-          { id: 'l_py4', title: 'Classes, Objects, Inheritance & Dunder Methods', duration: '60 mins', completed: false },
-          { id: 'l_py5', title: 'File Handling, JSON Parsing & Error Handling', duration: '60 mins', completed: false },
-          { id: 'l_py6', title: 'Modules, Virtual Environments & Pip Packages', duration: '60 mins', completed: false },
-        ]
-      }
-    ]
-  },
-  {
-    id: 'course-database-sql-basics',
-    title: 'Relational Databases & SQL Query Fundamentals',
-    tagline: 'Design normalized database schemas, write SQL queries, joins, group by aggregations, and subqueries.',
-    category: 'Database',
-    difficulty: 'Beginner',
-    platform: 'LearnPath Curated',
-    instructor: 'Alex Thorne (Database Specialist)',
-    duration: '4.5 Hours',
-    rating: 4.8,
-    reviewsCount: 390,
-    enrolled: false,
-    progress: 0,
-    completedLessons: 0,
-    totalLessons: 8,
-    xpReward: 260,
-    skillsCovered: ['SQL', 'PostgreSQL', 'Schema Design', 'Joins & Indexes'],
-    targetRole: 'Backend Developer',
-    assessmentId: 'assess-sql-fundamentals',
-    thumbnailGradient: 'from-emerald-500/20 via-teal-600/10 to-slate-900/30',
-    resources: {
-      officialDocs: {
-        title: 'PostgreSQL Official Documentation',
-        url: 'https://www.postgresql.org/docs/current/'
-      },
-      youtubeVideo: {
-        title: 'SQL Tutorial — Full Database Course for Beginners',
-        url: 'https://www.youtube.com/watch?v=HXV3zeRR3h4'
-      },
-      youtubeChannel: {
-        title: 'Traversy Media Channel',
-        url: 'https://www.youtube.com/@TraversyMedia'
-      },
-      learningPlatform: {
-        title: 'SQLBolt — Interactive Lessons',
-        url: 'https://sqlbolt.com/'
-      }
-    },
-    modules: [
-      {
-        title: 'Module 1: Relational Modeling & Basic Queries',
-        duration: '2.0 hrs',
-        lessons: [
-          { id: 'l_sql1', title: 'Tables, Primary Keys & Foreign Key Constraints', duration: '35 mins', completed: false },
-          { id: 'l_sql2', title: 'SELECT, WHERE, ORDER BY & LIMIT Filtering', duration: '40 mins', completed: false },
-          { id: 'l_sql3', title: 'INSERT, UPDATE, DELETE & Transactions', duration: '45 mins', completed: false },
-        ]
-      },
-      {
-        title: 'Module 2: Advanced Joins & Aggregations',
-        duration: '2.5 hrs',
-        lessons: [
-          { id: 'l_sql4', title: 'INNER, LEFT, RIGHT, FULL OUTER Joins Explained', duration: '50 mins', completed: false },
-          { id: 'l_sql5', title: 'GROUP BY, HAVING & Aggregate Functions', duration: '50 mins', completed: false },
-          { id: 'l_sql6', title: 'Subqueries, CTEs (WITH clause) & View Basics', duration: '50 mins', completed: false },
-        ]
-      }
-    ]
-  },
-
-  // ── INTERMEDIATE TIER COURSES ──
-  {
-    id: 'course-react-patterns',
-    title: 'React 18 Architecture & Custom Hooks Design',
-    tagline: 'Master component composition, custom hooks, atomic state management, and memory optimization.',
+    id: 'course-react-pro',
+    title: 'React 18 Architecture, Custom Hooks & State Management',
+    tagline: 'Build scalable React apps with hooks, context API, performance optimization, and clean component design.',
     category: 'Frontend',
     difficulty: 'Intermediate',
-    platform: 'LearnPath Curated',
-    instructor: 'Dr. Sarah Lin (Principal Frontend Architect)',
-    duration: '6.5 Hours',
+    platform: 'LearnPath AI Labs',
+    instructor: 'Dan Abramov & Kent C. Dodds',
+    duration: '8.0 Hours',
     rating: 4.9,
-    reviewsCount: 384,
+    reviewsCount: 820,
     enrolled: false,
     progress: 0,
     completedLessons: 0,
     totalLessons: 10,
     xpReward: 350,
-    skillsCovered: ['React.js', 'Custom Hooks', 'Concurrent Mode', 'State Management'],
-    targetRole: 'Full Stack Developer',
+    skillsCovered: ['React.js', 'Custom Hooks', 'State Management', 'Tailwind CSS'],
+    targetRole: 'Frontend Developer',
     assessmentId: 'assess-react-core',
-    thumbnailGradient: 'from-sky-500/20 via-cyan-600/10 to-blue-900/30',
+    thumbnailGradient: 'from-cyan-500/20 via-blue-600/10 to-slate-900/30',
     resources: {
-      officialDocs: {
-        title: 'React Official Documentation (react.dev)',
-        url: 'https://react.dev/'
-      },
-      youtubeVideo: {
-        title: 'React 18 Full Course — freeCodeCamp',
-        url: 'https://www.youtube.com/watch?v=bMknfKXIFA8'
-      },
-      youtubeChannel: {
-        title: 'The Net Ninja Channel',
-        url: 'https://www.youtube.com/@NetNinja'
-      },
-      learningPlatform: {
-        title: 'React Patterns & Best Practices Guide',
-        url: 'https://reactpatterns.js.org/'
-      }
+      officialDocs: { title: 'React 18 Documentation', url: 'https://react.dev/' },
+      youtubeVideo: { title: 'React 18 Full Course Tutorial', url: 'https://www.youtube.com/watch?v=bMknfKXIFA8' },
+      youtubeChannel: { title: 'Web Dev Simplified', url: 'https://www.youtube.com/@WebDevSimplified' },
+      learningPlatform: { title: 'React Official Hands-on Playground', url: 'https://react.dev/learn' }
     },
     modules: [
       {
-        title: 'Module 1: React 18 Fiber & Concurrent Features',
-        duration: '2.5 hrs',
-        lessons: [
-          { id: 'l1', title: 'Deep Dive into useTransition and useDeferredValue', duration: '35 mins', completed: false },
-          { id: 'l2', title: 'Automatic Batching & Server Components Primer', duration: '35 mins', completed: false },
-          { id: 'l3', title: 'Profiling Render Bottlenecks with React DevTools', duration: '40 mins', completed: false },
-        ]
-      },
-      {
-        title: 'Module 2: Advanced Hook Composition & State Architecture',
+        title: 'Module 1: Component Tree Decomposition & Hooks',
         duration: '4.0 hrs',
         lessons: [
-          { id: 'l4', title: 'Building Resilient Context Selectors without Re-renders', duration: '45 mins', completed: false },
-          { id: 'l5', title: 'Compound Components & Slot Pattern Architecture', duration: '50 mins', completed: false },
-          { id: 'l6', title: 'Custom Reducers with useReducer & Zustand State Store', duration: '55 mins', completed: false },
-          { id: 'l7', title: 'TanStack Query for Optimistic Server State Caching', duration: '50 mins', completed: false },
-        ]
-      }
-    ]
-  },
-  {
-    id: 'course-node-microservices',
-    title: 'Production Express.js, MongoDB & REST API Architecture',
-    tagline: 'Build battle-tested REST APIs with bulletproof auth, distributed caching, and Mongoose indexing.',
-    category: 'Backend',
-    difficulty: 'Intermediate',
-    platform: 'LearnPath AI Recommender',
-    instructor: 'Marcus Vance (Senior Backend Lead)',
-    duration: '8.0 Hours',
-    rating: 4.8,
-    reviewsCount: 512,
-    enrolled: false,
-    progress: 0,
-    completedLessons: 0,
-    totalLessons: 10,
-    xpReward: 400,
-    skillsCovered: ['Node.js', 'Express.js', 'MongoDB', 'JWT Auth', 'Redis'],
-    targetRole: 'Full Stack Developer',
-    assessmentId: 'assess-node-architecture',
-    thumbnailGradient: 'from-emerald-500/20 via-sky-600/10 to-slate-900/30',
-    resources: {
-      officialDocs: {
-        title: 'Node.js Official Documentation',
-        url: 'https://nodejs.org/en/docs'
-      },
-      youtubeVideo: {
-        title: 'Node.js and Express.js Full Course — freeCodeCamp',
-        url: 'https://www.youtube.com/watch?v=Oe421EPjeBE'
-      },
-      youtubeChannel: {
-        title: 'Traversy Media Channel',
-        url: 'https://www.youtube.com/@TraversyMedia'
-      },
-      learningPlatform: {
-        title: 'MongoDB University & Manual',
-        url: 'https://www.mongodb.com/docs/manual/'
-      }
-    },
-    modules: [
-      {
-        title: 'Module 1: Modular Express Controller & Service Layers',
-        duration: '3.5 hrs',
-        lessons: [
-          { id: 'l11', title: 'Clean Architecture Pattern for Enterprise Node.js', duration: '45 mins', completed: false },
-          { id: 'l12', title: 'Async Error Handling & Centralized Logging with Winston', duration: '45 mins', completed: false },
-          { id: 'l13', title: 'Input Sanitization and Zod/Joi Validation Schemas', duration: '45 mins', completed: false },
+          { id: 'l_rf1', title: 'Virtual DOM, Reconciliation & JSX Rendering', duration: '50 mins', completed: false },
+          { id: 'l_rf2', title: 'State & Effect Lifecycles with useState and useEffect', duration: '60 mins', completed: false },
+          { id: 'l_rf3', title: 'Custom Hook Design & Reusable Logic Extraction', duration: '65 mins', completed: false },
         ]
       },
       {
-        title: 'Module 2: Advanced MongoDB & Performance Indexing',
-        duration: '4.5 hrs',
+        title: 'Module 2: State & Performance Optimization',
+        duration: '4.0 hrs',
         lessons: [
-          { id: 'l14', title: 'Compound Indexes & Query Execution Plans ($explain)', duration: '50 mins', completed: false },
-          { id: 'l15', title: 'Aggregation Pipeline Masterclass ($lookup, $facet)', duration: '60 mins', completed: false },
-          { id: 'l16', title: 'HttpOnly Secure Cookies & Refresh Token Rotation', duration: '45 mins', completed: false },
-          { id: 'l17', title: 'Redis Caching & Distributed Rate Limiting', duration: '50 mins', completed: false },
-        ]
-      }
-    ]
-  },
-  {
-    id: 'course-typescript-fullstack',
-    title: 'TypeScript 5.x Mastery for Enterprise Applications',
-    tagline: 'Eliminate runtime bugs with generics, utility types, mapped types, and end-to-end type safety.',
-    category: 'Languages',
-    difficulty: 'Intermediate',
-    platform: 'LearnPath AI Recommender',
-    instructor: 'Elena Rostova (Staff Systems Engineer)',
-    duration: '5.2 Hours',
-    rating: 4.9,
-    reviewsCount: 290,
-    enrolled: false,
-    progress: 0,
-    completedLessons: 0,
-    totalLessons: 8,
-    xpReward: 300,
-    skillsCovered: ['TypeScript', 'Generics', 'Type Narrowing', 'Zod Integration'],
-    targetRole: 'Full Stack Developer',
-    assessmentId: 'assess-typescript-core',
-    thumbnailGradient: 'from-blue-600/20 via-cyan-500/10 to-indigo-950/30',
-    resources: {
-      officialDocs: {
-        title: 'TypeScript Official Handbook',
-        url: 'https://www.typescriptlang.org/docs/handbook/intro.html'
-      },
-      youtubeVideo: {
-        title: 'TypeScript Full Course for Beginners — freeCodeCamp',
-        url: 'https://www.youtube.com/watch?v=gp5H0Vw39yw'
-      },
-      youtubeChannel: {
-        title: 'Fireship Channel',
-        url: 'https://www.youtube.com/@Fireship'
-      },
-      learningPlatform: {
-        title: 'Total TypeScript Interactive Guide by Matt Pocock',
-        url: 'https://www.totaltypescript.com/tutorials'
-      }
-    },
-    modules: [
-      {
-        title: 'Module 1: Advanced Type System Concepts',
-        duration: '2.5 hrs',
-        lessons: [
-          { id: 'l19', title: 'Conditional Types, infer Keyword & Template Literals', duration: '40 mins', completed: false },
-          { id: 'l20', title: 'Discriminated Unions & Custom Type Guards', duration: '35 mins', completed: false },
-          { id: 'l21', title: 'Mapped Types & Key Remapping in Practice', duration: '45 mins', completed: false },
-        ]
-      },
-      {
-        title: 'Module 2: TypeScript with React & Node',
-        duration: '2.7 hrs',
-        lessons: [
-          { id: 'l22', title: 'Typing Polymorphic React Components & forwardRef', duration: '50 mins', completed: false },
-          { id: 'l23', title: 'Type-Safe Express Route Handlers & Zod Ingestion', duration: '45 mins', completed: false },
-          { id: 'l24', title: 'Sharing Monorepo Types between Client & Server', duration: '55 mins', completed: false },
-        ]
-      }
-    ]
-  },
-  {
-    id: 'course-docker-k8s',
-    title: 'Docker Containers, CI/CD & Cloud Infrastructure',
-    tagline: 'Containerize microservices, write multi-stage Dockerfiles, and automate CI/CD with GitHub Actions.',
-    category: 'Cloud & DevOps',
-    difficulty: 'Intermediate',
-    platform: 'Cloud Academy Partner',
-    instructor: 'Alex Thorne (DevOps Specialist)',
-    duration: '7.0 Hours',
-    rating: 4.8,
-    reviewsCount: 215,
-    enrolled: false,
-    progress: 0,
-    completedLessons: 0,
-    totalLessons: 8,
-    xpReward: 380,
-    skillsCovered: ['Docker', 'CI/CD', 'GitHub Actions', 'AWS ECS', 'NGINX'],
-    targetRole: 'DevOps Engineer',
-    assessmentId: 'assess-docker-devops',
-    thumbnailGradient: 'from-cyan-600/20 via-sky-700/10 to-slate-900/30',
-    resources: {
-      officialDocs: {
-        title: 'Docker Official Documentation',
-        url: 'https://docs.docker.com/'
-      },
-      youtubeVideo: {
-        title: 'Docker Tutorial for Beginners — TechWorld with Nana',
-        url: 'https://www.youtube.com/watch?v=3c-iBn73dDE'
-      },
-      youtubeChannel: {
-        title: 'TechWorld with Nana Channel',
-        url: 'https://www.youtube.com/@TechWorldwithNana'
-      },
-      learningPlatform: {
-        title: 'Play with Docker Interactive Lab',
-        url: 'https://labs.play-with-docker.com/'
-      }
-    },
-    modules: [
-      {
-        title: 'Module 1: Docker Fundamentals & Multi-Stage Builds',
-        duration: '3.5 hrs',
-        lessons: [
-          { id: 'l25', title: 'Dockerizing React & Node APIs with Alpine Linux', duration: '50 mins', completed: false },
-          { id: 'l26', title: 'Docker Compose for Multi-Service Local Networks', duration: '55 mins', completed: false },
-          { id: 'l27', title: 'Volume Persistence, Bind Mounts & Security Scanning', duration: '50 mins', completed: false },
-        ]
-      },
-      {
-        title: 'Module 2: CI/CD Pipelines & Cloud Deployment',
-        duration: '3.5 hrs',
-        lessons: [
-          { id: 'l28', title: 'GitHub Actions Automated Testing & Container Push', duration: '60 mins', completed: false },
-          { id: 'l29', title: 'NGINX Reverse Proxy, SSL Certs & Load Balancing', duration: '60 mins', completed: false },
+          { id: 'l_rf4', title: 'Context API and Global Store Hydration', duration: '60 mins', completed: false },
+          { id: 'l_rf5', title: 'useMemo, useCallback & Profiler Optimization', duration: '65 mins', completed: false },
         ]
       }
     ]
   },
 
-  // ── ADVANCED TIER COURSES ──
+  // --- BACKEND DEVELOPER ---
   {
-    id: 'course-system-design',
-    title: 'High-Scale System Design & Distributed Architecture',
-    tagline: 'Learn how top tech companies scale to millions of users with horizontal sharding, Kafka queues, and CDNs.',
-    category: 'Architecture',
-    difficulty: 'Advanced',
-    platform: 'LearnPath AI Executive',
-    instructor: 'Vikram Mehta (VP of Engineering)',
-    duration: '9.0 Hours',
-    rating: 5.0,
-    reviewsCount: 420,
+    id: 'course-backend-node',
+    title: 'Node.js, Express & RESTful API Engineering',
+    tagline: 'Architect high-throughput REST APIs, asynchronous worker pipelines, authentication, and error handling.',
+    category: 'Backend',
+    difficulty: 'Intermediate',
+    platform: 'LearnPath AI Backend Track',
+    instructor: 'Ryan Dahl & Maximilian Schwarzmuller',
+    duration: '7.5 Hours',
+    rating: 4.8,
+    reviewsCount: 710,
     enrolled: false,
     progress: 0,
     completedLessons: 0,
     totalLessons: 10,
-    xpReward: 500,
-    skillsCovered: ['System Design', 'Kafka', 'Redis Caching', 'Database Sharding', 'Microservices'],
-    targetRole: 'Solutions Architect',
-    assessmentId: 'assess-system-design',
-    thumbnailGradient: 'from-indigo-600/20 via-sky-600/10 to-slate-950/30',
+    xpReward: 300,
+    skillsCovered: ['Node.js', 'Express.js', 'RESTful APIs', 'JWT & Security'],
+    targetRole: 'Backend Developer',
+    assessmentId: 'assess-backend-node',
+    thumbnailGradient: 'from-emerald-500/20 via-teal-600/10 to-slate-900/30',
     resources: {
-      officialDocs: {
-        title: 'System Design Primer by Donne Martin',
-        url: 'https://github.com/donnemartin/system-design-primer'
-      },
-      youtubeVideo: {
-        title: 'System Design Interview — Step by Step Guide',
-        url: 'https://www.youtube.com/watch?v=i53Gi_K3o7I'
-      },
-      youtubeChannel: {
-        title: 'ByteByteGo Channel (Alex Xu)',
-        url: 'https://www.youtube.com/@ByteByteGo'
-      },
-      learningPlatform: {
-        title: 'High Scalability Architecture Case Studies',
-        url: 'http://highscalability.com/'
-      }
+      officialDocs: { title: 'Node.js Documentation', url: 'https://nodejs.org/docs/latest/api/' },
+      youtubeVideo: { title: 'Node.js and Express.js Full Course', url: 'https://www.youtube.com/watch?v=Oe421EPjeBE' },
+      youtubeChannel: { title: 'Traversy Media', url: 'https://www.youtube.com/@TraversyMedia' },
+      learningPlatform: { title: 'Express.js Official Guide', url: 'https://expressjs.com/en/starter/installing.html' }
     },
     modules: [
       {
-        title: 'Module 1: Scalability Patterns & Distributed Caching',
-        duration: '4.5 hrs',
+        title: 'Module 1: Node.js Runtime & Asynchronous Streams',
+        duration: '3.5 hrs',
         lessons: [
-          { id: 'l30', title: 'Cache Invalidation Strategies (Write-Through vs Cache-Aside)', duration: '55 mins', completed: false },
-          { id: 'l31', title: 'Message Queues (Kafka, RabbitMQ) for Event-Driven Services', duration: '65 mins', completed: false },
-          { id: 'l32', title: 'Rate Limiting Algorithms (Token Bucket vs Leaky Bucket)', duration: '50 mins', completed: false },
+          { id: 'l_nd1', title: 'Event Loop Phases, Timers & process.nextTick', duration: '50 mins', completed: false },
+          { id: 'l_nd2', title: 'Buffers, Streams & High-Volume I/O Pipelines', duration: '55 mins', completed: false },
+          { id: 'l_nd3', title: 'Error Handling Patterns & Centralized Middleware', duration: '45 mins', completed: false },
         ]
       },
       {
-        title: 'Module 2: Database Scalability & High Availability',
-        duration: '4.5 hrs',
+        title: 'Module 2: REST API Security & Database Integration',
+        duration: '4.0 hrs',
         lessons: [
-          { id: 'l33', title: 'Read Replicas, Horizontal Sharding & Consistent Hashing', duration: '65 mins', completed: false },
-          { id: 'l34', title: 'CAP Theorem, Eventual Consistency & Distributed Locks', duration: '75 mins', completed: false },
+          { id: 'l_nd4', title: 'JWT Authentication, Bcrypt & Role-Based Access', duration: '60 mins', completed: false },
+          { id: 'l_nd5', title: 'MongoDB Indexing & Schema Validation with Mongoose', duration: '60 mins', completed: false },
         ]
       }
     ]
   },
   {
-    id: 'course-ai-llm-embeddings',
-    title: 'Applied AI: Vector Databases & RAG Architectures',
-    tagline: 'Build intelligent applications using LLM API integrations, LangChain, vector embeddings, and semantic retrieval.',
-    category: 'AI/ML',
+    id: 'course-database-arch',
+    title: 'Database Architecture: MongoDB & PostgreSQL Scaling',
+    tagline: 'Master indexing strategies, ACID transactions, aggregation pipelines, and sharded relational/NoSQL clusters.',
+    category: 'Backend',
     difficulty: 'Advanced',
-    platform: 'LearnPath AI Labs',
-    instructor: 'Dr. David Chen (Principal AI Researcher)',
-    duration: '8.0 Hours',
+    platform: 'LearnPath AI Architecture',
+    instructor: 'Martin Kleppmann (Data Systems)',
+    duration: '8.5 Hours',
     rating: 4.9,
-    reviewsCount: 340,
+    reviewsCount: 540,
+    enrolled: false,
+    progress: 0,
+    completedLessons: 0,
+    totalLessons: 8,
+    xpReward: 400,
+    skillsCovered: ['MongoDB', 'PostgreSQL', 'Database Modeling', 'Redis'],
+    targetRole: 'Backend Developer',
+    assessmentId: 'assess-backend-node',
+    thumbnailGradient: 'from-green-500/20 via-emerald-600/10 to-slate-900/30',
+    resources: {
+      officialDocs: { title: 'PostgreSQL Documentation', url: 'https://www.postgresql.org/docs/' },
+      youtubeVideo: { title: 'Database Indexing & Systems Deep Dive', url: 'https://www.youtube.com/watch?v=-qNSXK7s7_w' },
+      youtubeChannel: { title: 'Hussein Nasser Systems', url: 'https://www.youtube.com/@hnasr' },
+      learningPlatform: { title: 'MongoDB University', url: 'https://learn.mongodb.com/' }
+    },
+    modules: [
+      {
+        title: 'Module 1: Query Execution & Index Profiling',
+        duration: '4.0 hrs',
+        lessons: [
+          { id: 'l_db1', title: 'B-Tree vs Hash Indexes & ESR Optimization', duration: '60 mins', completed: false },
+          { id: 'l_db2', title: 'ACID Transactions & Lock Concurrency in Postgres', duration: '65 mins', completed: false },
+        ]
+      }
+    ]
+  },
+
+  // --- DATA SCIENTIST ---
+  {
+    id: 'course-python-data-science',
+    title: 'Python for Data Science, NumPy & Pandas Analytics',
+    tagline: 'Vectorized computing, exploratory data analysis, data wrangling, and numerical statistical processing.',
+    category: 'Data Science',
+    difficulty: 'Beginner',
+    platform: 'LearnPath AI Data Lab',
+    instructor: 'Wes McKinney (Creator of Pandas)',
+    duration: '7.0 Hours',
+    rating: 4.9,
+    reviewsCount: 910,
     enrolled: false,
     progress: 0,
     completedLessons: 0,
     totalLessons: 10,
-    xpReward: 480,
-    skillsCovered: ['Vector Databases', 'LangChain', 'Embeddings', 'RAG Pipelines', 'OpenAI / Gemini API'],
-    targetRole: 'AI Engineer',
-    assessmentId: 'assess-ai-rag',
-    thumbnailGradient: 'from-violet-600/20 via-pink-600/10 to-slate-950/30',
+    xpReward: 300,
+    skillsCovered: ['Python', 'Pandas', 'NumPy', 'Data Analysis'],
+    targetRole: 'Data Scientist',
+    assessmentId: 'assess-data-science',
+    thumbnailGradient: 'from-blue-500/20 via-sky-600/10 to-indigo-950/30',
     resources: {
-      officialDocs: {
-        title: 'Google AI Studio / Gemini API Documentation',
-        url: 'https://ai.google.dev/docs'
-      },
-      youtubeVideo: {
-        title: 'LangChain & RAG Crash Course — freeCodeCamp',
-        url: 'https://www.youtube.com/watch?v=aywZrzNaKjs'
-      },
-      youtubeChannel: {
-        title: 'James Briggs AI Channel',
-        url: 'https://www.youtube.com/@JamesBriggs'
-      },
-      learningPlatform: {
-        title: 'Pinecone Vector Database Learning Center',
-        url: 'https://www.pinecone.io/learn/'
-      }
+      officialDocs: { title: 'Pandas Documentation', url: 'https://pandas.pydata.org/docs/' },
+      youtubeVideo: { title: 'Python Pandas Data Science Tutorial', url: 'https://www.youtube.com/watch?v=vmEHCJofslg' },
+      youtubeChannel: { title: 'Keith Galli Data Science', url: 'https://www.youtube.com/@KeithGalli' },
+      learningPlatform: { title: 'Kaggle Python Micro-Courses', url: 'https://www.kaggle.com/learn' }
     },
     modules: [
       {
-        title: 'Module 1: Embeddings & Vector Search Foundations',
-        duration: '4.0 hrs',
+        title: 'Module 1: Vectorized Numerical Computations',
+        duration: '3.5 hrs',
         lessons: [
-          { id: 'l35', title: 'Text Embeddings & Cosine Similarity Mathematics', duration: '50 mins', completed: false },
-          { id: 'l36', title: 'Vector Indexing (HNSW, IVFFlat) & Index Tuning', duration: '60 mins', completed: false },
-          { id: 'l37', title: 'Chunking Strategies & Hybrid Search Patterns', duration: '50 mins', completed: false },
+          { id: 'l_ds1', title: 'NumPy N-Dimensional Arrays & SIMD Vectorization', duration: '50 mins', completed: false },
+          { id: 'l_ds2', title: 'Pandas DataFrames, GroupBy & Window Aggregations', duration: '60 mins', completed: false },
         ]
-      },
+      }
+    ]
+  },
+  {
+    id: 'course-machine-learning-mastery',
+    title: 'Machine Learning & Statistical Model Evaluation',
+    tagline: 'Supervised learning, gradient boosting, feature engineering, regularization, and production ML pipelines.',
+    category: 'Data Science',
+    difficulty: 'Intermediate',
+    platform: 'LearnPath AI Data Lab',
+    instructor: 'Andrew Ng (Stanford / DeepLearning.AI)',
+    duration: '9.0 Hours',
+    rating: 5.0,
+    reviewsCount: 1150,
+    enrolled: false,
+    progress: 0,
+    completedLessons: 0,
+    totalLessons: 12,
+    xpReward: 400,
+    skillsCovered: ['Machine Learning', 'Scikit-Learn', 'Statistics', 'Model Evaluation'],
+    targetRole: 'Data Scientist',
+    assessmentId: 'assess-data-science',
+    thumbnailGradient: 'from-violet-500/20 via-purple-600/10 to-slate-900/30',
+    resources: {
+      officialDocs: { title: 'Scikit-Learn User Guide', url: 'https://scikit-learn.org/stable/' },
+      youtubeVideo: { title: 'Machine Learning Specialization Walkthrough', url: 'https://www.youtube.com/watch?v=jGwO_b/Rre8' },
+      youtubeChannel: { title: 'StatQuest with Josh Starmer', url: 'https://www.youtube.com/@statquest' },
+      learningPlatform: { title: 'DeepLearning.AI Portal', url: 'https://www.deeplearning.ai/' }
+    },
+    modules: [
       {
-        title: 'Module 2: Production RAG Pipelines & Guardrails',
+        title: 'Module 1: Feature Engineering & Supervised Learning',
+        duration: '4.5 hrs',
+        lessons: [
+          { id: 'l_ml1', title: 'Linear Models, Regularization (Lasso/Ridge) & Cost Functions', duration: '60 mins', completed: false },
+          { id: 'l_ml2', title: 'Decision Trees, Random Forests & XGBoost Pipelines', duration: '65 mins', completed: false },
+          { id: 'l_ml3', title: 'Cross-Validation, Precision-Recall & ROC-AUC Metrics', duration: '55 mins', completed: false },
+        ]
+      }
+    ]
+  },
+
+  // --- DEVOPS ENGINEER ---
+  {
+    id: 'course-devops-docker-k8s',
+    title: 'Docker Containers, Kubernetes & CI/CD Pipelines',
+    tagline: 'Containerize microservices, orchestrate Kubernetes clusters, and automate GitHub Actions deployment pipelines.',
+    category: 'DevOps',
+    difficulty: 'Intermediate',
+    platform: 'LearnPath AI Cloud Lab',
+    instructor: 'Kelsey Hightower & Bret Fisher',
+    duration: '8.0 Hours',
+    rating: 4.9,
+    reviewsCount: 780,
+    enrolled: false,
+    progress: 0,
+    completedLessons: 0,
+    totalLessons: 10,
+    xpReward: 350,
+    skillsCovered: ['Docker', 'Kubernetes', 'CI/CD Pipelines', 'Linux'],
+    targetRole: 'DevOps Engineer',
+    assessmentId: 'assess-devops',
+    thumbnailGradient: 'from-indigo-500/20 via-blue-600/10 to-slate-900/30',
+    resources: {
+      officialDocs: { title: 'Kubernetes Documentation', url: 'https://kubernetes.io/docs/' },
+      youtubeVideo: { title: 'Docker and Kubernetes Tutorial for Beginners', url: 'https://www.youtube.com/watch?v=Wf2eSG3owoA' },
+      youtubeChannel: { title: 'TechWorld with Nana', url: 'https://www.youtube.com/@TechWorldwithNana' },
+      learningPlatform: { title: 'Play with Docker Interactive', url: 'https://labs.play-with-docker.com/' }
+    },
+    modules: [
+      {
+        title: 'Module 1: Containerization & Cluster Orchestration',
         duration: '4.0 hrs',
         lessons: [
-          { id: 'l38', title: 'Building Multi-Source Retrieval with LangChain / LlamaIndex', duration: '65 mins', completed: false },
-          { id: 'l39', title: 'Context Window Optimization, Re-Ranking & Evaluation', duration: '65 mins', completed: false },
+          { id: 'l_dv1', title: 'Multi-Stage Dockerfiles & Image Size Optimization', duration: '50 mins', completed: false },
+          { id: 'l_dv2', title: 'Kubernetes Pods, Deployments & Service Routing', duration: '60 mins', completed: false },
+          { id: 'l_dv3', title: 'Automated CI/CD with GitHub Actions & Registry Push', duration: '55 mins', completed: false },
+        ]
+      }
+    ]
+  },
+
+  // --- BUSINESS ANALYST ---
+  {
+    id: 'course-business-analysis',
+    title: 'Business Analysis, Requirements Engineering & SQL/Excel',
+    tagline: 'Master BRD/FRD creation, relational SQL for business insights, advanced Excel modeling, and Power BI dashboards.',
+    category: 'Business Analytics',
+    difficulty: 'Beginner',
+    platform: 'LearnPath AI Analytics',
+    instructor: 'Alex The Analyst & Barbara Minto',
+    duration: '6.5 Hours',
+    rating: 4.8,
+    reviewsCount: 620,
+    enrolled: false,
+    progress: 0,
+    completedLessons: 0,
+    totalLessons: 9,
+    xpReward: 250,
+    skillsCovered: ['Requirements Engineering', 'SQL', 'Advanced Excel', 'Power BI'],
+    targetRole: 'Business Analyst',
+    assessmentId: 'assess-business-analyst',
+    thumbnailGradient: 'from-rose-500/20 via-pink-600/10 to-slate-900/30',
+    resources: {
+      officialDocs: { title: 'Microsoft Power BI Documentation', url: 'https://learn.microsoft.com/en-us/power-bi/' },
+      youtubeVideo: { title: 'Business Analyst Full Course', url: 'https://www.youtube.com/watch?v=pzoBvWkUjE0' },
+      youtubeChannel: { title: 'Alex The Analyst', url: 'https://www.youtube.com/@AlexTheAnalyst' },
+      learningPlatform: { title: 'IIBA Business Analysis Standards', url: 'https://www.iiba.org/' }
+    },
+    modules: [
+      {
+        title: 'Module 1: Business Requirements & Process Mapping',
+        duration: '3.0 hrs',
+        lessons: [
+          { id: 'l_ba1', title: 'Stakeholder Interviews, BRD & FRD Specifications', duration: '45 mins', completed: false },
+          { id: 'l_ba2', title: 'Relational SQL for Business Queries & KPI Aggregation', duration: '55 mins', completed: false },
+          { id: 'l_ba3', title: 'Advanced Excel Financial & Operational Modeling', duration: '50 mins', completed: false },
+        ]
+      }
+    ]
+  },
+
+  // --- FULL STACK / MERN DEVELOPER ---
+  {
+    id: 'course-fullstack-mern',
+    title: 'Full Stack MERN Architecture & Production Deployment',
+    tagline: 'Connect React client with Node/Express REST APIs, MongoDB atlas, JWT auth, and cloud production deployment.',
+    category: 'Full Stack',
+    difficulty: 'Intermediate',
+    platform: 'LearnPath AI Academy',
+    instructor: 'Brad Traversy & John Smilga',
+    duration: '9.5 Hours',
+    rating: 4.9,
+    reviewsCount: 960,
+    enrolled: false,
+    progress: 0,
+    completedLessons: 0,
+    totalLessons: 12,
+    xpReward: 400,
+    skillsCovered: ['React.js', 'Node.js', 'Express.js', 'MongoDB', 'Full Stack Architecture'],
+    targetRole: 'Full Stack Developer',
+    assessmentId: 'assess-fullstack-mern',
+    thumbnailGradient: 'from-orange-500/20 via-amber-600/10 to-slate-900/30',
+    resources: {
+      officialDocs: { title: 'MERN Stack Guide', url: 'https://www.mongodb.com/mern-stack' },
+      youtubeVideo: { title: 'MERN Stack Full Tutorial with Auth', url: 'https://www.youtube.com/watch?v=-0exw-9YJCE' },
+      youtubeChannel: { title: 'freeCodeCamp.org', url: 'https://www.youtube.com/@freecodecamp' },
+      learningPlatform: { title: 'FullStackOpen University Course', url: 'https://fullstackopen.com/en/' }
+    },
+    modules: [
+      {
+        title: 'Module 1: End-to-End MERN Integration',
+        duration: '5.0 hrs',
+        lessons: [
+          { id: 'l_fs1', title: 'REST API & State Synchronization with Axios', duration: '55 mins', completed: false },
+          { id: 'l_fs2', title: 'Cookie & JWT Authentication Lifecycles', duration: '60 mins', completed: false },
+          { id: 'l_fs3', title: 'Production Build & Dockerized Deployment', duration: '60 mins', completed: false },
         ]
       }
     ]
@@ -544,296 +383,469 @@ export const INITIAL_COURSES = [
 ];
 
 export const INITIAL_ASSESSMENTS = [
+  // 1. FRONTEND
   {
     id: 'assess-js-foundations',
     title: 'JavaScript ES6+ & Web Core Benchmark',
-    tagline: 'Validate your core knowledge of event loop, closures, async promises, and array manipulations.',
-    skill: 'JavaScript',
     category: 'Frontend',
-    duration: '20 mins',
-    questionsCount: 5,
-    difficulty: 'Beginner',
-    lastScore: null,
+    difficulty: 'Intermediate',
+    targetRole: 'Frontend Developer',
+    skillTested: 'JavaScript',
+    duration: '15 Mins',
     passingScore: 70,
-    status: 'Ready to Take',
     xpReward: 150,
-    badgeText: 'Core Skill',
+    questionsCount: 5,
     attemptsCount: 0,
+    status: 'Ready to Take',
+    lastScore: null,
+    lastAttemptDate: null,
     questions: [
       {
-        question: 'What is the output of typeof null in standard JavaScript?',
+        question: 'What is the primary output order of console.log(1); setTimeout(() => console.log(2), 0); Promise.resolve().then(() => console.log(3)); console.log(4); in JavaScript?',
+        options: ['1, 4, 3, 2', '1, 2, 3, 4', '1, 4, 2, 3', '1, 3, 4, 2'],
+        correctAnswerIndex: 0,
+        explanation: 'Microtasks (Promises) execute before macrotasks (setTimeout) after synchronous evaluation completes.',
+        skillSubtopic: 'Event Loop & Microtasks',
+      },
+      {
+        question: 'How does Object.freeze() differ from Object.seal() in JavaScript?',
         options: [
-          '"object"',
-          '"null"',
-          '"undefined"',
-          '"boolean"'
+          'freeze makes existing properties read-only, whereas seal allows modifying existing writable properties',
+          'seal prevents adding properties while freeze allows adding new properties',
+          'freeze is for arrays only while seal is for objects only',
+          'There is no functional difference between them',
         ],
         correctAnswerIndex: 0,
-        explanation: 'Due to a historical legacy bug in JavaScript first release, typeof null evaluates to "object".'
+        explanation: 'Object.freeze() sets writable to false; Object.seal() allows mutating existing writable properties.',
+        skillSubtopic: 'Object Mutability',
       },
       {
-        question: 'Which method creates a new array populated with the results of calling a provided function on every element?',
-        options: [
-          'Array.prototype.forEach()',
-          'Array.prototype.map()',
-          'Array.prototype.filter()',
-          'Array.prototype.reduce()'
-        ],
-        correctAnswerIndex: 1,
-        explanation: 'map() creates and returns a brand new array containing transformed elements without mutating the source array.'
+        question: 'Which web API is designed to cancel active asynchronous fetch() requests?',
+        options: ['AbortController', 'fetch.cancel()', 'window.stopFetch()', 'Promise.reject()'],
+        correctAnswerIndex: 0,
+        explanation: 'AbortController provides an AbortSignal to abort active fetch connections cleanly.',
+        skillSubtopic: 'Asynchronous Control Flow',
       },
       {
-        question: 'What does Promise.all() do when any one of the input promises rejects?',
-        options: [
-          'It waits for the remaining promises to resolve and ignores the rejection.',
-          'It immediately rejects with the reason of the first promise that rejected (fail-fast behavior).',
-          'It converts the rejected value to undefined and resolves.',
-          'It retries the failed promise up to 3 times.'
-        ],
-        correctAnswerIndex: 1,
-        explanation: 'Promise.all exhibits fail-fast behavior: if any single promise rejects, the returned master promise rejects immediately.'
+        question: 'What is the return value of typeof null in standard JavaScript?',
+        options: ['"object"', '"null"', '"undefined"', '"boolean"'],
+        correctAnswerIndex: 0,
+        explanation: 'typeof null returns "object" due to a legacy design quirk in the original JavaScript engine.',
+        skillSubtopic: 'Data Types',
       },
       {
-        question: 'What is a closure in JavaScript?',
+        question: 'How does the nullish coalescing operator (??) differ from logical OR (||)?',
         options: [
-          'A method that terminates a worker thread.',
-          'A function bundled together with references to its surrounding lexical environment.',
-          'A syntactic tag that prevents variable redeclaration.',
-          'A CSS selector that isolates component styles.'
+          '?? only falls back on null or undefined, whereas || falls back on all falsy values like 0 or empty string',
+          '?? only checks booleans while || checks numbers',
+          '?? executes asynchronously',
+          'There is no difference',
         ],
-        correctAnswerIndex: 1,
-        explanation: 'A closure gives an inner function access to an outer function scope even after the outer function has returned.'
+        correctAnswerIndex: 0,
+        explanation: 'Nullish coalescing strictly handles nullish values (null and undefined) rather than all falsy values.',
+        skillSubtopic: 'Operators',
       },
-      {
-        question: 'Which equality operator performs type coercion before comparison?',
-        options: [
-          '=== (Strict Equality)',
-          '== (Loose Equality)',
-          'Object.is()',
-          '= (Assignment)'
-        ],
-        correctAnswerIndex: 1,
-        explanation: 'The loose equality operator (==) converts operands to a common type before comparing values, whereas === compares without coercion.'
-      }
     ]
   },
   {
     id: 'assess-react-core',
     title: 'React 18 Architecture & Hooks Benchmark',
-    tagline: 'Evaluate your mastery of concurrent rendering, useMemo, custom hooks, and state patterns.',
-    skill: 'React.js',
     category: 'Frontend',
-    duration: '25 mins',
-    questionsCount: 5,
     difficulty: 'Intermediate',
-    lastScore: null,
+    targetRole: 'Frontend Developer',
+    skillTested: 'React.js',
+    duration: '15 Mins',
     passingScore: 70,
-    status: 'Ready to Take',
-    xpReward: 200,
-    badgeText: 'Priority Gap',
+    xpReward: 150,
+    questionsCount: 4,
     attemptsCount: 0,
+    status: 'Ready to Take',
+    lastScore: null,
+    lastAttemptDate: null,
     questions: [
       {
-        question: 'What is the primary architectural purpose of the useTransition hook in React 18?',
+        question: 'When does the cleanup callback returned by useEffect execute?',
         options: [
-          'To mark state updates as non-urgent transitions, keeping UI responsive for critical user input.',
-          'To trigger automatic page reloads on route changes.',
-          'To directly manipulate DOM CSS transitions without re-rendering.',
-          'To replace Redux for global state management.'
+          'Before component unmounts and before re-running the effect on dependency changes',
+          'Only when the browser window closes',
+          'Synchronously before the initial render starts',
+          'Immediately when state is declared',
         ],
         correctAnswerIndex: 0,
-        explanation: 'useTransition lets you mark updates as non-urgent transitions so urgent user interactions (like typing in an input) remain instantaneous.'
+        explanation: 'React executes the cleanup callback before unmounting and prior to applying new effect updates.',
+        skillSubtopic: 'Hooks Lifecycle',
       },
       {
-        question: 'Why should you NOT rely on useMemo as a semantic guarantee that a computation will never re-run?',
+        question: 'What is the main benefit of using useCallback in React?',
         options: [
-          'React documentation explicitly states useMemo is a performance hint and React may forget memoized values in future releases or low memory states.',
-          'useMemo runs on a background web worker thread with race conditions.',
-          'useMemo causes infinite loops if used inside event handlers.',
-          'useMemo has a hard cap of storing only string values.'
+          'It caches a function definition between renders to maintain reference equality for memoized child components',
+          'It accelerates mathematical calculations',
+          'It automatically syncs state with LocalStorage',
+          'It fetches data in the background',
         ],
         correctAnswerIndex: 0,
-        explanation: 'React explicitly specifies that useMemo is a performance optimization, not a semantic guarantee.'
+        explanation: 'useCallback preserves callback reference equality, preventing unnecessary re-renders in memoized children.',
+        skillSubtopic: 'Performance & Memoization',
       },
       {
-        question: 'What does the useDeferredValue hook achieve in React 18?',
+        question: 'Why must state never be mutated directly in React components?',
         options: [
-          'It forces an input element to only update on blur.',
-          'It defers re-rendering a non-urgent part of the tree until more urgent updates are completed.',
-          'It delays network requests by a fixed millisecond timeout.',
-          'It turns a controlled component into an uncontrolled component.'
+          'Direct mutations bypass React shallow comparison and fail to schedule a re-render',
+          'Direct mutations crash the JavaScript runtime',
+          'Direct mutations only work in class components',
+          'Direct mutations cause memory leaks',
         ],
-        correctAnswerIndex: 1,
-        explanation: 'useDeferredValue lets you defer updating a non-critical portion of the UI while keeping the main input responsive.'
+        correctAnswerIndex: 0,
+        explanation: 'React relies on immutable state updates to trigger virtual DOM reconciliation.',
+        skillSubtopic: 'State Immutability',
       },
       {
-        question: 'Why should you avoid creating functions or objects inline inside the dependency array of useEffect?',
+        question: 'What does the useMemo hook return in React?',
         options: [
-          'JavaScript throws a SyntaxError on inline objects in arrays.',
-          'New object/function references are created every render, causing the effect to re-run on every render cycle.',
-          'Inline references cause memory leaks in React Native only.',
-          'React removes inline dependencies automatically.'
+          'A memoized calculated value from an expensive computation',
+          'A DOM element reference',
+          'A global Redux store',
+          'An event listener callback',
         ],
-        correctAnswerIndex: 1,
-        explanation: 'JavaScript checks dependency arrays by referential equality (Object.is). An inline object or function creates a new reference on every render pass, triggering unnecessary effect executions.'
+        correctAnswerIndex: 0,
+        explanation: 'useMemo caches the output of an expensive computation until dependencies change.',
+        skillSubtopic: 'React Optimization',
       },
-      {
-        question: 'How do React Server Components (RSC) differ from traditional SSR (Server-Side Rendering)?',
-        options: [
-          'RSCs require Node.js 12 or lower.',
-          'RSCs do not ship any JavaScript bundle for server components to the client, while SSR hydrates client JS for all components.',
-          'RSCs cannot connect to databases directly.',
-          'RSCs only work with GraphQL.'
-        ],
-        correctAnswerIndex: 1,
-        explanation: 'RSCs render purely on the server and return a serialized UI stream without shipping their JS dependency code to the browser bundle.'
-      }
     ]
   },
+
+  // 2. BACKEND
   {
-    id: 'assess-node-architecture',
-    title: 'Node.js Event Loop & REST API Architecture',
-    tagline: 'Test your understanding of the libuv event loop phases, async I/O, middleware chaining, and streams.',
-    skill: 'Node.js',
+    id: 'assess-backend-node',
+    title: 'Node.js, Express & REST API Architecture Checkpoint',
     category: 'Backend',
-    duration: '25 mins',
-    questionsCount: 5,
     difficulty: 'Intermediate',
-    lastScore: null,
+    targetRole: 'Backend Developer',
+    skillTested: 'Node.js',
+    duration: '15 Mins',
     passingScore: 70,
-    status: 'Ready to Take',
-    xpReward: 200,
-    badgeText: 'Recommended Gap',
+    xpReward: 150,
+    questionsCount: 4,
     attemptsCount: 0,
+    status: 'Ready to Take',
+    lastScore: null,
+    lastAttemptDate: null,
     questions: [
       {
-        question: 'In which libuv phase do setImmediate() callbacks execute?',
+        question: 'What signature identifies custom error-handling middleware in Express.js?',
         options: [
-          'Timers phase',
-          'I/O Polling phase',
-          'Check phase',
-          'Close callbacks phase'
-        ],
-        correctAnswerIndex: 2,
-        explanation: 'The Check phase of the Node.js event loop is dedicated specifically to executing callbacks registered via setImmediate().'
-      },
-      {
-        question: 'What happens when process.nextTick() is called recursively inside a callback?',
-        options: [
-          'It schedules the callback for the next tick of the next event loop iteration.',
-          'It starves the event loop I/O polling, causing a complete freeze/starvation of other operations.',
-          'Node.js automatically throws a NextTickLimitExceededError.',
-          'It runs in a separate thread on the worker pool.'
-        ],
-        correctAnswerIndex: 1,
-        explanation: 'process.nextTick queue is processed before moving to the next event loop phase. Calling it recursively prevents the event loop from ever reaching the Poll/I/O phase.'
-      },
-      {
-        question: 'Why is using Stream.pipe() or pipeline() superior to fs.readFile() for transmitting large files in Express?',
-        options: [
-          'Streams buffer the entire file into RAM at once for faster reading.',
-          'Streams process data chunk-by-chunk, maintaining minimal memory footprint and applying backpressure.',
-          'fs.readFile is deprecated in Node.js 20.',
-          'Streams automatically compress files to .zip format.'
-        ],
-        correctAnswerIndex: 1,
-        explanation: 'Streams read and transmit data in small chunks (e.g. 64KB), preventing heap memory overflow and handling slow clients gracefully via automatic backpressure.'
-      },
-      {
-        question: 'How should unhandled Promise rejections be handled in modern Node.js applications?',
-        options: [
-          'Ignore them because Node.js recovers automatically.',
-          'Listen to process.on("unhandledRejection"), log the stack trace with contextual metadata, and gracefully terminate/restart the worker.',
-          'Wrap every single file in an eval() block.',
-          'Set NODE_ENV=production which silently discards rejected promises.'
-        ],
-        correctAnswerIndex: 1,
-        explanation: 'Unhandled promise rejections leave the process in an undefined state. Best practice is to log the telemetry, close active connections gracefully, and let a process supervisor restart the worker.'
-      },
-      {
-        question: 'In Express middleware, what is the critical requirement for error-handling middleware functions?',
-        options: [
-          'They must be defined at the top before all route handlers.',
-          'They must accept exactly 4 arguments: (err, req, res, next).',
-          'They must return an async Promise.',
-          'They cannot use res.status() code.'
-        ],
-        correctAnswerIndex: 1,
-        explanation: 'Express inspects function.length. Only middleware with 4 arguments (err, req, res, next) are recognized by Express internal router as error handlers.'
-      }
-    ]
-  },
-  {
-    id: 'assess-system-design',
-    title: 'Distributed Systems & Scalability Benchmark',
-    tagline: 'Validate your knowledge of caching, database sharding, CAP theorem, and event-driven queues.',
-    skill: 'System Design',
-    category: 'Architecture',
-    duration: '30 mins',
-    questionsCount: 5,
-    difficulty: 'Advanced',
-    lastScore: null,
-    passingScore: 70,
-    status: 'Ready to Take',
-    xpReward: 250,
-    badgeText: 'Advanced Skill',
-    attemptsCount: 0,
-    questions: [
-      {
-        question: 'Under high write concurrency, which cache invalidation strategy guarantees zero stale reads by invalidating or updating the cache within the database transaction?',
-        options: [
-          'Write-Through Caching',
-          'Cache-Aside (Lazy Loading)',
-          'Write-Behind (Write-Back) Caching',
-          'Time-To-Live (TTL) Only'
+          'A middleware function with 4 arguments: (err, req, res, next)',
+          'A middleware function with 2 arguments: (req, res)',
+          'An explicit call to process.exit(1)',
+          'A try-catch block inside server.js',
         ],
         correctAnswerIndex: 0,
-        explanation: 'Write-Through updates both the cache and underlying database synchronously, preventing stale reads at the cost of higher write latency.'
+        explanation: 'Express differentiates error middleware specifically by its 4-parameter signature: (err, req, res, next).',
+        skillSubtopic: 'Express Middleware',
       },
       {
-        question: 'What is the primary benefit of Consistent Hashing over simple Modulo Hashing in distributed cache clusters?',
+        question: 'What is the difference between process.nextTick() and setImmediate() in Node.js?',
         options: [
-          'It eliminates all network latency.',
-          'When a node is added or removed, only K/N keys need to be remapped instead of almost all keys.',
-          'It compresses keys into 32-bit integers.',
-          'It converts NoSQL queries into SQL.'
+          'process.nextTick() executes immediately after the current operation before the next event loop phase; setImmediate() runs in the Check phase',
+          'setImmediate() always executes before process.nextTick()',
+          'process.nextTick() only runs inside worker threads',
+          'There is no execution phase difference',
         ],
-        correctAnswerIndex: 1,
-        explanation: 'In consistent hashing on a hash ring, adding or removing a node only redistributes keys belonging to the immediate neighbor node (1/N of keys), avoiding mass cache thundering herds.'
+        correctAnswerIndex: 0,
+        explanation: 'nextTick queue is drained immediately following the current tick, while setImmediate runs during the Check phase.',
+        skillSubtopic: 'Event Loop Phases',
       },
       {
-        question: 'According to the CAP theorem, what does a distributed system choose during a network partition (P) if it prioritizes Availability (A)?',
-        options: [
-          'It guarantees every read receives the most recent write (Consistency).',
-          'It returns responses from all non-failing nodes even if some nodes contain stale data.',
-          'It shuts down all nodes immediately.',
-          'It deletes all partitions.'
-        ],
-        correctAnswerIndex: 1,
-        explanation: 'In AP systems, during a partition the system remains available to process reads and writes, accepting eventual consistency rather than rejecting operations.'
+        question: 'In MongoDB, which method inspects query execution plan and verifies index utilization?',
+        options: ['cursor.explain("executionStats")', 'db.profile()', 'db.indexScan()', 'db.verifyQuery()'],
+        correctAnswerIndex: 0,
+        explanation: 'explain("executionStats") details whether a COLLSCAN (collection scan) or IXSCAN (index scan) occurred.',
+        skillSubtopic: 'MongoDB Index Profiling',
       },
       {
-        question: 'What problem does an Exponential Backoff with Jitter algorithm solve in distributed microservices?',
+        question: 'Why are Node.js Streams preferred over fs.readFile() for processing large files?',
         options: [
-          'It compiles TypeScript code faster.',
-          'It prevents synchronized retry spikes (thundering herd problem) from overwhelming a recovering downstream service.',
-          'It compresses images on the edge.',
-          'It enforces ACID transactions across MongoDB.'
+          'Streams process data in chunks without buffering the whole file into RAM',
+          'Streams automatically compress files to zip format',
+          'fs.readFile is deprecated',
+          'Streams execute directly on the GPU',
         ],
-        correctAnswerIndex: 1,
-        explanation: 'Adding random jitter to exponential backoff decorrelates client retry attempts, smoothing traffic load on struggling downstream dependencies.'
+        correctAnswerIndex: 0,
+        explanation: 'Streams maintain constant low memory consumption by reading and transferring chunks incrementally.',
+        skillSubtopic: 'Streams & I/O',
+      },
+    ]
+  },
+
+  // 3. DATA SCIENTIST
+  {
+    id: 'assess-data-science',
+    title: 'Data Science, Statistics & Machine Learning Benchmark',
+    category: 'Data Science',
+    difficulty: 'Intermediate',
+    targetRole: 'Data Scientist',
+    skillTested: 'Python',
+    duration: '15 Mins',
+    passingScore: 70,
+    xpReward: 150,
+    questionsCount: 4,
+    attemptsCount: 0,
+    status: 'Ready to Take',
+    lastScore: null,
+    lastAttemptDate: null,
+    questions: [
+      {
+        question: 'In Python, what is the memory advantage of a generator expression over a list comprehension?',
+        options: [
+          'Generators yield items lazily on-demand with O(1) space complexity instead of storing all elements in RAM',
+          'Generators compile directly to machine bytecode',
+          'Generators run on multi-threaded background workers',
+          'Generators only store integers',
+        ],
+        correctAnswerIndex: 0,
+        explanation: 'Generators compute values on-the-fly, preserving minimal memory footprint during large dataset iterations.',
+        skillSubtopic: 'Generators & Memory',
       },
       {
-        question: 'What is Database Sharding and what is its primary limitation?',
+        question: 'In Pandas, why are vectorized operations preferred over row iteration with for loops or .iterrows()?',
         options: [
-          'Compressing table columns with gzip.',
-          'Partitioning data horizontally across multiple database instances based on a shard key; cross-shard joins and transactions become complex and expensive.',
-          'Replacing relational tables with Redis strings.',
-          'Duplicating 100% of data across all nodes.'
+          'Vectorized operations execute in compiled C/SIMD instructions without Python interpreter loop overhead',
+          'Vectorization automatically encrypts data',
+          'iterrows() cannot process numerical columns',
+          'Vectorization reduces disk size',
         ],
-        correctAnswerIndex: 1,
-        explanation: 'Horizontal sharding scales database write throughput across instances, but cross-shard queries, joins, and distributed transactions incur significant latency penalties.'
-      }
+        correctAnswerIndex: 0,
+        explanation: 'Vectorized Pandas operations delegate calculations to precompiled C routines for 100x-1000x speedup.',
+        skillSubtopic: 'Pandas Vectorization',
+      },
+      {
+        question: 'How does L1 regularization (Lasso) differ from L2 regularization (Ridge) in linear models?',
+        options: [
+          'L1 penalizes absolute coefficient weights driving unneeded features to exact zero; L2 penalizes squared weights',
+          'L1 is only for classification; L2 is only for regression',
+          'L2 eliminates features completely while L1 keeps all features',
+          'L1 cannot be used with gradient descent',
+        ],
+        correctAnswerIndex: 0,
+        explanation: 'L1 regularization acts as automated feature selection by zeroing out non-essential coefficients.',
+        skillSubtopic: 'Model Regularization',
+      },
+      {
+        question: 'When evaluating a classification model on an imbalanced dataset, why is AUC-ROC / PR-AUC preferred over raw Accuracy?',
+        options: [
+          'Accuracy can be deceptively high by simply predicting the majority class, masking poor minority detection',
+          'Accuracy cannot be calculated on numerical data',
+          'AUC-ROC requires fewer computation cycles',
+          'PR-AUC only applies to clustering tasks',
+        ],
+        correctAnswerIndex: 0,
+        explanation: 'Accuracy overlooks class imbalance, whereas Precision-Recall and ROC curves evaluate discriminative trade-offs.',
+        skillSubtopic: 'Model Evaluation Metrics',
+      },
+    ]
+  },
+
+  // 4. DEVOPS ENGINEER
+  {
+    id: 'assess-devops',
+    title: 'DevOps, Docker, Kubernetes & CI/CD Checkpoint',
+    category: 'DevOps',
+    difficulty: 'Intermediate',
+    targetRole: 'DevOps Engineer',
+    skillTested: 'Docker',
+    duration: '15 Mins',
+    passingScore: 70,
+    xpReward: 150,
+    questionsCount: 4,
+    attemptsCount: 0,
+    status: 'Ready to Take',
+    lastScore: null,
+    lastAttemptDate: null,
+    questions: [
+      {
+        question: 'What is the difference between Docker CMD and ENTRYPOINT in a Dockerfile?',
+        options: [
+          'ENTRYPOINT sets the default executable, while CMD provides default parameters that can be overridden at runtime',
+          'CMD runs during build time while ENTRYPOINT runs during container startup',
+          'ENTRYPOINT can only run shell scripts; CMD runs binary files',
+          'There is no difference in execution',
+        ],
+        correctAnswerIndex: 0,
+        explanation: 'ENTRYPOINT specifies the command binary, while CMD sets default arguments that users can override.',
+        skillSubtopic: 'Containerization & Docker',
+      },
+      {
+        question: 'In Kubernetes, what is the role of a Pod compared to a Deployment?',
+        options: [
+          'A Pod is the smallest deployable compute unit (one or more containers); a Deployment manages replica sets, scaling, and rolling updates',
+          'A Deployment runs on developer laptops while a Pod runs only in production',
+          'A Pod stores persistent volumes while a Deployment only stores network routes',
+          'A Pod is a physical server while a Deployment is a virtual machine',
+        ],
+        correctAnswerIndex: 0,
+        explanation: 'Pods encapsulate container instances, whereas Deployments manage replication, health checks, and rolling updates.',
+        skillSubtopic: 'Kubernetes Orchestration',
+      },
+      {
+        question: 'What is the core principle of Infrastructure as Code (IaC) with tools like Terraform?',
+        options: [
+          'Declaring cloud infrastructure state in version-controlled configuration files for repeatable, automated provisioning',
+          'Writing manual shell commands inside production servers',
+          'Replacing all databases with flat JSON files',
+          'Preventing developers from writing unit tests',
+        ],
+        correctAnswerIndex: 0,
+        explanation: 'IaC manages infrastructure declaratively with version control, state drift detection, and automated provisioning.',
+        skillSubtopic: 'Infrastructure as Code',
+      },
+      {
+        question: 'In a CI/CD deployment pipeline, what is the purpose of Canary Deployments?',
+        options: [
+          'Routing a small fraction of live traffic to a new version to validate stability before full rollout',
+          'Encrypting code before sending to Git',
+          'Running tests on a developer local machine',
+          'Deleting old database backups',
+        ],
+        correctAnswerIndex: 0,
+        explanation: 'Canary releases minimize blast radius by verifying the new build on a small sample of production users.',
+        skillSubtopic: 'Deployment Strategies',
+      },
+    ]
+  },
+
+  // 5. BUSINESS ANALYST
+  {
+    id: 'assess-business-analyst',
+    title: 'Business Analysis, Requirements & BI Metrics Benchmark',
+    category: 'Business Analytics',
+    difficulty: 'Intermediate',
+    targetRole: 'Business Analyst',
+    skillTested: 'Requirements Engineering',
+    duration: '15 Mins',
+    passingScore: 70,
+    xpReward: 150,
+    questionsCount: 4,
+    attemptsCount: 0,
+    status: 'Ready to Take',
+    lastScore: null,
+    lastAttemptDate: null,
+    questions: [
+      {
+        question: 'What is the primary difference between a Business Requirements Document (BRD) and a Functional Requirements Document (FRD)?',
+        options: [
+          'A BRD describes high-level business goals and problem statements; an FRD details exact system behavior, inputs, outputs, and workflows',
+          'A BRD is written by software developers; an FRD is written by sales teams',
+          'A BRD is only used in Waterfall; an FRD is only used in Scrum',
+          'There is no functional distinction',
+        ],
+        correctAnswerIndex: 0,
+        explanation: 'The BRD outlines business objectives and ROI, whereas the FRD specifies technical requirements and system capabilities.',
+        skillSubtopic: 'Requirements Engineering',
+      },
+      {
+        question: 'In Excel data modeling, why is INDEX-MATCH or XLOOKUP preferred over traditional VLOOKUP?',
+        options: [
+          'They do not break when columns are inserted/rearranged and can perform flexible left-lookups',
+          'They only work with binary datasets',
+          'VLOOKUP is not compatible with modern spreadsheet software',
+          'They automatically format cells with colors',
+        ],
+        correctAnswerIndex: 0,
+        explanation: 'INDEX-MATCH and XLOOKUP reference columns independently, providing robustness against structural spreadsheet changes.',
+        skillSubtopic: 'Advanced Excel Analytics',
+      },
+      {
+        question: 'What is a Star Schema in Data Warehousing and Business Intelligence?',
+        options: [
+          'A dimensional model with a central Fact table surrounded by Denormalized Dimension tables for fast BI querying',
+          'A network topology connecting 5 client computers to a server',
+          'A database that only stores user passwords',
+          'A software testing methodology',
+        ],
+        correctAnswerIndex: 0,
+        explanation: 'A Star Schema simplifies analytical queries by connecting metric Fact tables directly to descriptive Dimension tables.',
+        skillSubtopic: 'BI & Data Warehousing',
+      },
+      {
+        question: 'In relational SQL, what is the key difference between WHERE and HAVING clauses?',
+        options: [
+          'WHERE filters rows before aggregation; HAVING filters aggregated groups after GROUP BY',
+          'WHERE only works with numbers; HAVING works with text',
+          'HAVING is used exclusively for table creation',
+          'WHERE is executed after HAVING',
+        ],
+        correctAnswerIndex: 0,
+        explanation: 'WHERE filters individual table rows prior to aggregation, while HAVING filters group results.',
+        skillSubtopic: 'SQL Query Optimization',
+      },
+    ]
+  },
+
+  // 6. FULL STACK DEVELOPER
+  {
+    id: 'assess-fullstack-mern',
+    title: 'Full Stack MERN Architecture & Systems Benchmark',
+    category: 'Full Stack',
+    difficulty: 'Intermediate',
+    targetRole: 'Full Stack Developer',
+    skillTested: 'Full Stack Architecture',
+    duration: '15 Mins',
+    passingScore: 70,
+    xpReward: 150,
+    questionsCount: 4,
+    attemptsCount: 0,
+    status: 'Ready to Take',
+    lastScore: null,
+    lastAttemptDate: null,
+    questions: [
+      {
+        question: 'How do you prevent Cross-Site Scripting (XSS) when handling user input in React and Express?',
+        options: [
+          'Rely on React built-in JSX auto-escaping and sanitize/validate inputs before storage on the Express backend',
+          'Disable CORS on all Express routes',
+          'Store all user tokens in plain text in cookies without httpOnly',
+          'Only use class components',
+        ],
+        correctAnswerIndex: 0,
+        explanation: 'React escapes variables in JSX by default; backend input sanitization and httpOnly cookies ensure layered XSS protection.',
+        skillSubtopic: 'Web Security',
+      },
+      {
+        question: 'What is the purpose of HTTP status code 401 vs 403 in REST APIs?',
+        options: [
+          '401 means Unauthorized (missing or invalid credentials); 403 means Forbidden (authenticated, but lacking permissions)',
+          '401 means Server Error; 403 means Database Error',
+          '401 is for GET requests; 403 is for POST requests',
+          'There is no distinction',
+        ],
+        correctAnswerIndex: 0,
+        explanation: '401 indicates unauthenticated identity; 403 indicates authenticated identity with insufficient access privileges.',
+        skillSubtopic: 'REST Protocol & Auth',
+      },
+      {
+        question: 'When storing passwords in a database, what is the best security practice?',
+        options: [
+          'Hash the password using a salted adaptive algorithm like Bcrypt or Argon2',
+          'Encrypt the password with Base64 encoding',
+          'Store the password in plain text inside an environment variable',
+          'Save MD5 hashes without salt',
+        ],
+        correctAnswerIndex: 0,
+        explanation: 'Bcrypt and Argon2 include salt and work-factor calibration to resist dictionary and rainbow-table attacks.',
+        skillSubtopic: 'Authentication Security',
+      },
+      {
+        question: 'What is the primary benefit of compound indexing with ESR (Equality, Sort, Range) in MongoDB?',
+        options: [
+          'It provides maximum query efficiency by filtering exact matches, avoiding in-memory sort, and applying range filters last',
+          'It halves document storage size',
+          'It encrypts all network requests',
+          'It replaces the need for database backups',
+        ],
+        correctAnswerIndex: 0,
+        explanation: 'ESR ordering minimizes index scan key operations and eliminates expensive in-memory sort stages.',
+        skillSubtopic: 'Database Performance',
+      },
     ]
   }
 ];

@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 
 export const AIMentorPage = () => {
-  const { user } = useAuth();
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
   const { learningPath, skillGapReport } = useLearningPath();
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
@@ -33,8 +33,10 @@ export const AIMentorPage = () => {
   ];
 
   useEffect(() => {
-    loadConversation();
-  }, []);
+    if (isAuthenticated && !authLoading) {
+      loadConversation();
+    }
+  }, [isAuthenticated, authLoading]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

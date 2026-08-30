@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import { Sparkles, Code, CheckCircle2, Clock, ExternalLink, RefreshCw, FolderGit2, Layers } from 'lucide-react';
 import ProjectDetailModal from '../components/projects/ProjectDetailModal';
 
 export const ProjectsPage = () => {
+  const { isAuthenticated, loading: authLoading } = useAuth();
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedProject, setSelectedProject] = useState(null);
 
   useEffect(() => {
-    fetchProjects();
-  }, []);
+    if (isAuthenticated && !authLoading) {
+      fetchProjects();
+    }
+  }, [isAuthenticated, authLoading]);
 
   const fetchProjects = async () => {
     try {

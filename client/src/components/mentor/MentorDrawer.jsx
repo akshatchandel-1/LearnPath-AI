@@ -1,4 +1,5 @@
 ﻿import React, { useState, useEffect, useRef } from 'react';
+import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import {
   X,
@@ -41,10 +42,10 @@ export const MentorDrawer = ({ isOpen, onClose }) => {
   ];
 
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && isAuthenticated && !authLoading) {
       loadConversation();
     }
-  }, [isOpen]);
+  }, [isOpen, isAuthenticated, authLoading]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

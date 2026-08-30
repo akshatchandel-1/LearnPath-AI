@@ -1,270 +1,351 @@
-﻿const llmService = require('./llmService');
+const llmService = require('./llmService');
 const Quiz = require('../../models/Quiz');
 
 const QUESTION_BANK = {
   javascript: [
     {
-      question: 'What is the primary output order of `console.log(1); setTimeout(() => console.log(2), 0); Promise.resolve().then(() => console.log(3)); console.log(4);`?',
+      question: 'What is the primary output order of console.log(1); setTimeout(() => console.log(2), 0); Promise.resolve().then(() => console.log(3)); console.log(4); in JavaScript?',
       options: ['1, 4, 3, 2', '1, 2, 3, 4', '1, 4, 2, 3', '1, 3, 4, 2'],
       correctAnswerIndex: 0,
-      explanation: 'Microtasks (Promises) execute before macrotasks (setTimeout) after the synchronous execution stack empties, resulting in 1, 4, 3, 2.',
+      explanation: 'Microtasks (Promises) execute before macrotasks (setTimeout) after synchronous execution completes.',
       skillSubtopic: 'Event Loop & Microtasks',
     },
     {
-      question: 'How does `Object.freeze()` differ from `Object.seal()` in JavaScript?',
+      question: 'How does Object.freeze() differ from Object.seal() in JavaScript?',
       options: [
-        'freeze makes all existing properties read-only, whereas seal permits modifying existing writable property values',
-        'seal prevents adding new properties while freeze allows adding new properties',
+        'freeze makes existing properties read-only, whereas seal allows modifying existing writable properties',
+        'seal prevents adding properties while freeze allows adding new properties',
         'freeze is for arrays only while seal is for objects only',
-        'There is no functional difference between them'
+        'There is no functional difference between them',
       ],
       correctAnswerIndex: 0,
-      explanation: 'Object.freeze() sets configurable and writable to false. Object.seal() sets configurable to false but retains existing writability.',
+      explanation: 'Object.freeze() sets writable to false, whereas Object.seal() retains existing writability.',
       skillSubtopic: 'Object Mutability',
     },
     {
-      question: 'Which method should be used to abort an active `fetch()` request when a component unmounts?',
-      options: ['AbortController.abort()', 'fetch.cancel()', 'window.stopFetch()', 'Promise.reject()'],
+      question: 'Which web API should be used to cancel an active fetch() request?',
+      options: ['AbortController', 'fetch.cancel()', 'window.stopFetch()', 'Promise.reject()'],
       correctAnswerIndex: 0,
-      explanation: 'AbortController generates a signal passed to fetch() that cancels active network requests upon calling abort().',
-      skillSubtopic: 'Asynchronous Control',
+      explanation: 'AbortController generates an AbortSignal passed into fetch to cancel active network connections.',
+      skillSubtopic: 'Asynchronous Control Flow',
     },
     {
-      question: 'What is the consequence of creating a closure over a large outer scope variable inside an event listener that is never removed?',
+      question: 'What happens when a closure references a large object inside an event listener that is never removed?',
       options: [
-        'Potential memory leak as the garbage collector cannot reclaim the referenced memory',
-        'Immediate syntax error at compilation time',
-        'The variable is automatically garbage collected after 5 seconds',
-        'Browser tab crashes synchronously on startup'
+        'It can cause a memory leak because the garbage collector retains reachable references',
+        'It triggers an immediate syntax error',
+        'The object is automatically garbage collected after 5 seconds',
+        'The browser halts JavaScript execution',
       ],
       correctAnswerIndex: 0,
-      explanation: 'Retaining references in persistent event listeners creates memory leaks because the garbage collector cannot free active reachability chains.',
+      explanation: 'Reachable references prevent garbage collection, leading to persistent memory retention.',
       skillSubtopic: 'Memory Lifecycle & Closures',
     },
     {
-      question: 'Which array method executes a reducer function on each element without mutating the original array?',
-      options: ['reduce()', 'splice()', 'reverse()', 'sort()'],
+      question: 'What is the return value of typeof NaN in JavaScript?',
+      options: ['"number"', '"NaN"', '"undefined"', '"object"'],
       correctAnswerIndex: 0,
-      explanation: 'Array.prototype.reduce() accumulates array values into a single return value without mutating the source array.',
-      skillSubtopic: 'Functional Array Pipelines',
+      explanation: 'In JavaScript, NaN represents Not-a-Number but its primitive data type is number.',
+      skillSubtopic: 'Data Types',
     },
     {
-      question: 'In ES Modules (ESM), how does static `import` differ from dynamic `import()`?',
+      question: 'How does the nullish coalescing operator (??) differ from the logical OR operator (||)?',
       options: [
-        'Static imports are resolved at compile/parse time, whereas dynamic import() returns a Promise resolved at runtime',
-        'Static imports only work in Node.js while dynamic imports only work in the browser',
-        'Dynamic import() can only load JSON files',
-        'Static imports are always asynchronous'
+        '?? only falls back on null or undefined, while || falls back on all falsy values like 0 or empty string',
+        '?? works only with numbers while || works only with booleans',
+        '?? executes asynchronously while || is synchronous',
+        'There is no operational difference',
       ],
       correctAnswerIndex: 0,
-      explanation: 'Static import statements enable tree-shaking by resolving at parse time, while import() loads modules on-demand at runtime.',
-      skillSubtopic: 'ES Modules & Dynamic Loading',
-    },
-    {
-      question: 'What happens when `Promise.all([p1, p2, p3])` encounters a rejection on `p2` while `p1` is still pending?',
-      options: [
-        'The returned Promise immediately rejects with the reason from p2 (fail-fast behavior)',
-        'It waits for p1 and p3 to finish before rejecting',
-        'It ignores p2 and returns the fulfilled results of p1 and p3',
-        'It converts the rejection into an empty array'
-      ],
-      correctAnswerIndex: 0,
-      explanation: 'Promise.all rejects immediately upon the first rejection. To wait for all settlements, use Promise.allSettled().',
-      skillSubtopic: 'Promise Concurrency',
-    },
-    {
-      question: 'What does the `WeakMap` data structure prevent in long-running JavaScript applications?',
-      options: [
-        'Memory leaks by allowing object keys to be garbage collected when no other references exist',
-        'Concurrent thread execution conflicts',
-        'Type coercion errors during arithmetic operations',
-        'Uncaught JSON parsing exceptions'
-      ],
-      correctAnswerIndex: 0,
-      explanation: 'WeakMap holds weak references to key objects, allowing the garbage collector to reclaim them when unreachable elsewhere.',
-      skillSubtopic: 'Data Structures & Garbage Collection',
+      explanation: 'Nullish coalescing strictly checks for nullish values (null and undefined) rather than falsy values.',
+      skillSubtopic: 'Operators & Expressions',
     },
   ],
 
   react: [
     {
-      question: 'What is the primary purpose of the `useCallback` hook in React?',
+      question: 'When does the cleanup callback returned by useEffect execute?',
       options: [
-        'To memoize a callback function instance between renders to prevent unnecessary child re-renders',
-        'To execute asynchronous side-effects on initial component mount',
-        'To create a mutable ref that persists across render cycles',
-        'To dynamically manage browser URL query parameters'
+        'Before the component unmounts and before re-running the effect on dependency change',
+        'Only when the entire browser tab closes',
+        'Synchronously before the initial render starts',
+        'Immediately when state is declared',
       ],
       correctAnswerIndex: 0,
-      explanation: 'useCallback returns a memoized version of the callback that only changes if one of the dependencies has changed.',
-      skillSubtopic: 'Hooks & Optimization',
+      explanation: 'React executes cleanup before unmounting and before applying new effect cycles.',
+      skillSubtopic: 'Hooks Lifecycle',
     },
     {
-      question: 'What problem occurs when a `useEffect` hook relies on a state variable that is omitted from its dependency array?',
+      question: 'What is the primary purpose of the useCallback hook in React?',
       options: [
-        'Stale closure bug where the effect accesses outdated state values from previous renders',
-        'Fatal syntax error during compilation',
-        'Component permanently unmounts immediately',
-        'State is reset to null automatically'
+        'To return a memoized callback function instance preventing unnecessary re-renders in memoized child components',
+        'To run synchronous calculations on the background thread',
+        'To fetch data from backend servers automatically',
+        'To replace useState with global state',
       ],
       correctAnswerIndex: 0,
-      explanation: 'Omitting dependencies captures stale variables in the closure from the render cycle where the effect was initialized.',
-      skillSubtopic: 'useEffect Dependency Management',
+      explanation: 'useCallback caches function definitions between renders based on dependency array changes.',
+      skillSubtopic: 'Memoization & Performance',
     },
     {
-      question: 'Why should keys in React lists be stable and unique identifiers instead of array indices?',
+      question: 'Why should state never be mutated directly in React (e.g. state.count = 5)?',
       options: [
-        'Using array indices causes DOM state bugs and inefficient re-renders when items are reordered or filtered',
-        'React throws a compile-time fatal error if an index is used',
-        'Indices prevent Tailwind CSS styles from rendering',
-        'Indices consume 10x more browser RAM'
+        'Direct mutations bypass React shallow comparison and fail to schedule a re-render',
+        'Direct mutations trigger a fatal compilation error',
+        'Direct mutations slow down the JavaScript engine',
+        'Direct mutations are only allowed inside class components',
       ],
       correctAnswerIndex: 0,
-      explanation: 'Stable keys allow React reconciliation to identify which items have changed, been added, or removed correctly.',
-      skillSubtopic: 'Virtual DOM & Reconciliation',
+      explanation: 'React relies on immutability to detect state changes and trigger virtual DOM reconciliation.',
+      skillSubtopic: 'State Immutability',
     },
     {
-      question: 'How does React 18 Concurrent Mode improve user experience during heavy state updates?',
+      question: 'What does the useMemo hook return?',
       options: [
-        'By allowing React to interrupt, pause, and resume rendering to keep the browser main thread responsive for user input',
-        'By running multiple JavaScript threads inside web workers automatically',
-        'By caching all HTTP responses on disk',
-        'By disabling CSS animations during data fetching'
+        'A memoized calculated value from an expensive computation',
+        'A callback function that runs on every tick',
+        'A DOM element reference',
+        'A global store reducer',
       ],
       correctAnswerIndex: 0,
-      explanation: 'Concurrent rendering lets React yield execution back to the browser event loop during urgent interactions like typing.',
-      skillSubtopic: 'Concurrent Rendering',
-    },
-    {
-      question: 'What is the role of `useMemo` compared to `useCallback`?',
-      options: [
-        'useMemo caches the calculated return value of a function, while useCallback caches the function definition itself',
-        'useMemo is for components and useCallback is for HTML elements',
-        'useMemo runs synchronously on server while useCallback runs on client',
-        'There is no distinction between them'
-      ],
-      correctAnswerIndex: 0,
-      explanation: 'useMemo(() => computeValue(a, b), [a, b]) caches the result, while useCallback(fn, deps) caches the function reference.',
-      skillSubtopic: 'Performance Memoization',
+      explanation: 'useMemo caches the result of an expensive calculation until dependencies change.',
+      skillSubtopic: 'React Optimization',
     },
   ],
 
   node: [
     {
-      question: 'How does Node.js achieve high concurrency despite having a single-threaded JavaScript execution engine?',
+      question: 'What signature identifies custom error-handling middleware in Express.js?',
       options: [
-        'Via the Libuv event loop and thread pool for asynchronous non-blocking I/O operations',
-        'By compiling all JavaScript into multithreaded C++ binaries',
-        'By launching a new OS process for each incoming HTTP request',
-        'By using synchronous blocking socket calls'
-      ],
-      correctAnswerIndex: 0,
-      explanation: 'Node.js delegates I/O tasks to the Libuv event loop and worker pool, executing callbacks asynchronously upon completion.',
-      skillSubtopic: 'Libuv Architecture',
-    },
-    {
-      question: 'What is the correct way to handle stream backpressure in Node.js?',
-      options: [
-        'Use `readable.pipe(writable)` or `stream.pipeline()` which manage buffer draining automatically',
-        'Increase Node.js buffer memory allocation to 16GB',
-        'Call process.exit() if write() returns false',
-        'Disable stream chunking and load entire files into RAM'
-      ],
-      correctAnswerIndex: 0,
-      explanation: 'stream.pipeline() properly forwards backpressure signals and cleans up file descriptors upon stream completion or error.',
-      skillSubtopic: 'Streams & Backpressure',
-    },
-    {
-      question: 'In Express.js, what must be called in custom error-handling middleware?',
-      options: [
-        'A middleware function signature with 4 parameters: `(err, req, res, next)`',
-        'A middleware function with only 2 parameters: `(req, res)`',
-        'An explicit call to process.crash()',
-        'A global try/catch block inside package.json'
+        'A middleware function with 4 arguments: (err, req, res, next)',
+        'A middleware function with 2 arguments: (req, res)',
+        'An explicit call to process.exit(1)',
+        'A try-catch block wrapping express()',
       ],
       correctAnswerIndex: 0,
       explanation: 'Express identifies error-handling middleware specifically by having 4 arguments: (err, req, res, next).',
       skillSubtopic: 'Express Middleware',
     },
     {
-      question: 'What is the difference between `process.nextTick()` and `setImmediate()` in Node.js?',
+      question: 'What is the difference between process.nextTick() and setImmediate() in Node.js?',
       options: [
-        'process.nextTick() fires immediately after current operation completes before the next event loop phase; setImmediate() runs in the check phase',
-        'setImmediate() runs before process.nextTick()',
-        'process.nextTick() only runs in worker threads',
-        'There is no execution phase difference'
+        'process.nextTick() fires immediately after the current operation finishes; setImmediate() runs in the Check phase',
+        'setImmediate() runs before process.nextTick() in all phases',
+        'process.nextTick() only operates in cluster worker threads',
+        'There is no difference in execution timing',
       ],
       correctAnswerIndex: 0,
-      explanation: 'nextTick queue is processed immediately after the current tick completes, whereas setImmediate fires in the Check phase.',
+      explanation: 'nextTick queue is processed immediately after current tick completes, whereas setImmediate runs in Check phase.',
       skillSubtopic: 'Event Loop Phases',
+    },
+    {
+      question: 'Why are Node.js Streams preferred over fs.readFile() for processing large files?',
+      options: [
+        'Streams process data in chunks without buffering the entire file into memory',
+        'Streams automatically compress files to zip format',
+        'fs.readFile is deprecated in modern Node.js',
+        'Streams run natively on the GPU',
+      ],
+      correctAnswerIndex: 0,
+      explanation: 'Streams maintain constant low memory usage by reading and transferring chunks incrementally.',
+      skillSubtopic: 'Node.js Streams & I/O',
     },
   ],
 
   database: [
     {
-      question: 'In MongoDB, which command allows you to inspect query execution plan and verify whether an index is used?',
+      question: 'In MongoDB, which command inspects query execution plan and verifies index usage?',
       options: ['cursor.explain("executionStats")', 'db.profile()', 'db.indexScan()', 'db.verifyQuery()'],
       correctAnswerIndex: 0,
-      explanation: 'explain("executionStats") details whether a COLLSCAN (slow collection scan) or IXSCAN (fast index scan) occurred.',
+      explanation: 'explain("executionStats") details whether a COLLSCAN (collection scan) or IXSCAN (index scan) occurred.',
       skillSubtopic: 'MongoDB Index Profiling',
     },
     {
-      question: 'What is the primary benefit of compound indexes with Equality, Sort, Range (ESR) ordering in MongoDB?',
+      question: 'What is the Equality, Sort, Range (ESR) rule for compound index design in databases?',
       options: [
-        'It maximizes query efficiency by filtering exact matches, avoiding in-memory sorts, and applying range filters last',
-        'It reduces document storage size by 50%',
-        'It enables automatic database sharding across multiple clouds',
-        'It forces all collections to reside in browser cache'
+        'Place equality fields first, sort fields second, and range filters last for optimal index coverage',
+        'Sort data before inserting into tables',
+        'Limit database queries to 3 conditions maximum',
+        'Encrypt all index columns on disk',
       ],
       correctAnswerIndex: 0,
-      explanation: 'The ESR rule places Equality fields first, Sort fields second, and Range fields third for optimal index coverage.',
-      skillSubtopic: 'Index Optimization (ESR)',
+      explanation: 'The ESR rule maximizes index efficiency by filtering exact matches, avoiding in-memory sort, and applying range filters.',
+      skillSubtopic: 'Compound Indexing',
     },
     {
-      question: 'Which aggregation pipeline stage is used to deconstruct an array field in documents into separate documents?',
+      question: 'Which MongoDB aggregation stage is used to deconstruct an array field into individual documents?',
       options: ['$unwind', '$group', '$project', '$lookup'],
       correctAnswerIndex: 0,
       explanation: '$unwind outputs one document for each element in the specified array field.',
-      skillSubtopic: 'Aggregation Framework',
+      skillSubtopic: 'Aggregation Pipelines',
+    },
+    {
+      question: 'In relational SQL, what is the difference between WHERE and HAVING clauses?',
+      options: [
+        'WHERE filters rows before aggregation; HAVING filters aggregated groups after GROUP BY',
+        'WHERE only works with numbers; HAVING works with text',
+        'HAVING is used exclusively for table creation',
+        'WHERE is executed after HAVING',
+      ],
+      correctAnswerIndex: 0,
+      explanation: 'WHERE filters individual table rows prior to aggregation, while HAVING filters group results.',
+      skillSubtopic: 'SQL Query Optimization',
     },
   ],
 
   python: [
     {
-      question: 'In Python, what is the key performance advantage of a generator expression over a list comprehension?',
+      question: 'In Python, what is the memory advantage of a generator expression over a list comprehension?',
       options: [
-        'Generators evaluate items lazily on-demand using constant memory (O(1) space complexity)',
-        'Generators execute 100x faster by compiling to machine bytecode',
-        'Generators bypass the Global Interpreter Lock (GIL)',
-        'Generators can only hold integer values'
+        'Generators yield items lazily on-demand with O(1) space complexity instead of storing all items in memory',
+        'Generators compile directly to machine bytecode',
+        'Generators run on multi-threaded background workers',
+        'Generators only store integer primitives',
       ],
       correctAnswerIndex: 0,
-      explanation: 'Generators yield values one at a time, avoiding memory overhead for massive datasets.',
-      skillSubtopic: 'Generators & Memory Efficiency',
+      explanation: 'Generators evaluate values lazily, maintaining minimal memory footprint for large datasets.',
+      skillSubtopic: 'Generators & Iterators',
     },
     {
-      question: 'In Pandas, why is vectorized column manipulation preferred over iterating with `for` loops or `.iterrows()`?',
+      question: 'In Pandas, why are vectorized operations preferred over row iteration (for loops / .iterrows())?',
       options: [
-        'Vectorized operations execute in optimized C code via NumPy SIMD instructions without Python interpreter overhead',
-        'Vectorization automatically encrypts data frames on disk',
-        'iterrows() is deprecated in all Python versions',
-        'Vectorization produces smaller SVG charts'
+        'Vectorized operations run in compiled C/SIMD instructions without Python interpreter loop overhead',
+        'Vectorization automatically writes data to SQL databases',
+        'iterrows() cannot handle numerical columns',
+        'Vectorization reduces disk storage requirements',
       ],
       correctAnswerIndex: 0,
-      explanation: 'Vectorized Pandas operations delegate calculations to precompiled C/Fortran array operations for 100x-1000x speedup.',
-      skillSubtopic: 'Pandas Vectorization',
+      explanation: 'Vectorized Pandas/NumPy operations delegate computation to precompiled C routines for high performance.',
+      skillSubtopic: 'Pandas Performance',
     },
     {
-      question: 'What is the purpose of Python decorators using the `@` syntax?',
+      question: 'What is the function of Python decorators with the @ syntax?',
       options: [
-        'To wrap another function to extend its behavior without permanently modifying its source code',
-        'To declare a class variable as immutable',
-        'To automatically write docstrings to markdown files',
-        'To run the decorated function on a remote GPU cluster'
+        'To wrap a function and augment its behavior without permanently altering its core code',
+        'To declare a variable as thread-safe',
+        'To automatically generate unit tests',
+        'To export functions to C++ shared libraries',
       ],
       correctAnswerIndex: 0,
-      explanation: 'Decorators are higher-order functions that take a function, augment its execution (e.g. logging, auth), and return it.',
+      explanation: 'Decorators are higher-order functions that modify or extend function execution dynamically.',
       skillSubtopic: 'Functional Decorators',
+    },
+  ],
+
+  machinelearning: [
+    {
+      question: 'How does L1 regularization (Lasso) differ from L2 regularization (Ridge) in linear models?',
+      options: [
+        'L1 penalizes absolute weights driving coefficients to exact zero; L2 penalizes squared weights',
+        'L1 is only for classification; L2 is only for regression',
+        'L2 eliminates features completely while L1 keeps all features',
+        'L1 cannot be used with gradient descent',
+      ],
+      correctAnswerIndex: 0,
+      explanation: 'L1 regularization produces sparse feature sets by driving non-critical coefficients to zero.',
+      skillSubtopic: 'Model Regularization',
+    },
+    {
+      question: 'When evaluating a classification model on an imbalanced dataset, why is AUC-ROC / PR-AUC preferred over raw Accuracy?',
+      options: [
+        'Accuracy can be deceptively high by simply predicting the majority class, masking poor minority detection',
+        'Accuracy cannot be calculated on numerical data',
+        'AUC-ROC requires fewer computation cycles',
+        'PR-AUC only applies to clustering tasks',
+      ],
+      correctAnswerIndex: 0,
+      explanation: 'Accuracy ignores class distribution, whereas Precision-Recall and ROC curves evaluate discriminative thresholds.',
+      skillSubtopic: 'Model Evaluation Metrics',
+    },
+    {
+      question: 'What is the purpose of Cross-Validation (e.g. 5-Fold CV) in Machine Learning?',
+      options: [
+        'To evaluate model generalization performance and detect overfitting across multiple data splits',
+        'To reduce dataset size before training',
+        'To convert continuous variables into discrete labels',
+        'To deploy models directly to Kubernetes',
+      ],
+      correctAnswerIndex: 0,
+      explanation: 'Cross-validation splits data into folds to validate that performance is stable across different subsets.',
+      skillSubtopic: 'Cross Validation & Generalization',
+    },
+  ],
+
+  devops: [
+    {
+      question: 'What is the difference between Docker CMD and ENTRYPOINT in a Dockerfile?',
+      options: [
+        'ENTRYPOINT sets the default executable, while CMD provides default parameters that can be overridden at runtime',
+        'CMD runs during build time while ENTRYPOINT runs during container startup',
+        'ENTRYPOINT can only run shell scripts; CMD runs binary files',
+        'There is no difference in execution',
+      ],
+      correctAnswerIndex: 0,
+      explanation: 'ENTRYPOINT configures the primary binary to execute, and CMD provides default arguments.',
+      skillSubtopic: 'Containerization & Docker',
+    },
+    {
+      question: 'In Kubernetes, what is the role of a Pod compared to a Deployment?',
+      options: [
+        'A Pod is the smallest deployable compute unit (one or more containers); a Deployment manages replica sets, scaling, and rolling updates',
+        'A Deployment runs on developer laptops while a Pod runs only in production',
+        'A Pod stores persistent volumes while a Deployment only stores network routes',
+        'A Pod is a physical server while a Deployment is a virtual machine',
+      ],
+      correctAnswerIndex: 0,
+      explanation: 'Pods encapsulate container instances, whereas Deployments declare desired state, scaling, and update policies.',
+      skillSubtopic: 'Kubernetes Orchestration',
+    },
+    {
+      question: 'What is the core principle of Infrastructure as Code (IaC) with tools like Terraform?',
+      options: [
+        'Declaring cloud infrastructure state in version-controlled configuration files for repeatable, automated provisioning',
+        'Writing manual shell commands inside production servers',
+        'Replacing all databases with flat JSON files',
+        'Preventing developers from writing unit tests',
+      ],
+      correctAnswerIndex: 0,
+      explanation: 'IaC manages infrastructure declaratively with version control, state drift detection, and automated provisioning.',
+      skillSubtopic: 'Infrastructure as Code',
+    },
+  ],
+
+  businessanalyst: [
+    {
+      question: 'What is the primary difference between a Business Requirements Document (BRD) and a Functional Requirements Document (FRD)?',
+      options: [
+        'A BRD describes high-level business goals and problem statements; an FRD details exact system behavior, inputs, outputs, and workflows',
+        'A BRD is written by software developers; an FRD is written by sales teams',
+        'A BRD is only used in Waterfall; an FRD is only used in Scrum',
+        'There is no functional distinction',
+      ],
+      correctAnswerIndex: 0,
+      explanation: 'The BRD outlines business objectives and ROI, whereas the FRD specifies technical requirements and system capabilities.',
+      skillSubtopic: 'Requirements Engineering',
+    },
+    {
+      question: 'In Excel data modeling, why is INDEX-MATCH or XLOOKUP preferred over traditional VLOOKUP?',
+      options: [
+        'They do not break when columns are inserted/rearranged and can perform flexible left-lookups',
+        'They only work with binary datasets',
+        'VLOOKUP is not compatible with modern spreadsheet software',
+        'They automatically format cells with colors',
+      ],
+      correctAnswerIndex: 0,
+      explanation: 'INDEX-MATCH and XLOOKUP reference columns independently, providing robustness against structural spreadsheet changes.',
+      skillSubtopic: 'Advanced Excel Analytics',
+    },
+    {
+      question: 'What is a Star Schema in Data Warehousing and Business Intelligence?',
+      options: [
+        'A dimensional model with a central Fact table surrounded by Denormalized Dimension tables for fast BI querying',
+        'A network topology connecting 5 client computers to a server',
+        'A database that only stores user passwords',
+        'A software testing methodology',
+      ],
+      correctAnswerIndex: 0,
+      explanation: 'A Star Schema simplifies analytical queries by connecting metric Fact tables directly to descriptive Dimension tables.',
+      skillSubtopic: 'BI & Data Warehousing',
     },
   ],
 };
@@ -273,7 +354,7 @@ class QuizGenerator {
   shuffleQuestion(q) {
     const originalCorrect = q.options[q.correctAnswerIndex];
     const optionsWithIndex = q.options.map((opt, idx) => ({ opt, isCorrect: idx === q.correctAnswerIndex }));
-    // Shuffle
+    
     for (let i = optionsWithIndex.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [optionsWithIndex[i], optionsWithIndex[j]] = [optionsWithIndex[j], optionsWithIndex[i]];
@@ -291,20 +372,22 @@ class QuizGenerator {
   }
 
   getBankForSkill(skillName = '') {
-    const s = skillName.toLowerCase();
+    const s = (skillName || '').toLowerCase();
     if (s.includes('react')) return QUESTION_BANK.react;
-    if (s.includes('node') || s.includes('express')) return QUESTION_BANK.node;
-    if (s.includes('mongo') || s.includes('data') || s.includes('sql') || s.includes('database')) return QUESTION_BANK.database;
-    if (s.includes('python') || s.includes('pandas') || s.includes('ml') || s.includes('machine learning')) return QUESTION_BANK.python;
+    if (s.includes('node') || s.includes('express') || s.includes('api')) return QUESTION_BANK.node;
+    if (s.includes('mongo') || s.includes('sql') || s.includes('database') || s.includes('postgres')) return QUESTION_BANK.database;
+    if (s.includes('ml') || s.includes('machine learning') || s.includes('deep learning') || s.includes('ai')) return QUESTION_BANK.machinelearning;
+    if (s.includes('python') || s.includes('pandas') || s.includes('numpy') || s.includes('data science')) return QUESTION_BANK.python;
+    if (s.includes('docker') || s.includes('kubernetes') || s.includes('devops') || s.includes('ci') || s.includes('linux') || s.includes('terraform')) return QUESTION_BANK.devops;
+    if (s.includes('business') || s.includes('excel') || s.includes('power bi') || s.includes('tableau') || s.includes('requirements') || s.includes('analysis')) return QUESTION_BANK.businessanalyst;
     return QUESTION_BANK.javascript;
   }
 
   async generateQuizForSkill(skillName, difficulty = 'Intermediate', count = null) {
-    const questionCount = count || 3;
+    const questionCount = count ? Math.min(10, Math.max(1, count)) : 3;
 
-    // Try LLM if configured
-    const prompt = `Generate an exact ${questionCount}-question technical quiz for the skill "${skillName}" at "${difficulty}" level.
-Output strictly valid JSON with this format:
+    const prompt = `Generate exactly ${questionCount} technical multiple-choice questions for the skill "${skillName}" at "${difficulty}" level.
+Output valid JSON only matching this format:
 {
   "title": "${skillName} Checkpoint",
   "skill": "${skillName}",
@@ -312,21 +395,21 @@ Output strictly valid JSON with this format:
   "passingScore": 70,
   "questions": [
     {
-      "question": "string",
-      "options": ["A", "B", "C", "D"],
-      "correctAnswerIndex": number (0-3),
-      "explanation": "string",
-      "skillSubtopic": "string"
+      "question": "question text",
+      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "correctAnswerIndex": 0,
+      "explanation": "concise explanation",
+      "skillSubtopic": "topic name"
     }
   ]
 }`;
 
-    const raw = await llmService.generateContent(prompt);
+    const raw = await llmService.generateContent(prompt, { temperature: 0.3 });
     if (raw) {
       try {
-        const cleaned = raw.replace(/\`\`\`json/g, '').replace(/\`\`\`/g, '').trim();
+        const cleaned = raw.replace(/```json/g, '').replace(/```/g, '').trim();
         const parsed = JSON.parse(cleaned);
-        if (parsed.questions && parsed.questions.length >= 1) {
+        if (parsed.questions && Array.isArray(parsed.questions) && parsed.questions.length >= 1) {
           const slicedQuestions = parsed.questions.slice(0, questionCount).map(q => this.shuffleQuestion(q));
           return await Quiz.create({
             title: parsed.title || `${skillName} ${questionCount}-Question Checkpoint`,
@@ -337,10 +420,11 @@ Output strictly valid JSON with this format:
             createdBy: 'AI_Generator',
           });
         }
-      } catch (e) {}
+      } catch (e) {
+        // Fall back to localized bank if JSON parse fails
+      }
     }
 
-    // Dynamic Randomized Question Selection from Bank
     const bank = this.getBankForSkill(skillName);
     const shuffledBank = [...bank].sort(() => Math.random() - 0.5);
     const selectedQuestions = shuffledBank.slice(0, Math.min(questionCount, shuffledBank.length)).map(q => this.shuffleQuestion(q));

@@ -1,16 +1,28 @@
-﻿class LLMService {
+class LLMService {
   constructor() {
-    this.provider = process.env.LLM_PROVIDER || 'gemini';
-    this.apiKey = process.env.GEMINI_API_KEY || '';
+    this.provider = process.env.LLM_PROVIDER || "gemini";
+  }
+
+  getApiKey() {
+    return process.env.GEMINI_API_KEY || "";
   }
 
   async generateContent(prompt, options = {}) {
-    if (!this.apiKey || this.apiKey.length < 5) {
+    const apiKey = this.getApiKey();
+    if (!apiKey || apiKey.length < 5) {
       return null;
     }
 
-    const models = ['gemini-2.0-flash', 'gemini-1.5-flash'];
-    const timeoutMs = options.timeout || 12000;
+    const models = [
+      "gemini-3.6-flash",
+      "gemini-3.5-flash",
+      "gemini-3.5-flash-lite",
+      "gemini-3.1-flash-lite",
+      "gemini-flash-lite-latest",
+      "gemma-4-26b-a4b-it",
+      "gemma-4-31b-it"
+    ];
+    const timeoutMs = options.timeout || 15000;
 
     for (const model of models) {
       try {
@@ -18,15 +30,15 @@
         const timer = setTimeout(() => controller.abort(), timeoutMs);
 
         const response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${this.apiKey}`,
+          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
           {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               contents: [{ parts: [{ text: prompt }] }],
               generationConfig: {
-                temperature: options.temperature || 0.4,
-                maxOutputTokens: options.maxTokens || 1200,
+                temperature: options.temperature !== undefined ? options.temperature : 0.4,
+                maxOutputTokens: options.maxTokens || 1500,
               },
             }),
             signal: controller.signal,
@@ -37,9 +49,13 @@
 
         if (response.ok) {
           const data = await response.json();
-          const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+          let text = data.candidates?.[0]?.content?.parts?.[0]?.text;
           if (text && text.trim().length > 0) {
-            return text.trim();
+            // Strip any thinking tags if present
+            text = text.replace(/<thought>[\s\S]*?<\/thought>/gi, "").trim();
+            if (text.length > 0) {
+              return text;
+            }
           }
         }
       } catch (err) {
@@ -53,3 +69,4 @@
 
 const llmService = new LLMService();
 module.exports = llmService;
+

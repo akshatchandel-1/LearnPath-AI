@@ -4,6 +4,74 @@ const adaptivePathService = require('../services/adaptive/adaptivePathService');
 const recommendationEngine = require('../services/recommendation/recommendationEngine');
 const { parseResumeFromBuffer } = require('../utils/resumeParser');
 
+const CANONICAL_SKILL_MAP = {
+  'javascript': 'JavaScript',
+  'js': 'JavaScript',
+  'java script': 'JavaScript',
+  'es6': 'JavaScript',
+  'react': 'React.js',
+  'reactjs': 'React.js',
+  'react.js': 'React.js',
+  'react js': 'React.js',
+  'node': 'Node.js',
+  'nodejs': 'Node.js',
+  'node.js': 'Node.js',
+  'node js': 'Node.js',
+  'express': 'Express.js',
+  'expressjs': 'Express.js',
+  'express.js': 'Express.js',
+  'express js': 'Express.js',
+  'html': 'HTML5',
+  'html5': 'HTML5',
+  'html 5': 'HTML5',
+  'css': 'CSS3',
+  'css3': 'CSS3',
+  'css 3': 'CSS3',
+  'mongodb': 'MongoDB',
+  'mongo': 'MongoDB',
+  'mongo db': 'MongoDB',
+  'postgres': 'PostgreSQL',
+  'postgresql': 'PostgreSQL',
+  'sql': 'SQL',
+  'python': 'Python',
+  'python3': 'Python',
+  'pandas': 'Pandas',
+  'numpy': 'NumPy',
+  'docker': 'Docker',
+  'k8s': 'Kubernetes',
+  'kubernetes': 'Kubernetes',
+  'aws': 'AWS',
+  'typescript': 'TypeScript',
+  'ts': 'TypeScript',
+  'type script': 'TypeScript',
+  'tailwind': 'Tailwind CSS',
+  'tailwindcss': 'Tailwind CSS',
+  'tailwind css': 'Tailwind CSS',
+  'machine learning': 'Machine Learning',
+  'ml': 'Machine Learning',
+  'deep learning': 'Deep Learning',
+  'dl': 'Deep Learning',
+  'power bi': 'Power BI',
+  'powerbi': 'Power BI',
+  'tableau': 'Tableau',
+  'excel': 'Advanced Excel',
+  'git': 'Git & GitHub',
+  'github': 'Git & GitHub',
+  'linux': 'Linux',
+};
+
+function normalizeSkillName(rawName) {
+  if (!rawName || typeof rawName !== 'string') return '';
+  const trimmed = rawName.trim();
+  const lower = trimmed.toLowerCase();
+  const alphaNumericKey = lower.replace(/[^a-z0-9]/g, '');
+
+  if (CANONICAL_SKILL_MAP[lower]) return CANONICAL_SKILL_MAP[lower];
+  if (CANONICAL_SKILL_MAP[alphaNumericKey]) return CANONICAL_SKILL_MAP[alphaNumericKey];
+
+  return trimmed.split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+}
+
 // @desc    Get user learner profile
 // @route   GET /api/profile
 // @access  Private
@@ -30,6 +98,7 @@ const getProfile = async (req, res, next) => {
         name: req.user.name,
         email: req.user.email,
         careerGoal: req.user.careerGoal,
+        targetRole: req.user.targetRole || req.user.careerGoal,
         experienceLevel: req.user.experienceLevel,
         streak: req.user.streak,
         points: req.user.points,
@@ -98,7 +167,6 @@ const updateProfile = async (req, res, next) => {
     if (weeklyStudyHours) user.weeklyHours = weeklyStudyHours;
     await user.save();
 
-    // Trigger AI background recalibration only if goal or skills changed
     if (effectiveGoal || skills) {
       const activeGoal = effectiveGoal || user.careerGoal;
       Promise.all([
@@ -198,42 +266,81 @@ const saveResumeData = async (req, res, next) => {
       linkedin: req.body.linkedin || user.resumeData?.linkedin,
       github: req.body.github || user.resumeData?.github,
       portfolio: req.body.portfolio || user.resumeData?.portfolio,
-      education: req.body.education || [],
-      experience: req.body.experience || [],
-      skills: req.body.skills || [],
-      projects: req.body.projects || [],
-      certifications: req.body.certifications || [],
-      achievements: req.body.achievements || []
+      education: req.body.education || user.resumeData?.education || [],
+      experience: req.body.experience || user.resumeData?.experience || [],
+      skills: req.body.skills || user.resumeData?.skills || [],
+      projects: req.body.projects || user.resumeData?.projects || [],
+      certifications: req.body.certifications || user.resumeData?.certifications || [],
+      achievements: req.body.achievements || user.resumeData?.achievements || []
     };
 
     if (req.body.name && req.body.name.trim().length > 1) {
       user.name = req.body.name.trim();
     }
 
-    // Merge skills into LearnerProfile & User with normalization
+    if (req.body.education) {
+      if (Array.isArray(req.body.education) && req.body.education.length > 0) {
+        user.education = typeof req.body.education[0] === 'string' ? req.body.education[0] : (req.body.education[0].degree || req.body.education[0].institution || user.education);
+      } else if (typeof req.body.education === 'string') {
+        user.education = req.body.education;
+      }
+    }
+
+    if (req.body.experience && Array.isArray(req.body.experience) && req.body.experience.length > 0) {
+      profile.experience = req.body.experience.length > 2 ? 'Advanced' : 'Intermediate';
+      user.experienceLevel = profile.experience;
+    }
+
+    // Merge skills with normalization & deduplication
     const incomingSkills = Array.isArray(req.body.skills) ? req.body.skills : [];
     if (incomingSkills.length > 0) {
-      const existingSkillNames = new Set(
-        (user.skills || []).map(s => (s.name || s.skill || '').toLowerCase().trim())
-      );
-
-      incomingSkills.forEach(sk => {
-        const skillName = typeof sk === 'string' ? sk.trim() : (sk?.name || sk?.skill || '').trim();
-        if (skillName && !existingSkillNames.has(skillName.toLowerCase())) {
-          existingSkillNames.add(skillName.toLowerCase());
-          const newSkill = {
-            name: skillName,
-            level: (typeof sk === 'object' && sk.level) ? sk.level : 30,
-            category: (typeof sk === 'object' && sk.category) ? sk.category : 'Technical',
-          };
-          user.skills.push(newSkill);
-          profile.skills.push(newSkill);
+      const existingMap = new Map();
+      (user.skills || []).forEach(s => {
+        const norm = normalizeSkillName(s.name || s.skill || '');
+        if (norm) {
+          existingMap.set(norm.toLowerCase().replace(/[^a-z0-9]/g, ''), {
+            name: norm,
+            level: s.level || s.progress || 30,
+            category: s.category || 'Technical',
+          });
         }
       });
+
+      incomingSkills.forEach(sk => {
+        const rawName = typeof sk === 'string' ? sk : (sk?.name || sk?.skill || '');
+        const norm = normalizeSkillName(rawName);
+        if (!norm) return;
+
+        const key = norm.toLowerCase().replace(/[^a-z0-9]/g, '');
+        const incomingLevel = (typeof sk === 'object' && sk.level) ? sk.level : 40;
+        const incomingCategory = (typeof sk === 'object' && sk.category) ? sk.category : 'Technical';
+
+        if (existingMap.has(key)) {
+          const current = existingMap.get(key);
+          current.level = Math.max(current.level, incomingLevel);
+        } else {
+          existingMap.set(key, {
+            name: norm,
+            level: incomingLevel,
+            category: incomingCategory,
+          });
+        }
+      });
+
+      const mergedSkills = Array.from(existingMap.values());
+      user.skills = mergedSkills;
+      profile.skills = mergedSkills;
       await profile.save();
     }
 
     await user.save();
+
+    // Trigger AI background recalculation
+    const activeGoal = user.targetRole || user.careerGoal || 'Full Stack Developer';
+    Promise.all([
+      adaptivePathService.generateLearningPath(req.user._id, activeGoal),
+      recommendationEngine.generateRecommendationsForUser(req.user._id)
+    ]).catch(err => console.error('Background AI Sync Error:', err.message));
 
     res.json({
       success: true,
@@ -247,6 +354,7 @@ const saveResumeData = async (req, res, next) => {
         name: user.name,
         email: user.email,
         careerGoal: user.careerGoal,
+        targetRole: user.targetRole || user.careerGoal,
         experienceLevel: user.experienceLevel,
         streak: user.streak,
         points: user.points,

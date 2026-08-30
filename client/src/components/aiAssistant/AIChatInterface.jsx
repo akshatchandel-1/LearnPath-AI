@@ -52,6 +52,7 @@ export default function AIChatInterface() {
 
   // Load server conversation history on mount
   useEffect(() => {
+    if (!isAuthenticated || authLoading) return;
     const fetchHistory = async () => {
       try {
         const res = await api.get('/ai/conversation');
@@ -73,7 +74,7 @@ export default function AIChatInterface() {
     };
 
     fetchHistory();
-  }, []);
+  }, [isAuthenticated, authLoading]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

@@ -85,8 +85,12 @@ const submitQuiz = async (req, res, next) => {
 
       return {
         questionIndex: idx,
+        question: q.question,
         selectedOption: selected,
+        correctOption: q.correctAnswerIndex,
         isCorrect,
+        explanation: q.explanation,
+        skillSubtopic: q.skillSubtopic,
       };
     });
 
@@ -145,7 +149,6 @@ const submitQuiz = async (req, res, next) => {
     // Check if adaptive learning path recalibration should be triggered
     let adaptiveTriggered = false;
     if (percentage < 60 || percentage >= 90) {
-      // Decouple AI adaptive trigger to prevent blocking or unhandled promises
       adaptivePathService.adaptLearningPath(req.user._id, {
         skill: quiz.skill,
         percentage,
@@ -158,7 +161,7 @@ const submitQuiz = async (req, res, next) => {
       user: req.user._id,
       quiz: quiz._id,
       skill: quiz.skill,
-      score: Math.round((correctCount / totalQuestions) * 100),
+      score: percentage,
       percentage,
       totalQuestions,
       correctCount,
@@ -183,7 +186,10 @@ const submitQuiz = async (req, res, next) => {
         earnedPoints,
         previousSkillLevel: previousLevel,
         newSkillLevel: newLevel,
+        skillDelta: newLevel - previousLevel,
         adaptiveTriggered,
+        adaptiveMessage: adaptiveTriggered ? 'Learning path adapted to your performance level' : '',
+        detailedAnswers: evaluatedAnswers,
         attemptId: attempt._id,
       },
       user: {
@@ -215,4 +221,3 @@ const getQuizHistory = async (req, res, next) => {
 };
 
 module.exports = { getQuizzes, getQuizById, generateQuiz, submitQuiz, getQuizHistory };
-

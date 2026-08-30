@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import {
   BarChart,
   Bar,
@@ -31,8 +32,10 @@ export const AnalyticsPage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchAnalytics();
-  }, []);
+    if (isAuthenticated && !authLoading) {
+      fetchAnalytics();
+    }
+  }, [isAuthenticated, authLoading]);
 
   const fetchAnalytics = async () => {
     try {
